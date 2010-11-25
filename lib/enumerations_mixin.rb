@@ -1,6 +1,6 @@
 require "rails"
 
-class EnumerationsMixin < Rails::Railtie
+class EnumerationsMixin < Rails::Engine
   config.autoload_paths << File.expand_path(File.join(__FILE__, "../"))
 
   initializer 'enumerations_mixin' do
