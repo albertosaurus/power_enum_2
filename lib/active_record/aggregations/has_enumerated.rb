@@ -5,17 +5,17 @@ module ActiveRecord
   module Aggregations # :nodoc:
     module HasEnumerated # :nodoc:
       def self.append_features(base)
-        super
+        super      
         base.extend(MacroMethods)
       end
 
-      module MacroMethods
+      module MacroMethods                      
         def has_enumerated(part_id, options = {})
           options.assert_valid_keys(:class_name, :foreign_key, :on_lookup_failure)
 
           name        = part_id.id2name
           class_name  = (options[:class_name] || name).to_s.camelize
-          foreign_key = (options[:foreign_key] || "#{name}_id").to_s
+          foreign_key = (options[:foreign_key] || "#{name}_id").to_s             
           failure     = options[:on_lookup_failure]
 
           module_eval <<-end_eval
@@ -25,9 +25,9 @@ module ActiveRecord
                 return self.send(#{failure.inspect}, :read, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
               end
               return rval
-            end
+            end         
 
-            def #{name}=(arg)
+            def #{name}=(arg)                         
               case arg
               when #{class_name}
                 val = #{class_name}.lookup_id(arg.id)
@@ -39,11 +39,11 @@ module ActiveRecord
                 val = #{class_name}.lookup_id(arg)
               when nil
                 val = nil
-              else
-                raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"
+              else     
+                raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"            
               end
 
-              if val.nil?
+              if val.nil? 
                 if #{failure.nil?}
                   raise ArgumentError, "#{self.name}: #{name}= can't assign a #{class_name} for a value of (\#{arg.inspect})"
                 end
