@@ -13,9 +13,9 @@ end
 # It's also handy if you want to define singleton methods for your
 # enumerated values.
 # See virtual_sample.txt in this directory for more info
-if File.exist?("#{RAILS_ROOT}/config/virtual_enumerations.rb")
+if File.exist?("#{Rails.root}/config/virtual_enumerations.rb")
   require 'active_record/virtual_enumerations'
   silence_warnings do
-    eval(IO.read("#{RAILS_ROOT}/config/virtual_enumerations.rb"), binding)
+    eval(IO.read("#{Rails.root}/config/virtual_enumerations.rb"), binding)
   end
 end
