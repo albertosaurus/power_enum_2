@@ -27,22 +27,18 @@ module ActiveRecord
           
           unless self.is_a? ActiveRecord::Acts::Enumerated::ClassMethods
             extend ActiveRecord::Acts::Enumerated::ClassMethods
-                        
-            eval_block = <<-EBLOCK
+            
             class_eval do
               include ActiveRecord::Acts::Enumerated::InstanceMethods
               
               before_save :enumeration_model_update
               before_destroy :enumeration_model_update
-              validates_uniqueness_of :#{name_column}
+              validates_uniqueness_of name_column
               
-              def name
-                read_attribute( :#{name_column} )
+              define_method :name do
+                read_attribute( name_column )
               end
             end
-            EBLOCK
-            
-            eval eval_block
           end
         end
       end
