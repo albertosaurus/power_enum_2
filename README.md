@@ -9,7 +9,8 @@ The enumerations mixin allows you to treat instances of your
 ActiveRecord models as though they were an enumeration of values.
 
 This is a modernization for use as a gem on Rails 3 of the original plugin by Trevor Squires
-located at https://github.com/protocool/enumerations_mixin
+located at https://github.com/protocool/enumerations_mixin by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
+and some additional updates and tests.
 
 At it's most basic level, it allows you to say things along the lines of:
 
@@ -25,9 +26,9 @@ See "How to use it" below for more information.
 
 ## Installation
 
-Simply add the gem to your Gemfile
+To use this version, add the gem to your Gemfile
 
-    gem 'enumerations_mixin'
+    gem 'enumerations_mixin', :git => 'git://github.com/albertosaurus/enumerations_mixin.git'
 
 ## Gem Contents
 
@@ -149,6 +150,10 @@ Go to dummy project:
 Run migrations for test environment:
 
     RAILS_ENV=test rake db:migrate
+
+If you're using Rails 3.1, you should do this instead:
+
+    RAILS_ENV=test bundle exec rake db:migrate
 
 Go back to gem root directory:
 

@@ -6,7 +6,7 @@ begin
     gem.description = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
     gem.email = "arthur.shagall@gmail.com"
     gem.homepage = "http://github.com/albertosaurus/enumerations_mixin"
-    gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergei Potapov']
+    gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
     gem.files = Dir["{lib}/**/*"] + Dir["{examples}/**/*"]
     gem.add_dependency('rails', '>= 3.0.0')
     gem.add_development_dependency('sqlite3')
