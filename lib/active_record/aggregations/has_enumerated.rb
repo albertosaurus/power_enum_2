@@ -38,7 +38,8 @@ module ActiveRecord
               when Fixnum
                 val = #{class_name}.lookup_id(arg)
               when nil
-                val = nil
+                self.#{foreign_key} = nil
+                return nil
               else     
                 raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"            
               end

@@ -46,7 +46,8 @@ There is also an <code>ActiveRecord::VirtualEnumerations</code> helper module to
     class BookingStatus < ActiveRecord::Base
       acts_as_enumerated  :conditions => 'optional_sql_conditions',
         :order => 'optional_sql_orderby',
-        :on_lookup_failure => :optional_class_method
+        :on_lookup_failure => :optional_class_method,
+        :name_column => 'optional_name_column'  #If required, may override the default name column
     end
 
 With that, your BookingStatus class will have the following methods defined:
@@ -55,9 +56,9 @@ With that, your BookingStatus class will have the following methods defined:
 
 Lookup the BookingStatus instance for arg. The arg value can be a 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be a Fixnum, in which case the lookup will be against the BookingStatus.id field.
 
-The <code>:on_lookup_failure</code> option specifies the name of a class method to invoke when the [] method is unable to locate a BookingStatus record for arg. The default is the built-in :enforce_strict_literals which causes an exception to be raised when no record is found and the arg is a Fixnum or Symbol, otherwise it returns nil. There are also built-ins for :enforce_strict (raise and exception regardless of the type for arg) and :enforce_none which just returns nil.
+The <code>:on_lookup_failure</code> option specifies the name of a class method to invoke when the [] method is unable to locate a BookingStatus record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an exception if the arg is a Fixnum or Symbol), :enforce_strict_ids (raises and exception if the arg is a Fixnum) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).
 
-The whole point of the :on_lookup_failure option is that I'm pretty opinionated that a) if the value can't be looked-up for a :symbol that I've passed, it's probably a typo so I want a *big* hint that something is wrong and b) it's likely that my opinion isn't shared by everyone so it should be configurable.
+The purpose of the :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action should be taken, therefore b) a fallback action should be easily configurable.
 
 <code>BookingStatus.all</code>
 
@@ -71,6 +72,24 @@ Using the above example you would do the following:
 
     BookingStatus.enumeration_model_updates_permitted = true
     BookingStatus.create(:name => 'newname')
+
+Each enumeration model gets the following instance methods.
+
+<code>===(arg)</code>
+
+<code>BookingStatus[:foo] === arg</code> returns true if <code>BookingStatus[:foo] === BookingStatus[arg]</code> returns true if arg is Fixnum, String, or Symbol.  If arg is an Array, will compare every element of the array and return true if any element return true for ===.
+
+You should note that defining an :on_lookup_failure method that raises an exception will cause <code>===</code> to also raise an exception for any lookup failure of <code>BookingStatus</arg>.
+
+<code>like?</code> is aliased to <code>===<code>
+
+<code>in?(*list)<code>
+
+Returns true if any element in the list returns true for <code>===(arg)</code>, false otherwise.
+
+<code>name_sym</code>
+
+Returns the symbol representation of the name of the enum.  <code>BookingStatus[:foo].name_sym</code> returns :foo.
 
 <code>has_enumerated</code>
 
@@ -92,22 +111,23 @@ Returns the BookingStatus with an id that matches the value in the Booking.statu
 
 <code>status=</code>
 
-Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a short-hand,
-you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol.
+Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
 
 example:
 
-    mybooking.status = :confirmed or mybooking.update_attribute(:status, :confirmed)
+    mybooking.status = :confirmed
 
-The <code>:on_lookup_failure</code> option in has_enumerated is there because (again) I'm opinionated about what should happen. By default, if booking.status_id contains an id that isn't a valid <code>BookingStatus.id</code> I just want booking.status to return nil rather than throw an exception.  This ensures I can edit my Booking instances without having to put rescue blocks around all my booking.status calls. However, if I call <code>booking.status = :bogus</code> I want noisy hints about the bug.
+The <code>:on_lookup_failure</code> option in has_enumerated is there because you may want to create an error handler for situations where the argument passed to status= is invalid.  By default, an invalid value will cause an ArgumentError to be raised.  
 
-Of course, you may not agree with that in which case you can specify an *instance* method to be called in the case of a lookup failure. The method signature is as follows:
+Of course, this may not be optimal in your situation.  In this case you can specify an *instance* method to be called in the case of a lookup failure. The method signature is as follows:
 
     your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
 
 The 'operation' arg will be either :read or :write.  In the case of :read you are expected to return something or raise an exception, while in the case of a :write you don't have to return anything.
 
 Note that there's enough information in the method signature that you can specify one method to handle all lookup failures for all has_enumerated fields if you happen to have more than one defined in your model.
+
+NOTE: A nil is always considered to be a valid value for status= since it's assumed you're trying to null out the foreign key, therefore the <code>:on_lookup_failure</code> will be bypassed.
 
 <code>ActiveRecord::VirtualEnumerations</code>
 

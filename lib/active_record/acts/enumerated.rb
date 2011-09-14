@@ -67,7 +67,7 @@ module ActiveRecord
           else
             raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
           end
-          self.send((read_inheritable_attribute(:acts_enumerated_on_lookup_failure) || :enforce_strict_literals), arg)
+          self.send((read_inheritable_attribute(:acts_enumerated_on_lookup_failure) || :enforce_none), arg)
         end
 
         def lookup_id(arg)
@@ -128,18 +128,30 @@ module ActiveRecord
         end   
         
         def enforce_none(arg)
-          return nil
+          nil
         end
 
         def enforce_strict(arg)
-          raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
+          raise_record_not_found(arg)
         end
 
         def enforce_strict_literals(arg)
-          if Fixnum === arg || Symbol === arg
-            raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
-          end
-          return nil
+          raise_record_not_found(arg) if (Fixnum === arg) || (Symbol === arg)
+          nil
+        end
+
+        def enforce_strict_ids(arg)
+          raise_record_not_found(arg) if Fixnum === arg
+          nil
+        end
+
+        def enforce_strict_symbols(arg)
+          raise_record_not_found(arg) if Symbol === arg
+          nil
+        end
+
+        def raise_record_not_found(arg)
+          raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
         end
         
       end

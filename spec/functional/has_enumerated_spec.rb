@@ -41,16 +41,25 @@ describe 'has_enumerated' do
     end
   end
 
-  context 'when status does exists' do
+  context 'when status does not exist' do
     it 'calls :on_lookup_failure method on assigning' do
       @booking.should_receive(:not_found_status_handler).
 	with(:write, 'status', 'status_id', 'BookingStatus', 'bad_status')
       @booking.status = 'bad_status'
     end
 
-    it 'assings nil if :on_lookup_failure method is not specified' do
-      @booking = Booking.create
-      @booking.status = :XXX
+    it 'does not call :on_lookup_failure method on assignment when nil is passed' do
+      @booking.should_receive(:status_id=).with(nil)
+      @booking.status = nil
+    end
+
+    it 'raises ArgumentError if :on_lookup_failure method is not specified' do
+      expect{ @booking.state = :XXX }.to raise_error ArgumentError
+    end
+
+    it 'assigns the foreign key to nil if :on_lookup_failure method is not specified and nil is passed' do
+      @booking.status = :confirmed
+      @booking.status = nil
       @booking.status.should be_nil
     end
   end
