@@ -33,7 +33,7 @@ module ActiveRecord
               
               before_save :enumeration_model_update
               before_destroy :enumeration_model_update
-              validates_uniqueness_of name_column
+              validates name_column, :presence => true, :uniqueness => true
               
               define_method :name do
                 read_attribute( name_column )
@@ -57,13 +57,13 @@ module ActiveRecord
         def [](arg)
           case arg
           when Symbol
-            rval = lookup_name(arg.id2name) and return rval
+            return_val = lookup_name(arg.id2name) and return return_val
           when String
-            rval = lookup_name(arg) and return rval
+            return_val = lookup_name(arg) and return return_val
           when Fixnum
-            rval = lookup_id(arg) and return rval
+            return_val = lookup_id(arg) and return return_val
           when nil
-            rval = nil 
+            return_val = nil
           else
             raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
           end
@@ -81,16 +81,17 @@ module ActiveRecord
         def include?(arg)
           case arg
           when Symbol
-            return !lookup_name(arg.id2name).nil?
+            !lookup_name(arg.id2name).nil?
           when String
-            return !lookup_name(arg).nil?
+            !lookup_name(arg).nil?
           when Fixnum
-            return !lookup_id(arg).nil?
+            !lookup_id(arg).nil?
           when self
             possible_match = lookup_id(arg.id) 
-            return !possible_match.nil? && possible_match == arg
+            !possible_match.nil? && possible_match == arg
+          else
+            false
           end
-          return false
         end
 
         # NOTE: purging the cache is sort of pointless because
@@ -107,19 +108,22 @@ module ActiveRecord
           @all = @all_by_name = @all_by_id = nil
         end
 
+        def name_column
+          @name_column ||= read_inheritable_attribute( :acts_enumerated_name_column )
+        end
+
         private 
         
         def all_by_id 
           return @all_by_id if @all_by_id
-          @all_by_id = all.inject({}) { |memo, item| memo[item.id] = item; memo;}.freeze              
+          @all_by_id = all.inject({}) { |memo, item| memo[item.id] = item; memo }.freeze
         end
         
         def all_by_name
           return @all_by_name if @all_by_name
           begin
-            @all_by_name = all.inject({}) { |memo, item| memo[item.name] = item; memo;}.freeze              
+            @all_by_name = all.inject({}) { |memo, item| memo[item.name] = item; memo }.freeze
           rescue NoMethodError => err
-            name_column = read_inheritable_attribute( :acts_enumerated_name_column )
             if err.name == name_column
               raise TypeError, "#{self.name}: you need to define a '#{name_column}' column in the table '#{table_name}'"
             end
@@ -159,12 +163,15 @@ module ActiveRecord
       module InstanceMethods
         def ===(arg)
           case arg
-          when Symbol, String, Fixnum, nil
+          when nil
+            false
+          when Symbol, String, Fixnum
             return self == self.class[arg]
           when Array
             return self.in?(*arg)
+          else
+            super
           end
-          super
         end
         
         alias_method :like?, :===
@@ -173,7 +180,7 @@ module ActiveRecord
           for item in list
             self === item and return true
           end
-          return false
+          false
         end
 
         def name_sym
@@ -191,11 +198,12 @@ module ActiveRecord
         def enumeration_model_update
           if self.class.enumeration_model_updates_permitted    
             self.class.purge_enumerations_cache
-            return true
+            true
+          else
+            # Ugh.  This just seems hack-ish.  I wonder if there's a better way.
+            self.errors.add(self.class.name_column, "changes to acts_as_enumeration model instances are not permitted")
+            false
           end
-          # Ugh.  This just seems hack-ish.  I wonder if there's a better way.
-          self.errors.add('name', "changes to acts_as_enumeration model instances are not permitted")   
-          return false
         end
       end
     end

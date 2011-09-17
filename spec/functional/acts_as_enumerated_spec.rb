@@ -1,10 +1,10 @@
 require 'spec_helper'
-# BookingStatus and State models act as enumarated.
+# BookingStatus and State models act as enumerated.
 # All predefined booking statuses are in "add_booking_statuses" migration.
 #
 describe 'acts_as_enumerated' do
 
-  it 'reponds to []' do
+  it 'responds to []' do
     BookingStatus.should respond_to :[]
     State.should respond_to :[]
   end
@@ -65,7 +65,7 @@ describe 'acts_as_enumerated' do
 
     context 'record does not exist' do
       context ':on_lookup_failure is specified' do
-        it 'if :on_lookup_failure is passed calls the speicified class method' do
+        it 'if :on_lookup_failure is passed calls the specified class method' do
           BookingStatus.should_receive(:not_found).with(:bad_status)
           BookingStatus[:bad_status]
         end
@@ -114,6 +114,10 @@ describe 'acts_as_enumerated' do
       it '=== should reject incorrect id' do
         BookingStatus[:confirmed].should_not === 2
       end
+
+      it '=== should reject nil' do
+        BookingStatus[:confirmed].should_not === nil
+      end
     end
 
     context ':name_column is specified and on_lookup_failure defined as enforce_strict_literals' do
@@ -137,6 +141,10 @@ describe 'acts_as_enumerated' do
       it '=== should raise if Symbol is compared' do
         State[:IL].should_not === 'foo'
       end
+
+      it '=== should reject nil' do
+        State[:IL].should_not === nil
+      end
     end
   end
 
@@ -145,6 +153,60 @@ describe 'acts_as_enumerated' do
       [1, :IL, 'IL'].each do |arg|
         State[:IL].in?(arg).should == true
       end
+    end
+  end
+
+  describe 'name' do
+    context ':name_column is not specified' do
+      it 'name should return value of "name" attribute' do
+        BookingStatus[:confirmed].name.should == 'confirmed'
+      end
+    end
+
+    context ':name_column is specified' do
+      it 'name should return value of the "name_column" attribute' do
+        State[:IL].name.should == 'IL'
+      end
+    end
+  end
+
+  describe 'name_sym' do
+    context ':name_column is not specified' do
+      it 'name_sym should equal the value in the name column cast to a symbol' do
+        BookingStatus[:confirmed].name_sym.should == :confirmed
+      end
+    end
+
+    context ':name_column is specified' do
+      it 'name_sym should equal value in the column defined under :name_column cast to a symbol' do
+        State[:IL].name_sym.should == :IL
+      end
+    end
+  end
+
+  describe 'name_column' do
+    context ':name_column is not specified' do
+      it 'name_column should be :name' do
+        BookingStatus.name_column.should == :name
+      end
+    end
+
+    context ':name_column is specified' do
+      it 'name_column should be :state_code' do
+        State.name_column.should == :state_code
+      end
+    end
+  end
+
+  describe 'include?' do
+    it 'include? should find by id, Symbol, String, and self' do
+      [State[:IL].id, State[:IL], :IL, 'IL'].each do |val|
+        State.include?(val).should == true
+      end
+    end
+
+    it 'include? should reject nil' do
+      State.include?(nil).should == false
     end
   end
 end
