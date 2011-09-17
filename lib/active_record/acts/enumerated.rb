@@ -54,6 +54,7 @@ module ActiveRecord
                       ).collect{|val| val.freeze}.freeze
         end
 
+        # Enum lookup by Symbol, String, or id.
         def [](arg)
           case arg
           when Symbol
@@ -63,21 +64,24 @@ module ActiveRecord
           when Fixnum
             return_val = lookup_id(arg) and return return_val
           when nil
-            return_val = nil
+            nil
           else
             raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
           end
           self.send((read_inheritable_attribute(:acts_enumerated_on_lookup_failure) || :enforce_none), arg)
         end
 
+        # Enum lookup by id
         def lookup_id(arg)
           all_by_id[arg]
         end
 
+        # Enum lookup by String
         def lookup_name(arg)
           all_by_name[arg]
         end
-                                   
+
+        # Returns true if the enum lookup by the given Symbol, String or id would have returned a value, false otherwise.
         def include?(arg)
           case arg
           when Symbol
@@ -108,6 +112,7 @@ module ActiveRecord
           @all = @all_by_name = @all_by_id = nil
         end
 
+        # Returns the name of the column this enum uses as the basic underlying value.
         def name_column
           @name_column ||= read_inheritable_attribute( :acts_enumerated_name_column )
         end
@@ -175,7 +180,8 @@ module ActiveRecord
         end
         
         alias_method :like?, :===
-        
+
+        # Returns true if any element in the list returns true for ===(arg), false otherwise.
         def in?(*list)
           for item in list
             self === item and return true
@@ -183,6 +189,7 @@ module ActiveRecord
           false
         end
 
+        # Returns the symbol representation of the name of the enum. BookingStatus[:foo].name_sym returns :foo.
         def name_sym
           self.name.to_sym
         end

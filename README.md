@@ -74,6 +74,8 @@ Using the above example you would do the following:
     BookingStatus.enumeration_model_updates_permitted = true
     BookingStatus.create(:name => 'newname')
 
+A <code>:presence</code> and <code>:uniqueness</code> validation is automatically defined on each model.
+
 Each enumeration model gets the following instance methods.
 
 <code>===(arg)</code>
@@ -87,6 +89,10 @@ You should note that defining an :on_lookup_failure method that raises an except
 <code>in?(*list)<code>
 
 Returns true if any element in the list returns true for <code>===(arg)</code>, false otherwise.
+
+<code>name</code>
+
+Returns the 'name' of the enum, i.e. the value in the <code>:name_column</code> attribute of the enumeration model.
 
 <code>name_sym</code>
 
