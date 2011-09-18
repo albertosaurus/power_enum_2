@@ -1,9 +1,9 @@
 require "rails"
 
-class EnumerationsMixin < Rails::Engine
+class PowerEnum < Rails::Engine
   config.autoload_paths << File.expand_path(File.join(__FILE__, "../"))
 
-  initializer 'enumerations_mixin' do
+  initializer 'power_enum' do
     ActiveSupport.on_load(:active_record) do
       include ActiveRecord::Acts::Enumerated
       include ActiveRecord::Aggregations::HasEnumerated

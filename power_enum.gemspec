@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "power_enum"
-  s.version = "0.2.4"
+  s.version = "0.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Trevor Squires", "Pivotal Labs", "Arthur Shagall", "Sergey Potapov"]
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
     "lib/active_record/acts/enumerated.rb",
     "lib/active_record/aggregations/has_enumerated.rb",
     "lib/active_record/virtual_enumerations.rb",
-    "lib/enumerations_mixin.rb"
+    "lib/power_enum.rb"
   ]
   s.homepage = "http://github.com/albertosaurus/enumerations_mixin"
   s.require_paths = ["lib"]

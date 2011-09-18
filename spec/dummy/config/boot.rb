@@ -9,4 +9,4 @@ end
 
 $:.unshift File.expand_path('../../../../lib', __FILE__)
 
-require 'enumerations_mixin'
+require 'power_enum'

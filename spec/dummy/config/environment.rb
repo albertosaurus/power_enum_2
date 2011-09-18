@@ -2,7 +2,7 @@
 require File.expand_path('../application', __FILE__)
 
 
-require 'enumerations_mixin'
+require 'power_enum'
 
 # Initialize the rails application
 Dummy::Application.initialize!

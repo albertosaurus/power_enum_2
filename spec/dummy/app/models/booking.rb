@@ -1,4 +1,4 @@
-require 'enumerations_mixin'
+require 'power_enum'
 
 class Booking < ActiveRecord::Base
   has_enumerated  :status, :class_name        => 'BookingStatus',
