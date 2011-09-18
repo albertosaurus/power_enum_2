@@ -8,10 +8,6 @@ begin
     gem.homepage = "http://github.com/albertosaurus/enumerations_mixin"
     gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
     gem.files = Dir["{lib}/**/*"] + Dir["{examples}/**/*"]
-    gem.add_dependency('rails', '>= 3.0.0')
-    gem.add_development_dependency('sqlite3')
-    gem.add_development_dependency('rspec')
-    gem.add_development_dependency('jeweler')
   end
 rescue
   puts "Jeweler or one of its dependencies is not installed."
