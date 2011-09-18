@@ -1,7 +1,7 @@
 begin
   require "jeweler"
   Jeweler::Tasks.new do |gem|
-    gem.name = "enumerations_mixin"
+    gem.name = "power_enum"
     gem.summary = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
     gem.description = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
     gem.email = "arthur.shagall@gmail.com"

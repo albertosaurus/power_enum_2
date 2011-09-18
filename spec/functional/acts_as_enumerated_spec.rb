@@ -163,7 +163,7 @@ describe 'acts_as_enumerated' do
       end
     end
 
-    context ':name_column is specified' do
+    context ':name_column is specified to be :state_code' do
       it 'name should return value of the "name_column" attribute' do
         State[:IL].name.should == 'IL'
       end
@@ -177,7 +177,7 @@ describe 'acts_as_enumerated' do
       end
     end
 
-    context ':name_column is specified' do
+    context ':name_column is specified to be :state_code' do
       it 'name_sym should equal value in the column defined under :name_column cast to a symbol' do
         State[:IL].name_sym.should == :IL
       end
@@ -191,7 +191,7 @@ describe 'acts_as_enumerated' do
       end
     end
 
-    context ':name_column is specified' do
+    context ':name_column is specified to be :state_code' do
       it 'name_column should be :state_code' do
         State.name_column.should == :state_code
       end
@@ -207,6 +207,32 @@ describe 'acts_as_enumerated' do
 
     it 'include? should reject nil' do
       State.include?(nil).should == false
+    end
+  end
+
+  describe 'validations' do
+    it 'Should not permit the creation of new enumeration models by default' do
+      bs = BookingStatus.create(:name => 'unconfirmed')
+      bs.new_record?.should == true
+      bs.save.should == false
+    end
+
+    it 'Should not permit the creation of an enumeration model with a blank name' do
+      BookingStatus.enumeration_model_updates_permitted = true
+      bs = BookingStatus.create()
+      bs.new_record?.should == true
+      bs.valid?.should == false
+      bs.errors[:name].first.should == "can't be blank"
+      bs.save.should == false
+    end
+
+    it 'Should not permit the creation of an enumeration model with a duplicate name' do
+      BookingStatus.enumeration_model_updates_permitted = true
+      bs = BookingStatus.create(:name => 'confirmed')
+      bs.new_record?.should == true
+      bs.valid?.should == false
+      bs.errors[:name].first.should == 'has already been taken'
+      bs.save.should == false
     end
   end
 end

@@ -1,16 +1,17 @@
-# Enumerations Mixin
+# Power Enum
 
-Copyright (c) 2005 Trevor Squires
+Initial Version Copyright (c) 2005 Trevor Squires
+Rails 3 Updates Copyright (c) 2010 Pivotal Labs
+Additional Updates Copyright (c) 2011 Arthur Shagall and Sergey Potapov
 Released under the MIT License.  See the LICENSE file for more details.
 
 ## What is this?:
 
-The enumerations mixin allows you to treat instances of your
+Power Enum allows you to treat instances of your
 ActiveRecord models as though they were an enumeration of values.
 
-This is a modernization for use as a gem on Rails 3 of the original plugin by Trevor Squires
-located at https://github.com/protocool/enumerations_mixin by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
-and some additional updates and tests.
+Power Enum is built on top of the Rails 3 modernization made by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
+to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While the core ideas remain,
 
 At it's most basic level, it allows you to say things along the lines of:
 
@@ -42,7 +43,26 @@ There is also an <code>ActiveRecord::VirtualEnumerations</code> helper module to
 
 ## How to use it
 
-<code>acts_as_enumerated</code>
+In the following example, we'll look at a Booking that can have several types of statuses.
+
+### migration
+
+    create_table :booking_statuses do |t|
+      t.string :name
+
+      t.timestamps
+    end
+
+    create_table :bookings do |t|
+      t.integer :status_id
+
+      t.timestamps
+    end
+
+    # Ideally, you would use a gem of some sort to handle foreign keys.
+    execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk' FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
+
+### acts_as_enumerated
 
     class BookingStatus < ActiveRecord::Base
       acts_as_enumerated  :conditions => 'optional_sql_conditions',
@@ -53,32 +73,25 @@ There is also an <code>ActiveRecord::VirtualEnumerations</code> helper module to
 
 With that, your BookingStatus class will have the following methods defined:
 
-<code>BookingStatus[arg]</code>
+#### Class Methods
 
-Lookup the BookingStatus instance for arg. The arg value can be a 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be a Fixnum, in which case the lookup will be against the BookingStatus.id field.
+##### []
+
+<code>BookingStatus[arg]</code> performs a lookup the BookingStatus instance for arg. The arg value can be a 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be a Fixnum, in which case the lookup will be against the BookingStatus.id field.
 
 The <code>:on_lookup_failure</code> option specifies the name of a class method to invoke when the [] method is unable to locate a BookingStatus record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an exception if the arg is a Fixnum or Symbol), :enforce_strict_ids (raises and exception if the arg is a Fixnum) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).
 
 The purpose of the :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action should be taken, therefore b) a fallback action should be easily configurable.
 
-<code>BookingStatus.all</code>
+##### all
 
-Returns an array of all BookingStatus records that match the :conditions specified in acts_as_enumerated, in the order specified by :order.
+<code>BookingStatus.all</code> returns an array of all BookingStatus records that match the :conditions specified in acts_as_enumerated, in the order specified by :order.
 
-NOTE: acts_as_enumerated records are considered immutable. By default you cannot create/alter/destroy instances because they are cached in memory.  Because of Rails' process-based model it is not safe to allow updating acts_as_enumerated records as the caches will get out of sync.
-
-However, one instance where updating the models *should* be allowed is if you are using ActiveRecord Migrations.
-
-Using the above example you would do the following:
-
-    BookingStatus.enumeration_model_updates_permitted = true
-    BookingStatus.create(:name => 'newname')
-
-A <code>:presence</code> and <code>:uniqueness</code> validation is automatically defined on each model.
+#### Instance Methods
 
 Each enumeration model gets the following instance methods.
 
-<code>===(arg)</code>
+##### ===(arg)
 
 <code>BookingStatus[:foo] === arg</code> returns true if <code>BookingStatus[:foo] === BookingStatus[arg]</code> returns true if arg is Fixnum, String, or Symbol.  If arg is an Array, will compare every element of the array and return true if any element return true for ===.
 
@@ -86,19 +99,34 @@ You should note that defining an :on_lookup_failure method that raises an except
 
 <code>like?</code> is aliased to <code>===<code>
 
-<code>in?(*list)<code>
+##### in?(*list)
 
 Returns true if any element in the list returns true for <code>===(arg)</code>, false otherwise.
 
-<code>name</code>
+##### name
 
 Returns the 'name' of the enum, i.e. the value in the <code>:name_column</code> attribute of the enumeration model.
 
-<code>name_sym</code>
+##### name_sym
 
 Returns the symbol representation of the name of the enum.  <code>BookingStatus[:foo].name_sym</code> returns :foo.
 
-<code>has_enumerated</code>
+#### Notes
+
+acts_as_enumerated records are considered immutable. By default you cannot create/alter/destroy instances because they are cached in memory.  Because of Rails' process-based model it is not safe to allow updating acts_as_enumerated records as the caches will get out of sync.
+
+However, one instance where updating the models *should* be allowed is if you are using seeds.rb to seed initial values into the database.
+
+Using the above example you would do the following:
+
+    BookingStatus.enumeration_model_updates_permitted = true
+    ['pending', 'confirmed', 'canceled'].each do | status_name |
+        BookingStatus.create( :name => status_name )
+    end
+
+A <code>:presence</code> and <code>:uniqueness</code> validation is automatically defined on each model.
+
+### has_enumerated
 
 First of all, note that you *could* specify the relationship to an acts_as_enumerated class using the belongs_to association. However, has_enumerated is preferable because you aren't really associated to the enumerated value, you are *aggregating* it. As such, the has_enumerated macro behaves more like an aggregation than an association.
 
@@ -112,11 +140,11 @@ By default, the foreign key is interpreted to be the name of your has_enumerated
 
 With that, your Booking class will have the following methods defined:
 
-<code>status</code>
+#### status
 
 Returns the BookingStatus with an id that matches the value in the Booking.status_id.
 
-<code>status=</code>
+#### status=
 
 Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
 
@@ -136,7 +164,7 @@ Note that there's enough information in the method signature that you can specif
 
 NOTE: A nil is always considered to be a valid value for status= since it's assumed you're trying to null out the foreign key, therefore the <code>:on_lookup_failure</code> will be bypassed.
 
-<code>ActiveRecord::VirtualEnumerations</code>
+### ActiveRecord::VirtualEnumerations
 
 For the most part, your acts_as_enumerated classes will do nothing more than just act as enumerated.
 
