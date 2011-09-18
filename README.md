@@ -1,9 +1,6 @@
 # Power Enum
 
-Initial Version Copyright (c) 2005 Trevor Squires
-Rails 3 Updates Copyright (c) 2010 Pivotal Labs
-Additional Updates Copyright (c) 2011 Arthur Shagall and Sergey Potapov
-Released under the MIT License.  See the LICENSE file for more details.
+Enumerations for Rails 3.X Done Right.
 
 ## What is this?:
 
@@ -29,7 +26,7 @@ See "How to use it" below for more information.
 
 To use this version, add the gem to your Gemfile
 
-    gem 'enumerations_mixin', :git => 'git://github.com/albertosaurus/enumerations_mixin.git'
+    gem 'power_enum'
 
 ## Gem Contents
 
@@ -196,3 +193,12 @@ Go back to gem root directory:
 And finally run tests:
 
     rake spec
+
+## Copyrights and License
+
+* Initial Version Copyright (c) 2005 Trevor Squires
+* Rails 3 Updates Copyright (c) 2010 Pivotal Labs
+* Initial test suite Copyright (c) 2011 Sergey Potapov
+* Additional Updates Copyright (c) 2011 Arthur Shagall
+
+Released under the MIT License.  See the LICENSE file for more details.
