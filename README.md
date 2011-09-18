@@ -8,7 +8,8 @@ Power Enum allows you to treat instances of your
 ActiveRecord models as though they were an enumeration of values.
 
 Power Enum is built on top of the Rails 3 modernization made by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
-to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While the core ideas remain,
+to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While mot the core ideas remain,
+it has been reworked and a full test suite written to facilitate further development.
 
 At it's most basic level, it allows you to say things along the lines of:
 
