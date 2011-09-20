@@ -7,6 +7,17 @@ class PowerEnum < Rails::Engine
     ActiveSupport.on_load(:active_record) do
       include ActiveRecord::Acts::Enumerated
       include ActiveRecord::Aggregations::HasEnumerated
+
+      ActiveRecord::ConnectionAdapters.module_eval do
+        include PowerEnum::Schema::SchemaStatements
+      end
+
+      if defined?(ActiveRecord::Migration::CommandRecorder)
+        ActiveRecord::Migration::CommandRecorder.class_eval do
+          include PowerEnum::Migration::CommandRecorder
+        end
+      end
     end
+
   end
 end
