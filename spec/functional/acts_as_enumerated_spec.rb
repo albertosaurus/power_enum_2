@@ -235,4 +235,39 @@ describe 'acts_as_enumerated' do
       bs.save.should == false
     end
   end
+
+  describe 'active' do
+    context 'no \'active\' column' do
+      it 'all and active should be the equal, i.e. contain all enums' do
+        BookingStatus.active.should == BookingStatus.all
+      end
+
+      it 'inactive should be empty' do
+        BookingStatus.inactive.should be_empty
+      end
+
+      it 'each enum should be active' do
+        BookingStatus.all.each do |booking_status|
+          booking_status.active?.should == true
+          booking_status.inactive?.should == false
+        end
+      end
+    end
+
+    context "'active' column defined" do
+      it 'active should only include active enums' do
+        ConnectorType.active.size.should == 2
+        ConnectorType.active.should include(ConnectorType[:HDMI])
+        ConnectorType.active.should include(ConnectorType[:DVI])
+        ConnectorType.active.should_not include(ConnectorType[:VGA])
+      end
+
+      it 'inactive should only include inactive enums' do
+        ConnectorType.inactive.size.should == 1
+        ConnectorType.inactive.should_not include(ConnectorType[:HDMI])
+        ConnectorType.inactive.should_not include(ConnectorType[:DVI])
+        ConnectorType.inactive.should include(ConnectorType[:VGA])
+      end
+    end
+  end
 end

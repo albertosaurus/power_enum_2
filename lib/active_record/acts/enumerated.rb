@@ -54,6 +54,16 @@ module ActiveRecord
                       ).collect{|val| val.freeze}.freeze
         end
 
+        def active
+          return @all_active if @all_active
+          @all_active = all.select{ |enum| enum.active? }.freeze
+        end
+
+        def inactive
+          return @all_inactive if @all_inactive
+          @all_inactive = all.select{ |enum| !enum.active? }.freeze
+        end
+
         # Enum lookup by Symbol, String, or id.
         def [](arg)
           case arg
@@ -109,7 +119,7 @@ module ActiveRecord
           unless self.enumeration_model_updates_permitted
             raise "#{self.name}: cache purging disabled for your protection"
           end
-          @all = @all_by_name = @all_by_id = nil
+          @all = @all_by_name = @all_by_id = @all_active = nil
         end
 
         # Returns the name of the column this enum uses as the basic underlying value.
@@ -194,7 +204,13 @@ module ActiveRecord
           self.name.to_sym
         end
 
-        private
+        def active?
+          @_active_status ||= ( attributes.include?('active') ? self.active : true )
+        end
+
+        def inactive?
+          !active?
+        end
 
         # NOTE: updating the models that back an acts_as_enumerated is 
         # rather dangerous because of rails' per-process model.
@@ -212,6 +228,7 @@ module ActiveRecord
             false
           end
         end
+        private :enumeration_model_update
       end
     end
   end

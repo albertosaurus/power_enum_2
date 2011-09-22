@@ -27,8 +27,9 @@ ActiveRecord::Schema.define(:version => 20110920064242) do
   end
 
   create_table "connector_types", :force => true do |t|
-    t.string   "name",        :limit => 50, :null => false
+    t.string   "name",        :limit => 50,                   :null => false
     t.string   "description"
+    t.boolean  "active",                    :default => true, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
