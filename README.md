@@ -6,8 +6,8 @@ Enumerations for Rails 3.X Done Right.
 
 Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.
 It allows you to cleanly solve many of the problems that the traditional Rails alternatives handler poorly if at all.
-It is particularly suitable for scenarios where your Rails application is not the only user of the database; perhaps it's
-being used for analytics or reporting.
+It is particularly suitable for scenarios where your Rails application is not the only user of the database, such as
+when it's used for analytics or reporting.
 
 Power Enum is built on top of the Rails 3 modernization made by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
 to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While many of the core ideas remain,

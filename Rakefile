@@ -3,7 +3,12 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "power_enum"
     gem.summary = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
-    gem.description = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
+    gem.description = <<-EOF
+Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.
+It allows you to cleanly solve many of the problems that the traditional Rails alternatives handler poorly if at all.
+It is particularly suitable for scenarios where your Rails application is not the only user of the database, such as
+when it's used for analytics or reporting.
+    EOF
     gem.email = "arthur.shagall@gmail.com"
     gem.homepage = "http://github.com/albertosaurus/enumerations_mixin"
     gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
