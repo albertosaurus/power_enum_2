@@ -4,17 +4,19 @@ Enumerations for Rails 3.X Done Right.
 
 ## What is this?:
 
-Power Enum allows you to treat instances of your
-ActiveRecord models as though they were an enumeration of values.
+Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.
+It allows you to cleanly solve many of the problems that the traditional Rails alternatives handler poorly if at all.
+It is particularly suitable for scenarios where your Rails application is not the only user of the database; perhaps it's
+being used for analytics or reporting.
 
 Power Enum is built on top of the Rails 3 modernization made by the fine folks at Protocool https://github.com/protocool/enumerations_mixin
-to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While mot the core ideas remain,
+to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations_mixin.  While many of the core ideas remain,
 it has been reworked and a full test suite written to facilitate further development.
 
 At it's most basic level, it allows you to say things along the lines of:
 
     booking = Booking.new(:status => BookingStatus[:provisional])
-    booking.update_attribute(:status, BookingStatus[:confirmed])
+    booking.status = :confirmed
 
     Booking.find :first,
                  :conditions => ['status_id = ?', BookingStatus[:provisional].id]
@@ -25,19 +27,29 @@ See "How to use it" below for more information.
 
 ## Installation
 
-To use this version, add the gem to your Gemfile
+Add the gem to your Gemfile
 
     gem 'power_enum'
 
+then run
+
+    bundle install
+
 ## Gem Contents
 
-This package adds two mixins and a helper to Rails' ActiveRecord:
+This package adds two mixins and a helper to Rails' ActiveRecord, as well as methods to migrations to simplify the creation of backing tables.
 
-<code>acts_as_enumerated</code> provides capabilities to treat your model and its records as an enumeration. At a minimum, the database table for  an acts_as_enumerated must contain an 'id' column and a 'name' column. All instances for the acts_as_enumerated model are cached in memory.
+<code>acts_as_enumerated</code> provides capabilities to treat your model and its records as an enumeration.
+At a minimum, the database table for  an acts_as_enumerated must contain an 'id' column and a 'name' column.
+It is strongly recommended that there be a NOT NULL constraint on the 'name' column.
+All instances for the acts_as_enumerated model are cached in memory.  If the table has an 'active' column, the
+value of that attribute will be used to determine which enum instances are active.  Otherwise, all values are considered
+active.
 
 <code>has_enumerated</code> adds methods to your ActiveRecord model for setting and retrieving enumerated values using an associated acts_as_enumerated model.
 
-There is also an <code>ActiveRecord::VirtualEnumerations</code> helper module to create 'virtual' acts_as_enumerated models which helps to avoid cluttering up your models directory with acts_as_enumerated classes.
+There is also an <code>ActiveRecord::VirtualEnumerations</code> helper module to create 'virtual' acts_as_enumerated models which helps to avoid
+cluttering up your models directory with acts_as_enumerated classes.
 
 ## How to use it
 
@@ -45,11 +57,13 @@ In the following example, we'll look at a Booking that can have several types of
 
 ### migration
 
-    create_table :booking_statuses do |t|
-      t.string :name
+    create_enum :booking_status, :name_limit => 50
+    # The above is equivalent to saying
+    # create_table :booking_statuses do |t|
+    #   t.string :name, :limit => 50, :null => false
 
-      t.timestamps
-    end
+    #   t.timestamps
+    # end
 
     create_table :bookings do |t|
       t.integer :status_id
@@ -59,6 +73,47 @@ In the following example, we'll look at a Booking that can have several types of
 
     # Ideally, you would use a gem of some sort to handle foreign keys.
     execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk' FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
+    
+There are two methods added to Rails migrations:
+
+##### create_enum(enum_name, options = {})
+
+Creates a new enum table.  <code>enum_name</code> will be automatically pluralized.  The following options are supported:
+
+- [:name_column]  Specify the column name for name of the enum.  By default it's :name.  This can be a String or a Symbol
+- [:description]  Set this to <code>true</code> to have a 'description' column generated.
+- [:name_limit]  Set this define the limit of the name column.
+- [:desc_limit]  Set this to define the limit of the description column
+- [:active]  Set this to <code>true</code> to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
+
+Example:
+
+    create_enum :booking_status, :name_column => :booking_name,
+                                 :name_limit  => 50,
+                                 :description => true,
+                                 :desc_limit  => 100,
+                                 :active      => true
+
+is the equivalent of
+    
+    create_table :booking_statuses do |t|
+      t.string :booking_name, :limit => 50, :null => false
+      t.string :description, :limit => 100
+      t.boolean :active, :null => false, :default => true
+      t.timestamps
+    end
+
+##### remove_enum(enum_name)
+
+Drops the enum table.  <code>enum_name</code> will be automatically pluralized.
+
+Example:
+
+    remove_enum :booking_status
+    
+is the equivalent of
+    
+    drop_table :booking_statuses
 
 ### acts_as_enumerated
 
@@ -73,7 +128,7 @@ With that, your BookingStatus class will have the following methods defined:
 
 #### Class Methods
 
-##### []
+##### [](arg)
 
 <code>BookingStatus[arg]</code> performs a lookup the BookingStatus instance for arg. The arg value can be a 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be a Fixnum, in which case the lookup will be against the BookingStatus.id field.
 
@@ -84,6 +139,14 @@ The purpose of the :on_lookup_failure option is that a) under some circumstances
 ##### all
 
 <code>BookingStatus.all</code> returns an array of all BookingStatus records that match the :conditions specified in acts_as_enumerated, in the order specified by :order.
+
+##### active
+
+<code>BookingStatus.active</code> returns an array of all BookingStatus records that are marked active.  See the <code>active?</code> instance method.
+
+##### inactive
+
+<code>BookingStatus.inactive</code> returns an array of all BookingStatus records that are inactive.  See the <code>inactive?</code> instance method.
 
 #### Instance Methods
 
@@ -108,6 +171,17 @@ Returns the 'name' of the enum, i.e. the value in the <code>:name_column</code> 
 ##### name_sym
 
 Returns the symbol representation of the name of the enum.  <code>BookingStatus[:foo].name_sym</code> returns :foo.
+
+##### active?
+
+Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
+returns the attribute cast to a boolean, otherwise returns true.  This method is used by the 'active'
+class method to select active enums.
+
+##### inactive?
+
+Returns true if the instance is inactive, false otherwise.  Default implementations returns !active?
+This method is used by the 'inactive' class method to select inactive enums.
 
 #### Notes
 
@@ -142,13 +216,17 @@ With that, your Booking class will have the following methods defined:
 
 Returns the BookingStatus with an id that matches the value in the Booking.status_id.
 
-#### status=
+#### status=(arg)
 
 Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
 
 example:
 
     mybooking.status = :confirmed
+    
+this also works:
+
+    mybooking.status = 'confirmed'
 
 The <code>:on_lookup_failure</code> option in has_enumerated is there because you may want to create an error handler for situations where the argument passed to status= is invalid.  By default, an invalid value will cause an ArgumentError to be raised.  
 

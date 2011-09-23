@@ -45,7 +45,8 @@ module ActiveRecord
       
       module ClassMethods  
         attr_accessor :enumeration_model_updates_permitted
-        
+
+        # Returns all the enum values.  Caches results after the first time this method is run.
         def all
           return @all if @all
           @all = find(:all, 
@@ -54,11 +55,13 @@ module ActiveRecord
                       ).collect{|val| val.freeze}.freeze
         end
 
+        # Returns all the active enum values.  See the 'active?' instance method.
         def active
           return @all_active if @all_active
           @all_active = all.select{ |enum| enum.active? }.freeze
         end
 
+        # Returns all the inactive enum values.  See the 'inactive?' instance method.
         def inactive
           return @all_inactive if @all_inactive
           @all_inactive = all.select{ |enum| !enum.active? }.freeze
@@ -204,10 +207,15 @@ module ActiveRecord
           self.name.to_sym
         end
 
+        # Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
+        # returns the attribute cast to a boolean, otherwise returns true.  This method is used by the 'active'
+        # class method to select active enums.
         def active?
-          @_active_status ||= ( attributes.include?('active') ? self.active : true )
+          @_active_status ||= ( attributes.include?('active') ? !!self.active : true )
         end
 
+        # Returns true if the instance is inactive, false otherwise.  Default implementations returns !active?
+        # This method is used by the 'inactive' class method to select inactive enums.
         def inactive?
           !active?
         end

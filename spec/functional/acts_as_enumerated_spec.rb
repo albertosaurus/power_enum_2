@@ -237,7 +237,7 @@ describe 'acts_as_enumerated' do
   end
 
   describe 'active' do
-    context 'no \'active\' column' do
+    context "no 'active' column" do
       it 'all and active should be the equal, i.e. contain all enums' do
         BookingStatus.active.should == BookingStatus.all
       end
@@ -267,6 +267,16 @@ describe 'acts_as_enumerated' do
         ConnectorType.inactive.should_not include(ConnectorType[:HDMI])
         ConnectorType.inactive.should_not include(ConnectorType[:DVI])
         ConnectorType.inactive.should include(ConnectorType[:VGA])
+      end
+    end
+
+    context "no 'active' column but 'active?' overriden" do
+      it "all and active should have the same contents" do
+        State.active.should == State.all
+      end
+
+      it "inactive should be empty" do
+        State.inactive.should be_empty
       end
     end
   end
