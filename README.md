@@ -89,6 +89,17 @@ Creates a new enum table.  `enum_name` will be automatically pluralized.  The fo
 
 Example:
 
+    create_enum :booking_status
+
+is the equivalent of
+
+    create_table :booking_statuses do |t|
+      t.string :name
+      t.timestamps
+    end
+
+In a more complex case:
+
     create_enum :booking_status, :name_column => :booking_name,
                                  :name_limit  => 50,
                                  :description => true,
