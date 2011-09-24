@@ -76,7 +76,7 @@ In the following example, we'll look at a Booking that can have several types of
     
 There are two methods added to Rails migrations:
 
-##### create_enum(enum_name, options = {})
+##### `create_enum(enum_name, options = {})`
 
 Creates a new enum table.  <code>enum_name</code> will be automatically pluralized.  The following options are supported:
 
@@ -103,7 +103,7 @@ is the equivalent of
       t.timestamps
     end
 
-##### remove_enum(enum_name)
+##### `remove_enum(enum_name)`
 
 Drops the enum table.  <code>enum_name</code> will be automatically pluralized.
 
@@ -128,7 +128,7 @@ With that, your BookingStatus class will have the following methods defined:
 
 #### Class Methods
 
-##### [](arg)
+##### `[](arg)`
 
 <code>BookingStatus[arg]</code> performs a lookup the BookingStatus instance for arg. The arg value can be a 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be a Fixnum, in which case the lookup will be against the BookingStatus.id field.
 
@@ -136,15 +136,15 @@ The <code>:on_lookup_failure</code> option specifies the name of a class method 
 
 The purpose of the :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action should be taken, therefore b) a fallback action should be easily configurable.
 
-##### all
+##### `all`
 
 <code>BookingStatus.all</code> returns an array of all BookingStatus records that match the :conditions specified in acts_as_enumerated, in the order specified by :order.
 
-##### active
+##### `active`
 
 <code>BookingStatus.active</code> returns an array of all BookingStatus records that are marked active.  See the <code>active?</code> instance method.
 
-##### inactive
+##### `inactive`
 
 <code>BookingStatus.inactive</code> returns an array of all BookingStatus records that are inactive.  See the <code>inactive?</code> instance method.
 
@@ -152,7 +152,7 @@ The purpose of the :on_lookup_failure option is that a) under some circumstances
 
 Each enumeration model gets the following instance methods.
 
-##### ===(arg)
+##### `===(arg)`
 
 <code>BookingStatus[:foo] === arg</code> returns true if <code>BookingStatus[:foo] === BookingStatus[arg]</code> returns true if arg is Fixnum, String, or Symbol.  If arg is an Array, will compare every element of the array and return true if any element return true for ===.
 
@@ -160,25 +160,25 @@ You should note that defining an :on_lookup_failure method that raises an except
 
 <code>like?</code> is aliased to <code>===<code>
 
-##### in?(*list)
+##### `in?(*list)`
 
 Returns true if any element in the list returns true for <code>===(arg)</code>, false otherwise.
 
-##### name
+##### `name`
 
 Returns the 'name' of the enum, i.e. the value in the <code>:name_column</code> attribute of the enumeration model.
 
-##### name_sym
+##### `name_sym`
 
 Returns the symbol representation of the name of the enum.  <code>BookingStatus[:foo].name_sym</code> returns :foo.
 
-##### active?
+##### `active?`
 
 Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
 returns the attribute cast to a boolean, otherwise returns true.  This method is used by the 'active'
 class method to select active enums.
 
-##### inactive?
+##### `inactive?`
 
 Returns true if the instance is inactive, false otherwise.  Default implementations returns !active?
 This method is used by the 'inactive' class method to select inactive enums.
@@ -212,11 +212,11 @@ By default, the foreign key is interpreted to be the name of your has_enumerated
 
 With that, your Booking class will have the following methods defined:
 
-#### status
+#### `status`
 
 Returns the BookingStatus with an id that matches the value in the Booking.status_id.
 
-#### status=(arg)
+#### `status=(arg)`
 
 Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
 
