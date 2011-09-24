@@ -94,7 +94,7 @@ Example:
 is the equivalent of
 
     create_table :booking_statuses do |t|
-      t.string :name
+      t.string :name, :null => false
       t.timestamps
     end
 
