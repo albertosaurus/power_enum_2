@@ -25,6 +25,8 @@ module PowerEnum::Schema
     #   Set this to define the limit of the description column.
     # [:active]
     #   Set this to <tt>true</tt> to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
+    # [:timestamps]
+    #   Set this to <tt>true</tt> to have timestamp columns (created_at and updated_at) generated.
     #
     # ===== Examples
     # ====== Basic Enum
@@ -32,11 +34,15 @@ module PowerEnum::Schema
     # is the equivalent of
     #  create_table :connector_types do |t|
     #    t.string :name, :null => false
-    #    t.timestamps
     #  end
     #
     # ====== Advanced Enum
-    #  create_enum :connector_type, :name_column => :connector, :name_limit => 50, :description => true, :desc_limit => 100, :active => true
+    #  create_enum :connector_type, :name_column => :connector,
+    #                               :name_limit => 50,
+    #                               :description => true,
+    #                               :desc_limit => 100,
+    #                               :active => true,
+    #                               :timestamps => true
     # is the equivalent of
     #  create_table :connector_types do |t|
     #    t.string :connector, :limit => 50, :null => false
@@ -50,6 +56,7 @@ module PowerEnum::Schema
       name_column = options[:name_column] || :name
       generate_description = !!options[:description]
       generate_active = !!options[:active]
+      generate_timestamps = !!options[:timestamps]
       name_limit = options[:name_limit]
       desc_limit = options[:desc_limit]
 
@@ -61,8 +68,9 @@ module PowerEnum::Schema
         if generate_active
           t.boolean :active, :null => false, :default => true
         end
-
-        t.timestamps
+        if generate_timestamps
+          t.timestamps
+        end
       end
 
       add_index enum_table_name, [name_column], :unique => true

@@ -62,8 +62,6 @@ In the following example, we'll look at a Booking that can have several types of
     # The above is equivalent to saying
     # create_table :booking_statuses do |t|
     #   t.string :name, :limit => 50, :null => false
-
-    #   t.timestamps
     # end
 
     create_table :bookings do |t|
@@ -86,6 +84,7 @@ Creates a new enum table.  `enum_name` will be automatically pluralized.  The fo
 - [:name_limit]  Set this define the limit of the name column.
 - [:desc_limit]  Set this to define the limit of the description column
 - [:active]  Set this to `true` to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
+- [:timestamps]  Set this to `true` to have the timestamp columns (created\_at and updated\_at) generated
 
 Example:
 
@@ -95,7 +94,6 @@ is the equivalent of
 
     create_table :booking_statuses do |t|
       t.string :name, :null => false
-      t.timestamps
     end
 
 In a more complex case:
@@ -104,7 +102,8 @@ In a more complex case:
                                  :name_limit  => 50,
                                  :description => true,
                                  :desc_limit  => 100,
-                                 :active      => true
+                                 :active      => true,
+                                 :timestamps  => true
 
 is the equivalent of
     
