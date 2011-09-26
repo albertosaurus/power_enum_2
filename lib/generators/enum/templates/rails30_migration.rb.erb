@@ -1,11 +1,11 @@
 class <%= migration_class_name %> < ActiveRecord::Migration
 
   def self.up
-    create_enum :<%=enum_name%>
+    create_enum :<%=file_name%>
   end
   
   def self.down
-    remove_enum :<%=enum_name%>
+    remove_enum :<%=file_name%>
   end
 
 end
