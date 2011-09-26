@@ -9,5 +9,6 @@ end
 group :development, :test do
   gem 'rspec'
   gem 'sqlite3'
+  gem 'genspec'
   #gem 'rails', '3.1.0'
 end

@@ -1,0 +1,10 @@
+Description:
+    Create the Rails files for a PowerEnum enum.
+
+Example:
+    rails generate enum booking_status
+
+    This will create:
+        BookingStatus model: app/models/booking_status.rb
+        Migration to create tables: db/migrate/db/migrate/20110925195833_create_enum_booking_status.rb
+        Unit test for model: test/unit/booking_status_test.rb
