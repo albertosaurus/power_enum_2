@@ -144,6 +144,7 @@ is the equivalent of
     create_table :booking_statuses do |t|
       t.string :name, :null => false
     end
+    add_index :booking_statuses, [:name], :unique => true
 
 In a more complex case:
 
@@ -162,6 +163,9 @@ is the equivalent of
       t.boolean :active, :null => false, :default => true
       t.timestamps
     end
+    add_index :booking_statuses, [:booking_name], :unique => true
+
+Notice that a unique index is automatically created.
 
 ##### `remove_enum(enum_name)`
 

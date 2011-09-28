@@ -35,6 +35,7 @@ module PowerEnum::Schema
     #  create_table :connector_types do |t|
     #    t.string :name, :null => false
     #  end
+    #  add_index :connector_types, [:name], :unique => true
     #
     # ====== Advanced Enum
     #  create_enum :connector_type, :name_column => :connector,
@@ -50,7 +51,9 @@ module PowerEnum::Schema
     #    t.boolean :active, :null => false, :default => true
     #    t.timestamps
     #  end
+    #  add_index :connector_types, [:connector], :unique => true
     #
+    # Notice that a unique index is automatically created.
     def create_enum(enum_name, options = {})
       enum_table_name = enum_name.pluralize
       name_column = options[:name_column] || :name
