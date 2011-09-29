@@ -5,7 +5,7 @@ Enumerations for Rails 3.X Done Right.
 ## What is this?:
 
 Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.
-It allows you to cleanly solve many of the problems that the traditional Rails alternatives handler poorly if at all.
+It allows you to cleanly solve many of the problems that the traditional Rails alternatives handle poorly if at all.
 It is particularly suitable for scenarios where your Rails application is not the only user of the database, such as
 when it's used for analytics or reporting.
 
