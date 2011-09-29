@@ -1,3 +1,6 @@
+# Copyright (c) 2011 Arthur Shagall
+# Released under the MIT license.  See LICENSE for details.
+
 module PowerEnum::Migration
 
   module CommandRecorder

@@ -49,10 +49,9 @@ module ActiveRecord
         # Returns all the enum values.  Caches results after the first time this method is run.
         def all
           return @all if @all
-          @all = find(:all, 
-                      :conditions => read_inheritable_attribute(:acts_enumerated_conditions),
-                      :order => read_inheritable_attribute(:acts_enumerated_order)
-                      ).collect{|val| val.freeze}.freeze
+          conditions = read_inheritable_attribute(:acts_enumerated_conditions)
+          order = read_inheritable_attribute(:acts_enumerated_order)
+          @all = where(conditions).order(order).collect{|val| val.freeze}.freeze
         end
 
         # Returns all the active enum values.  See the 'active?' instance method.
