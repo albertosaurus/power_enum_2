@@ -14,6 +14,19 @@ describe 'has_enumerated' do
     @booking.should respond_to :status=
   end
 
+  it 'has_enumerated? should respond true to enumerated attributes' do
+    Booking.has_enumerated?(:state).should be_true
+    Booking.has_enumerated?('status').should be_true
+    Booking.has_enumerated?('foo').should_not be_true
+    Booking.has_enumerated?(nil).should_not be_true
+  end
+
+  it 'enumerated_attributes should contain the list of has_enumerated attributes and nothing else' do
+    Booking.enumerated_attributes.size.should == 2
+    ['state', 'status'].each do |s|
+      Booking.enumerated_attributes.should include(s)
+    end
+  end
 
   context 'when status exists' do
     it 'assigns and returns an appropriate status model when Symbol is passed' do

@@ -325,6 +325,14 @@ for all has\_enumerated fields if you happen to have more than one defined in yo
 NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out the foreign key.
 The `:on_lookup_failure` will be bypassed.
 
+#### `has_enumerated?(attr)`
+
+Returns true if the given attr is an enumerated attributes, false otherwise.  `attr` can be a string or a symbol.
+
+#### `enumerated_attributes`
+
+Returns an array of attributes which are enumerated.
+
 ### ActiveRecord::VirtualEnumerations
 
 In many instances, your `acts_as_enumerated` classes will do nothing more than just act as enumerated.

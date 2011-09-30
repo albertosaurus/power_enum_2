@@ -9,11 +9,20 @@ module ActiveRecord
         base.extend(MacroMethods)
       end
 
-      module MacroMethods                      
+      module MacroMethods
+        def enumerated_attributes
+          @enumerated_attributes ||= []
+        end
+
+        def has_enumerated?(attribute)
+          return false unless attribute
+          enumerated_attributes.include? attribute.to_s
+        end
+
         def has_enumerated(part_id, options = {})
           options.assert_valid_keys(:class_name, :foreign_key, :on_lookup_failure)
 
-          name        = part_id.id2name
+          name        = part_id.to_s
           class_name  = (options[:class_name] || name).to_s.camelize
           foreign_key = (options[:foreign_key] || "#{name}_id").to_s             
           failure     = options[:on_lookup_failure]
@@ -54,6 +63,9 @@ module ActiveRecord
               end
             end
           end_eval
+
+          enumerated_attributes << name
+
         end
       end
     end
