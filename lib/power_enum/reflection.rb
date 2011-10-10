@@ -3,11 +3,13 @@ module PowerEnum::Reflection
 
   module ClassMethods
     def reflect_on_all_enumerated
-      reflections.values.grep(EnumerationReflection)
+      # Need to give it a full namespace to avoid getting Rails confused in development
+      # mode where all objects are reloaded on every request.
+      reflections.values.grep(PowerEnum::Reflection::EnumerationReflection)
     end
 
     def reflect_on_enumerated enumerated
-      reflections[enumerated.to_sym].is_a?(EnumerationReflection) ? reflections[enumerated.to_sym] : nil
+      reflections[enumerated.to_sym].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[enumerated.to_sym] : nil
     end
   end
 

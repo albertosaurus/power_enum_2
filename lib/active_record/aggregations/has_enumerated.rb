@@ -20,7 +20,7 @@ module ActiveRecord
         end
 
         def has_enumerated(part_id, options = {})
-          options.assert_valid_keys(:class_name, :foreign_key, :on_lookup_failure)
+          options.assert_valid_keys(:class_name, :foreign_key, :on_lookup_failure, :permit_empty_name)
 
           reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
           self.reflections.merge! part_id => reflection
@@ -29,6 +29,7 @@ module ActiveRecord
           class_name  = reflection.class_name
           foreign_key = reflection.foreign_key
           failure     = options[:on_lookup_failure]
+          empty_name  = options[:permit_empty_name]
 
           module_eval <<-end_eval
             def #{name}
@@ -40,7 +41,7 @@ module ActiveRecord
             end         
 
             def #{name}=(arg)
-              arg = nil if arg.is_a?(String) && arg.empty?
+              #{!empty_name ? 'arg = nil if arg.blank?' : ''}
               case arg
               when #{class_name}
                 val = #{class_name}.lookup_id(arg.id)

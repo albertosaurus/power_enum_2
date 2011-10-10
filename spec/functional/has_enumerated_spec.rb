@@ -49,7 +49,7 @@ describe 'has_enumerated' do
     end
   end
 
-  context 'when status exists' do
+  context 'when enum value exists' do
     it 'assigns and returns an appropriate status model when Symbol is passed' do
       @booking.status = :confirmed
       status = @booking.status
@@ -73,9 +73,17 @@ describe 'has_enumerated' do
       status.should be_an_instance_of BookingStatus
       status.name.should == 'confirmed'
     end
+    
+    it 'correctly looks up the proper value from the enumeration cache when performing update_attributes' do
+      @booking.update_attributes(:status => :rejected)
+      status = @booking.status
+      status.should_not be_new_record
+      status.should be_an_instance_of BookingStatus
+      status.name.should == 'rejected'
+    end
   end
 
-  context 'when status does not exist' do
+  context 'when enum value does not exist' do
     it 'calls :on_lookup_failure method on assigning' do
       @booking.should_receive(:not_found_status_handler).
           with(:write, 'status', 'status_id', 'BookingStatus', 'bad_status')
@@ -86,17 +94,31 @@ describe 'has_enumerated' do
       @booking.should_receive(:status_id=).with(nil)
       @booking.status = nil
     end
+    
+    it 'does not call :on_lookup_failure method on assignment when empty string is passed, converting it to nil' do
+      @booking.should_receive(:status_id=).with(nil)
+      @booking.status = ''
+    end
 
-    it 'raises ArgumentError if :on_lookup_failure method is not specified' do
+    it 'raises ArgumentError if :on_lookup_failure method is not specified when value is passed' do
       expect { @booking.state = :XXX }.to raise_error ArgumentError
     end
 
-    it 'assigns the foreign key to nil if :on_lookup_failure method is not specified and nil or empty string is passed' do
+    it 'assigns the foreign key to nil if :on_lookup_failure method is specified and nil or empty string is passed' do
       @booking.status = :confirmed
       @booking.status = nil
       @booking.status.should be_nil
       @booking.status = ''
       @booking.status.should be_nil
+    end
+    
+    it 'assigns the foreign key to nil if :on_lookup_failure is not specified and nil is passed' do
+      @booking.state = nil
+      @booking.state.should be_nil
+    end
+    
+    it 'raises ArgumentError if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
+      expect { @booking.state = '' }.to raise_error ArgumentError
     end
   end
 
