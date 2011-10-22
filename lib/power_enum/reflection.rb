@@ -8,13 +8,13 @@ module PowerEnum::Reflection
       reflections.values.grep(PowerEnum::Reflection::EnumerationReflection)
     end
 
-    def reflect_on_enumerated enumerated
+    def reflect_on_enumerated( enumerated )
       reflections[enumerated.to_sym].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[enumerated.to_sym] : nil
     end
   end
 
   class EnumerationReflection < ActiveRecord::Reflection::MacroReflection
-    def initialize name, options, active_record
+    def initialize( name, options, active_record )
       super :has_enumerated, name, options, active_record
     end
     
