@@ -129,55 +129,85 @@ module ActiveRecord
           @name_column ||= read_inheritable_attribute( :acts_enumerated_name_column )
         end
 
-        private 
-        
-        def all_by_id 
-          return @all_by_id if @all_by_id
-          @all_by_id = all.inject({}) { |memo, item| memo[item.id] = item; memo }.freeze
+        # ---Private methods---
+
+        def all_by_id
+          @all_by_id ||= all_by_attribute( :id )
         end
+        private :all_by_id
         
         def all_by_name
-          return @all_by_name if @all_by_name
           begin
-            @all_by_name = all.inject({}) { |memo, item| memo[item.name] = item; memo }.freeze
+            @all_by_name ||= all_by_attribute( :name )
           rescue NoMethodError => err
             if err.name == name_column
               raise TypeError, "#{self.name}: you need to define a '#{name_column}' column in the table '#{table_name}'"
             end
             raise
           end            
-        end   
+        end
+        private :all_by_name
+
+        def all_by_attribute(attr)
+          all.inject({}) { |memo, item|
+            memo[item.send(attr)] = item
+            memo
+          }.freeze
+        end
+        private :all_by_attribute
         
         def enforce_none(arg)
           nil
         end
+        private :enforce_none
 
         def enforce_strict(arg)
           raise_record_not_found(arg)
         end
+        private :enforce_strict
 
         def enforce_strict_literals(arg)
           raise_record_not_found(arg) if (Fixnum === arg) || (Symbol === arg)
           nil
         end
+        private :enforce_strict_literals
 
         def enforce_strict_ids(arg)
           raise_record_not_found(arg) if Fixnum === arg
           nil
         end
+        private :enforce_strict_ids
 
         def enforce_strict_symbols(arg)
           raise_record_not_found(arg) if Symbol === arg
           nil
         end
+        private :enforce_strict_symbols
 
         def raise_record_not_found(arg)
           raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
         end
+        private :raise_record_not_found
         
       end
 
       module InstanceMethods
+        # Behavior depends on the type of +arg+.
+        #
+        # * If +arg+ is +nil+, returns +false+.
+        # * If +arg+ is an instance of +Symbol+, +Fixnum+ or +String+, returns the result of +BookingStatus[:foo] == BookingStatus[arg]+.
+        # * If +arg+ is an +Array+, returns +true+ if any member of the array returns +true+ for +===(arg)+, +false+ otherwise.
+        # * In all other cases, delegates to +===(arg)+ of the superclass.
+        #
+        # Examples:
+        #
+        #     BookingStatus[:foo] === :foo #Returns true
+        #     BookingStatus[:foo] === 'foo' #Returns true
+        #     BookingStatus[:foo] === :bar #Returns false
+        #     BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
+        #     BookingStatus[:foo] === nil #Returns false
+        #
+        # You should note that defining an +:on_lookup_failure+ method that raises an exception will cause +===+ to also raise an exception for any lookup failure of +BookingStatus[arg]+.
         def ===(arg)
           case arg
           when nil

@@ -224,8 +224,20 @@ Each enumeration model gets the following instance methods.
 
 ##### `===(arg)`
 
-`BookingStatus[:foo] === arg` returns true if `BookingStatus[:foo] === BookingStatus[arg]` returns true if arg is Fixnum, String,
-or Symbol.  If arg is an Array, will compare every element of the array and return true if any element return true for `===`.
+Behavior depends on the type of `arg`.
+
+* If `arg` is `nil`, returns `false`.
+* If `arg` is an instance of `Symbol`, `Fixnum` or `String`, returns the result of `BookingStatus[:foo] == BookingStatus[arg]`.
+* If `arg` is an `Array`, returns `true` if any member of the array returns `true` for `===(arg)`, `false` otherwise.
+* In all other cases, delegates to `===(arg)` of the superclass.
+
+Examples:
+
+    BookingStatus[:foo] === :foo #Returns true
+    BookingStatus[:foo] === 'foo' #Returns true
+    BookingStatus[:foo] === :bar #Returns false
+    BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
+    BookingStatus[:foo] === nil #Returns false
 
 You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an exception for any lookup failure of `BookingStatus[arg]`.
 
@@ -234,6 +246,10 @@ You should note that defining an `:on_lookup_failure` method that raises an exce
 ##### `in?(*list)`
 
 Returns true if any element in the list returns true for `===(arg)`, false otherwise.
+
+Example:
+
+    BookingStatus[:foo].in? :foo, :bar, :baz #Returns true
 
 ##### `name`
 
