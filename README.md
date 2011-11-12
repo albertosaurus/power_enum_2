@@ -181,7 +181,7 @@ is the equivalent of
     end
     add_index :booking_statuses, [:name], :unique => true
 
-Notice that a unique index is automatically created on the name column.
+Notice that a unique index is automatically created on the specified name column.
 
 ##### `remove_enum(enum_name)`
 

@@ -70,7 +70,7 @@ module PowerEnum::Schema
     #  end
     #  add_index :connector_types, [:connector], :unique => true
     #
-    # Notice that a unique index is automatically created in each case.
+    # Notice that a unique index is automatically created in each case on the proper name column.
     def create_enum(enum_name, options = {}, &block)
       enum_table_name = enum_name.pluralize
       name_column = options[:name_column] || :name
