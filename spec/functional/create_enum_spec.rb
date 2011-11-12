@@ -7,7 +7,7 @@ describe "create_enum migration methods" do
   end
 
   it "connector type should define correct columns" do
-    ["id", "name", "description", "created_at", "updated_at", "active"].each do |column_name|
+    ["id", "name", "description", "created_at", "updated_at", "active", "has_sound"].each do |column_name|
       ConnectorType.column_names.should include(column_name)
     end
   end

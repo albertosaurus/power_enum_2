@@ -124,7 +124,7 @@ Now, when you create your Booking model, your migration should create a referenc
     
 There are two methods added to Rails migrations:
 
-##### `create_enum(enum_name, options = {})`
+##### `create_enum(enum_name, options = {}, &block)`
 
 Creates a new enum table.  `enum_name` will be automatically pluralized.  The following options are supported:
 
@@ -134,6 +134,8 @@ Creates a new enum table.  `enum_name` will be automatically pluralized.  The fo
 - [:desc_limit]  Set this to define the limit of the description column
 - [:active]  Set this to `true` to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
 - [:timestamps]  Set this to `true` to have the timestamp columns (created\_at and updated\_at) generated
+
+You can also pass in a block that takes a table object as an argument, like `create_table`.
 
 Example:
 
@@ -165,7 +167,21 @@ is the equivalent of
     end
     add_index :booking_statuses, [:booking_name], :unique => true
 
-Notice that a unique index is automatically created.
+You can also customize the creation process by using a block:
+
+    create_enum :booking_status do |t|
+      t.boolean :first_booking, :null => false
+    end
+
+is the equivalent of
+
+    create_table :booking_statuses do |t|
+      t.string :name, :null => false
+      t.boolean :first_booking, :null => false
+    end
+    add_index :booking_statuses, [:name], :unique => true
+
+Notice that a unique index is automatically created on the name column.
 
 ##### `remove_enum(enum_name)`
 

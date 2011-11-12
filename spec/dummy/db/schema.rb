@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20110920064242) do
     t.boolean  "active",                    :default => true, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "has_sound",                                   :null => false
   end
 
   add_index "connector_types", ["name"], :name => "index_connector_types_on_name", :unique => true

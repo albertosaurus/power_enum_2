@@ -31,6 +31,8 @@ module PowerEnum::Schema
     # [:timestamps]
     #   Set this to <tt>true</tt> to have timestamp columns (created_at and updated_at) generated.
     #
+    # You can also pass in a block that takes a table object as an argument, like <tt>create_table</tt>.
+    #
     # ===== Examples
     # ====== Basic Enum
     #  create_enum :connector_type
@@ -56,8 +58,20 @@ module PowerEnum::Schema
     #  end
     #  add_index :connector_types, [:connector], :unique => true
     #
-    # Notice that a unique index is automatically created.
-    def create_enum(enum_name, options = {})
+    # ====== Customizing Enum with a block
+    #  create_enum :connector_type, :description => true do |t|
+    #    t.boolean :has_sound
+    #  end
+    # is the equivalent of
+    #  create_table :connector_types do |t|
+    #    t.string :name, :null => false
+    #    t.string :description
+    #    t.boolean :has_sound
+    #  end
+    #  add_index :connector_types, [:connector], :unique => true
+    #
+    # Notice that a unique index is automatically created in each case.
+    def create_enum(enum_name, options = {}, &block)
       enum_table_name = enum_name.pluralize
       name_column = options[:name_column] || :name
       generate_description = !!options[:description]
@@ -76,6 +90,9 @@ module PowerEnum::Schema
         end
         if generate_timestamps
           t.timestamps
+        end
+        if block_given?
+          yield t
         end
       end
 
