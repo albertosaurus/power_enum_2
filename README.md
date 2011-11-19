@@ -111,7 +111,8 @@ You can now customize it.
     #   t.string :name, :limit => 50, :null => false
     # end
 
-Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign key relationship to the booking_statuses table.
+Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign
+key relationship to the booking_statuses table.
     
     create_table :bookings do |t|
       t.integer :status_id
@@ -121,6 +122,14 @@ Now, when you create your Booking model, your migration should create a referenc
 
     # Ideally, you would use a gem of some sort to handle foreign keys.
     execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk' FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
+
+It's easier to use the `references` method if you intend to stick to the default naming convention for reference columns.
+
+    create_table :bookings do |t|
+      t.references :booking_status # Same as t.integer booking_status_id
+
+      t.timestamps
+    end
     
 There are two methods added to Rails migrations:
 
