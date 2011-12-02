@@ -112,7 +112,7 @@ You can now customize it.
     # end
 
 Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign
-key relationship to the booking_statuses table.
+key relationship to the booking\_statuses table.
     
     create_table :bookings do |t|
       t.integer :status_id
@@ -137,10 +137,10 @@ There are two methods added to Rails migrations:
 
 Creates a new enum table.  `enum_name` will be automatically pluralized.  The following options are supported:
 
-- [:name_column]  Specify the column name for name of the enum.  By default it's :name.  This can be a String or a Symbol
+- [:name\_column]  Specify the column name for name of the enum.  By default it's :name.  This can be a String or a Symbol
 - [:description]  Set this to `true` to have a 'description' column generated.
-- [:name_limit]  Set this define the limit of the name column.
-- [:desc_limit]  Set this to define the limit of the description column
+- [:name\_limit]  Set this define the limit of the name column.
+- [:desc\_limit]  Set this to define the limit of the description column
 - [:active]  Set this to `true` to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
 - [:timestamps]  Set this to `true` to have the timestamp columns (created\_at and updated\_at) generated
 
@@ -298,7 +298,8 @@ This method is used by the `inactive` class method to select inactive enums.
 #### Notes
 
 `acts_as_enumerated` records are considered immutable. By default you cannot create/alter/destroy instances because they are cached in memory.
-Because of Rails' process-based model it is not safe to allow updating acts\_as\_enumerated records as the caches will get out of sync.
+Because of Rails' process-based model it is not safe to allow updating acts\_as\_enumerated records as the caches will get out of sync.  Also,
+as of version 0.5.1, `to_s` is overriden to return the name of the enum instance.
 
 However, one instance where updating the models *should* be allowed is if you are using seeds.rb to seed initial values into the database.
 

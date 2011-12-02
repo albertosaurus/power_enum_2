@@ -3,7 +3,9 @@ require 'spec_helper'
 describe "create_enum migration methods" do
 
   it "connector type should be defined" do
-    Module.const_defined?('ConnectorType').should == true
+    expect{
+      Module.const_get('ConnectorType')
+    }.to_not raise_error(NameError)
   end
 
   it "connector type should define correct columns" do
