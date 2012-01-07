@@ -49,6 +49,14 @@ describe 'has_enumerated' do
     end
   end
 
+  it 'A has_enumerated attribute without a :default option should have a default value of null' do
+    Booking.new.status.should be_nil
+  end
+
+  it 'A has_enumerated attribute with a :default option should have the default value passed to has_enumerated' do
+    Booking.new.state.should == State[:FL]
+  end
+
   context 'when enum value exists' do
     it 'assigns and returns an appropriate status model when Symbol is passed' do
       @booking.status = :confirmed

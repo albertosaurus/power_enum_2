@@ -322,14 +322,17 @@ the `has_enumerated` macro behaves more like an aggregation than an association.
       has_enumerated  :status, :class_name        => 'BookingStatus',
                                :foreign_key       => 'status_id',
                                :on_lookup_failure => :optional_instance_method,
-                               :permit_empty_name => true  #Setting this to true disables automatic conversion of empty strings to nil.  Default is false.
+                               :permit_empty_name => true,  #Setting this to true disables automatic conversion of empty strings to nil.  Default is false.
+                               :default           => :unconfirmed  #Default value of the attribute.
     end
 
 By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking_status') plus '\_id'.  Since we
 chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate it.  Additionally, the default value for
 `:class_name` is the camel-ized version of the name for your has\_enumerated field. `:on_lookup_failure` is explained below.  `:permit_empty_name`
 is an optional flag to disable automatic conversion of empty strings to nil.  It is typically desirable to have `booking.update_attributes(:status => '')`
-assign status_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data.
+assign status_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data, but
+the choice is yours.  Setting a `:default` option will generate an after_initialize callback to set a default value on the
+attribute unless a non-nil value has already been set.
 
 With that, your Booking class will have the following methods defined:
 
@@ -399,7 +402,7 @@ Run migrations for test environment:
 
     RAILS_ENV=test rake db:migrate
 
-If you're using Rails 3.1, you should do this instead:
+You may need to use `bundle exec` if you have gem conflicts:
 
     RAILS_ENV=test bundle exec rake db:migrate
 
