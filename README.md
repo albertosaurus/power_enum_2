@@ -133,7 +133,7 @@ It's easier to use the `references` method if you intend to stick to the default
     
 There are two methods added to Rails migrations:
 
-##### `create_enum(enum_name, options = {}, &block)`
+##### create_enum(enum\_name, options = {}, &block)
 
 Creates a new enum table.  `enum_name` will be automatically pluralized.  The following options are supported:
 
@@ -192,7 +192,7 @@ is the equivalent of
 
 Notice that a unique index is automatically created on the specified name column.
 
-##### `remove_enum(enum_name)`
+##### remove\_enum(enum\_name)
 
 Drops the enum table.  `enum_name` will be automatically pluralized.
 
@@ -217,7 +217,7 @@ With that, your BookingStatus class will have the following methods defined:
 
 #### Class Methods
 
-##### `[](arg)`
+##### [](arg)
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg.  The arg value can be a 'string' or a :symbol,
 in which case the lookup will be against the BookingStatus.name field.  Alternatively arg can be a Fixnum,
@@ -231,15 +231,15 @@ and `:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and action should be taken,
 therefore b) a fallback action should be easily configurable.
 
-##### `all`
+##### all
 
 `BookingStatus.all` returns an array of all BookingStatus records that match the `:conditions` specified in `acts_as_enumerated`, in the order specified by `:order`.
 
-##### `active`
+##### active
 
 `BookingStatus.active` returns an array of all BookingStatus records that are marked active.  See the `active?` instance method.
 
-##### `inactive`
+##### inactive
 
 `BookingStatus.inactive` returns an array of all BookingStatus records that are inactive.  See the `inactive?` instance method.
 
@@ -247,7 +247,7 @@ therefore b) a fallback action should be easily configurable.
 
 Each enumeration model gets the following instance methods.
 
-##### `===(arg)`
+##### ===(arg)
 
 Behavior depends on the type of `arg`.
 
@@ -268,7 +268,7 @@ You should note that defining an `:on_lookup_failure` method that raises an exce
 
 `like?` is aliased to `===`
 
-##### `in?(*list)`
+##### in?(*list)
 
 Returns true if any element in the list returns true for `===(arg)`, false otherwise.
 
@@ -276,21 +276,21 @@ Example:
 
     BookingStatus[:foo].in? :foo, :bar, :baz #Returns true
 
-##### `name`
+##### name
 
 Returns the 'name' of the enum, i.e. the value in the `:name_column` attribute of the enumeration model.
 
-##### `name_sym`
+##### name\_sym
 
 Returns the symbol representation of the name of the enum.  `BookingStatus[:foo].name_sym` returns :foo.
 
-##### `active?`
+##### active?
 
 Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
 returns the attribute cast to a boolean, otherwise returns true.  This method is used by the `active`
 class method to select active enums.
 
-##### `inactive?`
+##### inactive?
 
 Returns true if the instance is inactive, false otherwise.  Default implementations returns `!active?`
 This method is used by the `inactive` class method to select inactive enums.
@@ -336,11 +336,11 @@ attribute unless a non-nil value has already been set.
 
 With that, your Booking class will have the following methods defined:
 
-#### `status`
+#### status
 
 Returns the BookingStatus with an id that matches the value in the Booking.status_id.
 
-#### `status=(arg)`
+#### status=(arg)
 
 Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a
 short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
@@ -373,11 +373,11 @@ for all has\_enumerated fields if you happen to have more than one defined in yo
 NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out the foreign key.
 The `:on_lookup_failure` will be bypassed.
 
-#### `has_enumerated?(attr)`
+#### has\_enumerated?(attr)
 
 Returns true if the given attr is an enumerated attributes, false otherwise.  `attr` can be a string or a symbol.
 
-#### `enumerated_attributes`
+#### enumerated\_attributes
 
 Returns an array of attributes which are enumerated.
 
