@@ -221,7 +221,8 @@ With that, your BookingStatus class will have the following methods defined:
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg.  The arg value can be a 'string' or a :symbol,
 in which case the lookup will be against the BookingStatus.name field.  Alternatively arg can be a Fixnum,
-in which case the lookup will be against the BookingStatus.id field.
+in which case the lookup will be against the BookingStatus.id field.  Since version 0.5.3, it returns the arg
+if arg is an instance of the enum (in this case BookingStatus) as a convenience.
 
 The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to locate a BookingStatus record for arg.
 The default is the built-in `:enforce_none` which returns nil. There are also built-ins for `:enforce_strict` (raise and exception regardless of the type for arg),

@@ -34,7 +34,7 @@ describe 'acts_as_enumerated' do
           status.name.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
-
+        
       end
 
       context ':name_column is specified' do
@@ -84,6 +84,12 @@ describe 'acts_as_enumerated' do
           expect { State[999_999] }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+    end
+    
+    it 'returns instance when instance is passed' do
+      state = State[1]
+      state2 = State[state]
+      state2.should == state
     end
 
   end

@@ -66,7 +66,8 @@ module ActiveRecord
           @all_inactive = all.select{ |enum| !enum.active? }.freeze
         end
 
-        # Enum lookup by Symbol, String, or id.
+        # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
+        # an enum instance.
         def [](arg)
           case arg
           when Symbol
@@ -75,6 +76,8 @@ module ActiveRecord
             return_val = lookup_name(arg) and return return_val
           when Fixnum
             return_val = lookup_id(arg) and return return_val
+          when self
+            return arg
           when nil
             nil
           else
