@@ -57,6 +57,54 @@ describe 'has_enumerated' do
     Booking.new.state.should == State[:FL]
   end
 
+  context 'enumerated attribute scope' do
+
+    before :all do
+
+    end
+
+    after :all do
+      Booking.destroy_all
+    end
+
+    it 'should create a scope for the enumerated attribute by default' do
+      Booking.should respond_to(:with_status)
+    end
+
+    it 'should not create a scope if the "create_scope" option is set to false' do
+      Booking.should_not respond_to(:with_state)
+    end
+
+    it 'the generated scope should work with ids, strings, symbols, and enum instances' do
+      sql = [
+        [1, 3],
+        [:confirmed, :rejected],
+        ['confirmed', 'rejected'],
+        [BookingStatus[1], BookingStatus[3]]
+      ].map{ |status1, status2|
+        Booking.with_status(status1, status2).to_sql
+      }
+      sql.each{|s|
+        sql.first.should == s
+      }
+    end
+
+    it 'should only fetch the specified bookings' do
+      book = [:confirmed, :received, :rejected].map{|status|
+        booking = Booking.create(:status => status)
+        booking
+      }
+
+      bookings = Booking.with_status(:received, :rejected)
+      bookings.size.should == 2
+      bookings.find{ |booking| booking.status == BookingStatus[:received] }.should_not be_nil
+      bookings.find{ |booking| booking.status == BookingStatus[:rejected] }.should_not be_nil
+
+      book.each{|b| b.delete }
+    end
+
+  end
+
   context 'when enum value exists' do
     it 'assigns and returns an appropriate status model when Symbol is passed' do
       @booking.status = :confirmed

@@ -46,6 +46,8 @@ module ActiveRecord
         # [:default]
         #   Setting this option will generate an after_initialize callback to set a default value on the attribute
         #   unless a non-nil one already exists.
+        # [:create_scope]
+        #   Setting this option to 'false' will disable automatically creating a 'with_enum_attribute' scope.
         #
         # === Example
         #  class Booking < ActiveRecord::Base
@@ -53,22 +55,29 @@ module ActiveRecord
         #                    :class_name        => 'BookingStatus',
         #                    :foreign_key       => 'status_id',
         #                    :on_lookup_failure => :optional_instance_method,
-        #                    :permit_empty_name => true
-        #                    :default           => :unconfirmed
+        #                    :permit_empty_name => true,
+        #                    :default           => :unconfirmed,
+        #                    :create_cope       => false
         #  end
         def has_enumerated(part_id, options = {})
-          options.assert_valid_keys(:class_name, :foreign_key, :on_lookup_failure, :permit_empty_name, :default)
+          options.assert_valid_keys( :class_name,
+                                     :foreign_key,
+                                     :on_lookup_failure,
+                                     :permit_empty_name,
+                                     :default,
+                                     :create_scope )
 
           reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
           self.reflections.merge! part_id => reflection
 
-          name        = part_id.to_s
-          class_name  = reflection.class_name
-          foreign_key = reflection.foreign_key
-          failure     = options[:on_lookup_failure]
-          empty_name  = options[:permit_empty_name]
+          name         = part_id.to_s
+          class_name   = reflection.class_name
+          foreign_key  = reflection.foreign_key
+          failure      = options[:on_lookup_failure]
+          empty_name   = options[:permit_empty_name]
+          create_scope = options[:create_scope]
 
-          module_eval <<-end_eval
+          module_eval( <<-end_eval, __FILE__, __LINE__ )
             def #{name}
               rval = #{class_name}.lookup_id(self.#{foreign_key})
               if rval.nil? && #{!failure.nil?}
@@ -118,6 +127,15 @@ module ActiveRecord
               self.send("#{name}=", default) if self.send(name).nil?
             end
             private set_default_method
+          end
+
+          unless create_scope == false
+            module_eval( <<-end_eval, __FILE__, __LINE__)
+              scope :with_#{name}, lambda { |*args|
+                ids = args.map{|arg| #{class_name}[arg] }
+                where(:#{foreign_key} => ids)
+              }
+            end_eval
           end
 
         end #has_enumerated

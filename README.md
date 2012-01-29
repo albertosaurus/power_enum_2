@@ -324,12 +324,13 @@ the `has_enumerated` macro behaves more like an aggregation than an association.
                                :foreign_key       => 'status_id',
                                :on_lookup_failure => :optional_instance_method,
                                :permit_empty_name => true,  #Setting this to true disables automatic conversion of empty strings to nil.  Default is false.
-                               :default           => :unconfirmed  #Default value of the attribute.
+                               :default           => :unconfirmed,  #Default value of the attribute.
+                               :create_scope      => false  #Setting this to false disables the automatic creation of the 'with_status' scope.
     end
 
 By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking_status') plus '\_id'.  Since we
 chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate it.  Additionally, the default value for
-`:class_name` is the camel-ized version of the name for your has\_enumerated field. `:on_lookup_failure` is explained below.  `:permit_empty_name`
+`:class_name` is the camelized version of the name for your has\_enumerated field. `:on_lookup_failure` is explained below.  `:permit_empty_name`
 is an optional flag to disable automatic conversion of empty strings to nil.  It is typically desirable to have `booking.update_attributes(:status => '')`
 assign status_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data, but
 the choice is yours.  Setting a `:default` option will generate an after_initialize callback to set a default value on the
@@ -374,9 +375,26 @@ for all has\_enumerated fields if you happen to have more than one defined in yo
 NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out the foreign key.
 The `:on_lookup_failure` will be bypassed.
 
+#### with\_enumerated\_attribute scope
+
+Unless the `:create\_scope` option is set to `false`, a scope is automatically created that takes a list of enums as arguments.  This
+allows us to say things like:
+
+    Booking.with_status :confirmed, :received
+
+Strings, symbols, ids, or enum instances are all valid arguments.  For example, the following would be valid, though not recommended
+for obvious reasons.
+
+    Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
+
+### ActiveRecord::Base Extensions
+
+The following methods are added to ActiveRecord::Base as class methods.
+
 #### has\_enumerated?(attr)
 
-Returns true if the given attr is an enumerated attributes, false otherwise.  `attr` can be a string or a symbol.
+Returns true if the given attr is an enumerated attributes, false otherwise.  `attr` can be a string or a symbol.  This
+is a class method.
 
 #### enumerated\_attributes
 

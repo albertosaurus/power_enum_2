@@ -11,5 +11,6 @@ class Booking < ActiveRecord::Base
   has_enumerated :state,
                  :class_name        => 'State',
                  :permit_empty_name => true,
-                 :default           => :FL
+                 :default           => :FL,
+                 :create_scope      => false
 end
