@@ -1,15 +1,15 @@
 # Copyright (c) 2005 Trevor Squires
+# Copyright (c) 2012 Arthur Shagall
 # Released under the MIT License.  See the LICENSE file for more details.
 
 module ActiveRecord
   module Acts 
     module Enumerated 
-      def self.append_features(base)
-        super        
-        base.extend(MacroMethods)              
-      end
+      extend ActiveSupport::Concern
       
-      module MacroMethods          
+      module ClassMethods
+
+        # Declares the model as enumerated.  See the README for usage instructions.
         def acts_as_enumerated(options = {})
           valid_keys = [:conditions, :order, :on_lookup_failure, :name_column]
           options.assert_valid_keys(*valid_keys)
@@ -25,11 +25,11 @@ module ActiveRecord
                         end
           write_inheritable_attribute(:acts_enumerated_name_column, name_column)
           
-          unless self.is_a? ActiveRecord::Acts::Enumerated::ClassMethods
-            extend ActiveRecord::Acts::Enumerated::ClassMethods
+          unless self.is_a? ActiveRecord::Acts::Enumerated::EnumClassMethods
+            extend ActiveRecord::Acts::Enumerated::EnumClassMethods
             
             class_eval do
-              include ActiveRecord::Acts::Enumerated::InstanceMethods
+              include ActiveRecord::Acts::Enumerated::EnumInstanceMethods
               
               before_save :enumeration_model_update
               before_destroy :enumeration_model_update
@@ -43,7 +43,7 @@ module ActiveRecord
         end
       end
       
-      module ClassMethods  
+      module EnumClassMethods
         attr_accessor :enumeration_model_updates_permitted
 
         # Returns all the enum values.  Caches results after the first time this method is run.
@@ -194,7 +194,7 @@ module ActiveRecord
         
       end
 
-      module InstanceMethods
+      module EnumInstanceMethods
         # Behavior depends on the type of +arg+.
         #
         # * If +arg+ is +nil+, returns +false+.

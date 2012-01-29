@@ -1,5 +1,7 @@
 # Power Enum
 
+https://github.com/albertosaurus/enumerations\_mixin
+
 Enumerations for Rails 3.X Done Right.
 
 ## What is this?:
@@ -9,19 +11,23 @@ It allows you to cleanly solve many of the problems that the traditional Rails a
 It is particularly suitable for scenarios where your Rails application is not the only user of the database, such as
 when it's used for analytics or reporting.
 
-Power Enum is built on top of the Rails 3 modernization made by the fine folks at Protocool https://github.com/protocool/enumerations\_mixin
-to the original plugin by Trevor Squires located at https://github.com/protocool/enumerations\_mixin.  While many of the core ideas remain,
-it has been reworked and a full test suite written to facilitate further development.
+Power Enum is a fork of the Rails 3 modernization made by the fine folks at Protocool
+https://github.com/protocool/enumerations\_mixin to the original plugin by Trevor Squires located at
+https://github.com/protocool/enumerations\_mixin.  While many of the core ideas remain, it has been reworked and a full
+test suite written to facilitate further development.
 
 At it's most basic level, it allows you to say things along the lines of:
 
     booking = Booking.new(:status => BookingStatus[:provisional])
     booking.status = :confirmed
+    booking = Booking.create( :status => :rejected )
 
     Booking.find :first,
                  :conditions => ['status_id = ?', BookingStatus[:provisional].id]
 
     BookingStatus.all.collect {|status|, [status.name, status.id]}
+
+    Booking.with_status :provisional, :confirmed
 
 See "How to use it" below for more information.
 
@@ -50,10 +56,11 @@ are cached in memory.  If the table has an 'active' column, the value of that at
 will be used to determine which enum instances are active.
 Otherwise, all values are considered active.
 
-`has_enumerated` adds methods to your ActiveRecord model for setting and retrieving enumerated values using an associated acts\_as\_enumerated model.
+`has_enumerated` adds methods to your ActiveRecord model for setting and retrieving enumerated values using an
+associated acts\_as\_enumerated model.
 
-There is also an `ActiveRecord::VirtualEnumerations` helper module to create 'virtual' acts\_as\_enumerated models which helps to avoid
-cluttering up your models directory with acts\_as\_enumerated classes.
+There is also an `ActiveRecord::VirtualEnumerations` helper module to create 'virtual' acts\_as\_enumerated models
+which helps to avoid cluttering up your models directory with acts\_as\_enumerated classes.
 
 ## How to use it
 
@@ -79,7 +86,7 @@ from a pre-test Rake task.
 
 ### migration
 
-If you're using Rails prior to 3.1, your migration file will look something like this:
+If you're using Rails prior to 3.0, your migration file will look something like this:
 
     class CreateEnumBookingStatus < ActiveRecord::Migration
     
@@ -208,7 +215,7 @@ is the equivalent of
 
     class BookingStatus < ActiveRecord::Base
       acts_as_enumerated  :conditions        => 'optional_sql_conditions',
-                          :order             => 'optional_sql_orderby',
+                          :order             => 'optional_sql_order_by',
                           :on_lookup_failure => :optional_class_method,
                           :name_column       => 'optional_name_column'  #If required, may override the default name column
     end
@@ -219,30 +226,35 @@ With that, your BookingStatus class will have the following methods defined:
 
 ##### [](arg)
 
-`BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg.  The arg value can be a 'string' or a :symbol,
-in which case the lookup will be against the BookingStatus.name field.  Alternatively arg can be a Fixnum,
-in which case the lookup will be against the BookingStatus.id field.  Since version 0.5.3, it returns the arg
+`BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg.  The arg value can be a
+'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field.  Alternatively arg can be
+a Fixnum, in which case the lookup will be against the BookingStatus.id field.  Since version 0.5.3, it returns the arg
 if arg is an instance of the enum (in this case BookingStatus) as a convenience.
 
-The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to locate a BookingStatus record for arg.
-The default is the built-in `:enforce_none` which returns nil. There are also built-ins for `:enforce_strict` (raise and exception regardless of the type for arg),
-`:enforce_strict_literals` (raises an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Fixnum)
-and `:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
+The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to
+locate a BookingStatus record for arg.  The default is the built-in `:enforce_none` which returns nil. There are also
+built-ins for `:enforce_strict` (raise and exception regardless of the type for arg), `:enforce_strict_literals` (raises
+an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Fixnum) and
+`:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
 
-The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and action should be taken,
+The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
+action should be taken,
 therefore b) a fallback action should be easily configurable.
 
 ##### all
 
-`BookingStatus.all` returns an array of all BookingStatus records that match the `:conditions` specified in `acts_as_enumerated`, in the order specified by `:order`.
+`BookingStatus.all` returns an array of all BookingStatus records that match the `:conditions` specified in
+`acts_as_enumerated`, in the order specified by `:order`.
 
 ##### active
 
-`BookingStatus.active` returns an array of all BookingStatus records that are marked active.  See the `active?` instance method.
+`BookingStatus.active` returns an array of all BookingStatus records that are marked active.  See the `active?` instance
+method.
 
 ##### inactive
 
-`BookingStatus.inactive` returns an array of all BookingStatus records that are inactive.  See the `inactive?` instance method.
+`BookingStatus.inactive` returns an array of all BookingStatus records that are inactive.  See the `inactive?` instance
+method.
 
 #### Instance Methods
 
@@ -265,7 +277,8 @@ Examples:
     BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
     BookingStatus[:foo] === nil #Returns false
 
-You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an exception for any lookup failure of `BookingStatus[arg]`.
+You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an
+exception for any lookup failure of `BookingStatus[arg]`.
 
 `like?` is aliased to `===`
 
@@ -298,11 +311,13 @@ This method is used by the `inactive` class method to select inactive enums.
 
 #### Notes
 
-`acts_as_enumerated` records are considered immutable. By default you cannot create/alter/destroy instances because they are cached in memory.
-Because of Rails' process-based model it is not safe to allow updating acts\_as\_enumerated records as the caches will get out of sync.  Also,
-as of version 0.5.1, `to_s` is overriden to return the name of the enum instance.
+`acts_as_enumerated` records are considered immutable. By default you cannot create/alter/destroy instances because they
+are cached in memory.  Because of Rails' process-based model it is not safe to allow updating acts\_as\_enumerated
+records as the caches will get out of sync.  Also, as of version 0.5.1, `to_s` is overriden to return the name of the
+enum instance.
 
-However, one instance where updating the models *should* be allowed is if you are using seeds.rb to seed initial values into the database.
+However, one instance where updating the models *should* be allowed is if you are using seeds.rb to seed initial values
+into the database.
 
 Using the above example you would do the following:
 
@@ -315,9 +330,9 @@ Note that a `:presence` and `:uniqueness` validation is automatically defined on
 
 ### has\_enumerated
 
-First of all, note that you *could* specify the relationship to an `acts_as_enumerated` class using the belongs_to association.
-However, `has_enumerated` is preferable because you aren't really associated to the enumerated value, you are *aggregating* it. As such,
-the `has_enumerated` macro behaves more like an aggregation than an association.
+First of all, note that you *could* specify the relationship to an `acts_as_enumerated` class using the belongs_to
+association.  However, `has_enumerated` is preferable because you aren't really associated to the enumerated value, you
+are *aggregating* it. As such, the `has_enumerated` macro behaves more like an aggregation than an association.
 
     class Booking < ActiveRecord::Base
       has_enumerated  :status, :class_name        => 'BookingStatus',
@@ -328,13 +343,14 @@ the `has_enumerated` macro behaves more like an aggregation than an association.
                                :create_scope      => false  #Setting this to false disables the automatic creation of the 'with_status' scope.
     end
 
-By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking_status') plus '\_id'.  Since we
-chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate it.  Additionally, the default value for
-`:class_name` is the camelized version of the name for your has\_enumerated field. `:on_lookup_failure` is explained below.  `:permit_empty_name`
-is an optional flag to disable automatic conversion of empty strings to nil.  It is typically desirable to have `booking.update_attributes(:status => '')`
+By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking_status')
+plus '\_id'.  Since we chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate
+it.  Additionally, the default value for `:class_name` is the camelized version of the name for your has\_enumerated
+field. `:on_lookup_failure` is explained below.  `:permit_empty_name` is an optional flag to disable automatic
+conversion of empty strings to nil.  It is typically desirable to have `booking.update_attributes(:status => '')`
 assign status_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data, but
-the choice is yours.  Setting a `:default` option will generate an after_initialize callback to set a default value on the
-attribute unless a non-nil value has already been set.
+the choice is yours.  Setting a `:default` option will generate an after_initialize callback to set a default value on
+the attribute unless a non-nil value has already been set.
 
 With that, your Booking class will have the following methods defined:
 
@@ -345,7 +361,8 @@ Returns the BookingStatus with an id that matches the value in the Booking.statu
 #### status=(arg)
 
 Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a
-short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the id directly.
+short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the
+id directly.
 
 example:
 
@@ -359,31 +376,33 @@ or:
 
     mybooking.status = BookingStatus[:confirmed]
 
-The `:on_lookup_failure` option in has_enumerated is there because you may want to create an error handler for situations
-where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an ArgumentError to be raised.  
+The `:on_lookup_failure` option in has_enumerated is there because you may want to create an error handler for
+situations where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an
+ArgumentError to be raised.
 
-Of course, this may not be optimal in your situation.  In this case you can specify an *instance* method to be called in the case of a lookup failure. The method signature is as follows:
+Of course, this may not be optimal in your situation.  In this case you can specify an *instance* method to be called in
+the case of a lookup failure. The method signature is as follows:
 
     your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
 
-The 'operation' arg will be either `:read` or `:write`.  In the case of `:read` you are expected to return something or raise an exception,
-while in the case of a `:write` you don't have to return anything.
+The 'operation' arg will be either `:read` or `:write`.  In the case of `:read` you are expected to return something or
+raise an exception, while in the case of a `:write` you don't have to return anything.
 
-Note that there's enough information in the method signature that you can specify one method to handle all lookup failures
-for all has\_enumerated fields if you happen to have more than one defined in your model.
+Note that there's enough information in the method signature that you can specify one method to handle all lookup
+failures for all has\_enumerated fields if you happen to have more than one defined in your model.
 
-NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out the foreign key.
-The `:on_lookup_failure` will be bypassed.
+NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out
+the foreign key.  The `:on_lookup_failure` will be bypassed.
 
 #### with\_enumerated\_attribute scope
 
-Unless the `:create\_scope` option is set to `false`, a scope is automatically created that takes a list of enums as arguments.  This
-allows us to say things like:
+Unless the `:create\_scope` option is set to `false`, a scope is automatically created that takes a list of enums as
+arguments.  This allows us to say things like:
 
     Booking.with_status :confirmed, :received
 
-Strings, symbols, ids, or enum instances are all valid arguments.  For example, the following would be valid, though not recommended
-for obvious reasons.
+Strings, symbols, ids, or enum instances are all valid arguments.  For example, the following would be valid, though not
+recommended for obvious reasons.
 
     Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
 
@@ -404,9 +423,11 @@ Returns an array of attributes which are enumerated.
 
 In many instances, your `acts_as_enumerated` classes will do nothing more than just act as enumerated.
 
-In that case there isn't much point cluttering up your models directory with those class files. You can use ActiveRecord::VirtualEnumerations to reduce that clutter.
+In that case there isn't much point cluttering up your models directory with those class files. You can use
+ActiveRecord::VirtualEnumerations to reduce that clutter.
 
-Copy virtual\_enumerations\_sample.rb to Rails.root/config/initializers/virtual\_enumerations.rb and configure it accordingly.
+Copy virtual\_enumerations\_sample.rb to Rails.root/config/initializers/virtual\_enumerations.rb and configure it
+accordingly.
 
 See virtual\_enumerations\_sample.rb in the examples directory of this gem for a full description.
 

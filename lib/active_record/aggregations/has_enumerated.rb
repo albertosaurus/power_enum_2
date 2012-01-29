@@ -1,23 +1,23 @@
 # Copyright (c) 2005 Trevor Squires
+# Copyright (c) 2012 Arthur Shagall
 # Released under the MIT License.  See the LICENSE file for more details.
 
 module ActiveRecord
   module Aggregations # :nodoc:
     module HasEnumerated # :nodoc:
 
-      def self.append_features(base)
-        super      
-        base.extend(MacroMethods)
-      end
+      extend ActiveSupport::Concern
 
-      module MacroMethods
+      module ClassMethods
 
+        # Returns a list of all the attributes on the ActiveRecord model which are enumerated.
         def enumerated_attributes
           @enumerated_attributes ||= []
         end
 
+        # Returns +true+ if +attribute+ is an enumerated attribute, +false+ otherwise.
         def has_enumerated?(attribute)
-          return false unless attribute
+          return false if attribute.nil?
           enumerated_attributes.include? attribute.to_s
         end
 
@@ -26,7 +26,7 @@ module ActiveRecord
         #
         # === Supported options
         # [:class_name]
-        #   Name of the enum class.  By default it is the camel-ized version of the has_enumerated attribute.
+        #   Name of the enum class.  By default it is the camelized version of the has_enumerated attribute.
         # [:foreign_key]
         #   Explicitly set the foreign key column.  By default it's assumed to be your_enumerated_attribute_name_id.
         # [:on_lookup_failure]

@@ -1,3 +1,6 @@
+# Copyright (c) 2011 Arthur Shagall
+# Released under the MIT license.  See LICENSE for details.
+
 # Generator for PowerEnum
 class EnumGenerator < Rails::Generators::Base
   source_root File.expand_path('../templates', __FILE__)

@@ -1,3 +1,6 @@
+# Copyright (c) 2011 Artem Kuzko
+# Released under the MIT license.  See LICENSE for details.
+
 module PowerEnum::Reflection
   extend ActiveSupport::Concern
 
