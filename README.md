@@ -140,7 +140,7 @@ It's easier to use the `references` method if you intend to stick to the default
     
 There are two methods added to Rails migrations:
 
-##### create_enum(enum\_name, options = {}, &block)
+##### create\_enum(enum\_name, options = {}, &block)
 
 Creates a new enum table.  `enum_name` will be automatically pluralized.  The following options are supported:
 
@@ -330,7 +330,7 @@ Note that a `:presence` and `:uniqueness` validation is automatically defined on
 
 ### has\_enumerated
 
-First of all, note that you *could* specify the relationship to an `acts_as_enumerated` class using the belongs_to
+First of all, note that you *could* specify the relationship to an `acts_as_enumerated` class using the `belongs_to`
 association.  However, `has_enumerated` is preferable because you aren't really associated to the enumerated value, you
 are *aggregating* it. As such, the `has_enumerated` macro behaves more like an aggregation than an association.
 
@@ -343,24 +343,24 @@ are *aggregating* it. As such, the `has_enumerated` macro behaves more like an a
                                :create_scope      => false  #Setting this to false disables the automatic creation of the 'with_status' scope.
     end
 
-By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking_status')
+By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking\_status')
 plus '\_id'.  Since we chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate
 it.  Additionally, the default value for `:class_name` is the camelized version of the name for your has\_enumerated
 field. `:on_lookup_failure` is explained below.  `:permit_empty_name` is an optional flag to disable automatic
 conversion of empty strings to nil.  It is typically desirable to have `booking.update_attributes(:status => '')`
-assign status_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data, but
-the choice is yours.  Setting a `:default` option will generate an after_initialize callback to set a default value on
+assign status\_id to a nil rather than raise an Error, as you'll be often calling `update_attributes` with form data, but
+the choice is yours.  Setting a `:default` option will generate an after\_initialize callback to set a default value on
 the attribute unless a non-nil value has already been set.
 
 With that, your Booking class will have the following methods defined:
 
 #### status
 
-Returns the BookingStatus with an id that matches the value in the Booking.status_id.
+Returns the BookingStatus with an id that matches the value in the Booking.status\_id.
 
 #### status=(arg)
 
-Sets the value for Booking.status_id using the id of the BookingStatus instance passed as an argument.  As a
+Sets the value for Booking.status\_id using the id of the BookingStatus instance passed as an argument.  As a
 short-hand, you can also pass it the 'name' of a BookingStatus instance, either as a 'string' or :symbol, or pass in the
 id directly.
 
@@ -376,7 +376,7 @@ or:
 
     mybooking.status = BookingStatus[:confirmed]
 
-The `:on_lookup_failure` option in has_enumerated is there because you may want to create an error handler for
+The `:on_lookup_failure` option in has\_enumerated is there because you may want to create an error handler for
 situations where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an
 ArgumentError to be raised.
 
@@ -396,7 +396,7 @@ the foreign key.  The `:on_lookup_failure` will be bypassed.
 
 #### with\_enumerated\_attribute scope
 
-Unless the `:create\_scope` option is set to `false`, a scope is automatically created that takes a list of enums as
+Unless the `:create_scope` option is set to `false`, a scope is automatically created that takes a list of enums as
 arguments.  This allows us to say things like:
 
     Booking.with_status :confirmed, :received

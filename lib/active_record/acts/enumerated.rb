@@ -9,7 +9,48 @@ module ActiveRecord
       
       module ClassMethods
 
-        # Declares the model as enumerated.  See the README for usage instructions.
+        # Declares the model as enumerated.  See the README for detailed usage instructions.
+        #
+        # === Supported options
+        # [:conditions]
+        #   SQL search conditions
+        # [:order]
+        #   SQL load order clause
+        # [:on_lookup_failure]
+        #   Specifies the name of a class method to invoke when the +[]+ method is unable to locate a BookingStatus
+        #   record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for
+        #   :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an
+        #   exception if the arg is a Fixnum or Symbol), :enforce_strict_ids (raises and exception if the arg is a
+        #   Fixnum) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).  The purpose of the
+        #   :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action
+        #   should be taken, therefore b) a fallback action should be easily configurable.
+        # [:name_column]
+        #   Override for the 'name' column.  By default, assumed to be 'name'.
+        #
+        # === Examples
+        #
+        # ====Example 1
+        #  class BookingStatus < ActiveRecord::Base
+        #    acts_as_enumerated
+        #  end
+        #
+        # ====Example 2
+        #  class BookingStatus < ActiveRecord::Base
+        #    acts_as_enumerated :on_lookup_failure => :enforce_strict
+        #  end
+        #
+        # ====Example 3
+        #  class BookingStatus < ActiveRecord::Base
+        #    acts_as_enumerated :conditions        => [:exclude => false],
+        #                       :order             => 'created_at DESC',
+        #                       :on_lookup_failure => :lookup_failed,
+        #                       :name_column       => :status_code
+        #
+        #    def self.lookup_failed(arg)
+        #      logger.error("Invalid status code lookup #{arg.inspect}")
+        #      nil
+        #    end
+        #  end
         def acts_as_enumerated(options = {})
           valid_keys = [:conditions, :order, :on_lookup_failure, :name_column]
           options.assert_valid_keys(*valid_keys)
