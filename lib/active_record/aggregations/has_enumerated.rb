@@ -132,10 +132,20 @@ module ActiveRecord
           unless create_scope == false
             module_eval( <<-end_eval, __FILE__, __LINE__)
               scope :with_#{name}, lambda { |*args|
-                ids = args.map{|arg| #{class_name}[arg] }
+                ids = args.map{ |arg|
+                  n = #{class_name}[arg]
+                }
                 where(:#{foreign_key} => ids)
               }
             end_eval
+
+            if (name_p = name.pluralize) != name
+              module_eval( <<-end_eval, __FILE__, __LINE__)
+                class << self
+                  alias_method :with_#{name_p}, :with_#{name}
+                end
+              end_eval
+            end
           end
 
         end #has_enumerated

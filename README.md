@@ -406,6 +406,8 @@ recommended for obvious reasons.
 
     Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
 
+As of version 0.5.5, it also aliases a pluralized version of the scope, i.e. `:with_statuses`
+
 ### ActiveRecord::Base Extensions
 
 The following methods are added to ActiveRecord::Base as class methods.

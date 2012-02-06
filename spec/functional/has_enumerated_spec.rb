@@ -59,16 +59,16 @@ describe 'has_enumerated' do
 
   context 'enumerated attribute scope' do
 
-    before :all do
-
-    end
-
-    after :all do
+    after :each do
       Booking.destroy_all
     end
 
     it 'should create a scope for the enumerated attribute by default' do
       Booking.should respond_to(:with_status)
+    end
+
+    it "should properly alias the plural version of the scope" do
+      Booking.should respond_to(:with_statuses)
     end
 
     it 'should not create a scope if the "create_scope" option is set to false' do
@@ -99,6 +99,10 @@ describe 'has_enumerated' do
       bookings.size.should == 2
       bookings.find{ |booking| booking.status == BookingStatus[:received] }.should_not be_nil
       bookings.find{ |booking| booking.status == BookingStatus[:rejected] }.should_not be_nil
+
+      bookings2 = Booking.with_statuses(:received, :rejected)
+      bookings2.size.should == 2
+      bookings2.should == bookings
 
       book.each{|b| b.delete }
     end
