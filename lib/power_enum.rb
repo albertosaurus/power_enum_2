@@ -1,4 +1,5 @@
 require "rails"
+require 'testing/rspec'
 
 class PowerEnum < Rails::Engine
   config.autoload_paths << File.expand_path(File.join(__FILE__, "../"))

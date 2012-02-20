@@ -47,6 +47,7 @@ This package adds:
 - Two mixins and a helper to ActiveRecord
 - Methods to migrations to simplify the creation of backing tables
 - A generator to make generating enums easy
+- Custom RSpec matchers to streamline the testing of enums and enumerated attributes (Since version 0.6.0)
 
 `acts_as_enumerated` provides capabilities to treat your model and its records as an enumeration.
 At a minimum, the database table for an acts\_as\_enumerated must contain an 'id' column and a column
@@ -433,6 +434,60 @@ accordingly.
 
 See virtual\_enumerations\_sample.rb in the examples directory of this gem for a full description.
 
+### Testing (Since version 0.6.0)
+
+A pair of custom RSpec matchers are included to streamline testing of enums and enumerated attributes.
+
+#### act\_as\_enumerated
+
+This is used to test that a model acts as enumerated.  Example:
+
+    describe BookingStatus do
+      it { should act_as_enumerated }
+    end
+
+This also works:
+
+    describe BookingStatus do
+      it "should act as enumerated" do
+        BookingStatus.should act_as_enumerated
+      end
+    end
+
+You can use the `with_items` chained matcher to test that each enum is properly seeded:
+
+    describe BookingStatus do
+      it {
+        should act_as_enumerated.with_items(:confirmed, :received, :rejected)
+      }
+    end
+
+You can also pass in hashes if you want to be thorough and test out all the attributes of each enum.  If
+you do this, you must pass in the `:name` attribute in each hash
+
+    describe BookingStatus do
+      it {
+        should act_as_enumerated.with_items({ :name => 'confirmed', :description => "Processed and confirmed" },
+                                            { :name => 'received', :description => "Pending confirmation" },
+                                            { :name => 'rejected', :description => "Rejected due to internal rules" })
+      }
+    end
+
+#### have\_enumerated
+
+This is used to test that a model has enumerated the given attribute:
+
+    describe Booking do
+      it { should have_enumerated(:status) }
+    end
+
+This is also valid:
+
+    describe Booking do
+      it "Should have enumerated the status attribute" do
+        Booking.should have_enumerated(:status)
+      end
+    end
 
 ## How to run tests
 
