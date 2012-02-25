@@ -55,8 +55,11 @@ module ActiveRecord
           valid_keys = [:conditions, :order, :on_lookup_failure, :name_column]
           options.assert_valid_keys(*valid_keys)
           
-          valid_keys.each do |key|   
-            write_inheritable_attribute("acts_enumerated_#{key.to_s}".to_sym, options[key]) if options.has_key? key
+          valid_keys.each do |key|
+            class_attribute "acts_enumerated_#{key.to_s}"
+            if options.has_key?( key )
+              self.send "acts_enumerated_#{key.to_s}=", options[key]
+            end
           end
           
           name_column = if options.has_key?(:name_column) then
@@ -64,8 +67,10 @@ module ActiveRecord
                         else
                           :name
                         end
-          write_inheritable_attribute(:acts_enumerated_name_column, name_column)
-          
+
+          class_attribute :acts_enumerated_name_column
+          self.acts_enumerated_name_column = name_column
+
           unless self.is_a? ActiveRecord::Acts::Enumerated::EnumClassMethods
             extend ActiveRecord::Acts::Enumerated::EnumClassMethods
             
@@ -90,8 +95,8 @@ module ActiveRecord
         # Returns all the enum values.  Caches results after the first time this method is run.
         def all
           return @all if @all
-          conditions = read_inheritable_attribute(:acts_enumerated_conditions)
-          order = read_inheritable_attribute(:acts_enumerated_order)
+          conditions = self.acts_enumerated_conditions
+          order = self.acts_enumerated_order
           @all = where(conditions).order(order).collect{|val| val.freeze}.freeze
         end
 
@@ -124,7 +129,7 @@ module ActiveRecord
           else
             raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
           end
-          self.send((read_inheritable_attribute(:acts_enumerated_on_lookup_failure) || :enforce_none), arg)
+          self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
         end
 
         # Enum lookup by id
@@ -170,7 +175,7 @@ module ActiveRecord
 
         # Returns the name of the column this enum uses as the basic underlying value.
         def name_column
-          @name_column ||= read_inheritable_attribute( :acts_enumerated_name_column )
+          @name_column ||= self.acts_enumerated_name_column
         end
 
         # ---Private methods---
