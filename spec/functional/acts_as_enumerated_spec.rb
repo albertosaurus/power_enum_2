@@ -299,4 +299,10 @@ describe 'acts_as_enumerated' do
       end
     end
   end
+
+  describe 'names' do
+    it "should return the names of an enum as an array of symbols" do
+      ConnectorType.names.should == [:VGA, :HDMI, :DVI]
+    end
+  end
 end

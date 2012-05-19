@@ -87,7 +87,7 @@ from a pre-test Rake task.
 
 ### migration
 
-If you're using Rails prior to 3.0, your migration file will look something like this:
+If you're using Rails 3.0, your migration file will look something like this:
 
     class CreateEnumBookingStatus < ActiveRecord::Migration
     
@@ -101,7 +101,7 @@ If you're using Rails prior to 3.0, your migration file will look something like
     
     end
     
-If you're using Rails 3.1, it will look something like this:
+If you're using Rails 3.1 or later, it will look something like this:
 
     class CreateEnumBookingStatus < ActiveRecord::Migration
     
@@ -256,6 +256,10 @@ method.
 
 `BookingStatus.inactive` returns an array of all BookingStatus records that are inactive.  See the `inactive?` instance
 method.
+
+##### names (since version 0.6.3)
+
+`BookingStatus.names` will return all the names of the defined enums as an array of symbols.
 
 #### Instance Methods
 

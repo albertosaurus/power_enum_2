@@ -112,6 +112,11 @@ module ActiveRecord
           @all_inactive = all.select{ |enum| !enum.active? }.freeze
         end
 
+        # Returns the names of all the enum values as an array of symbols.
+        def names
+          all.map { |item| item.name_sym }
+        end
+
         # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
         # an enum instance.
         def [](arg)
@@ -180,11 +185,13 @@ module ActiveRecord
 
         # ---Private methods---
 
+        # Returns a hash of all enumeration members keyed by their ids.
         def all_by_id
           @all_by_id ||= all_by_attribute( :id )
         end
         private :all_by_id
-        
+
+        # Returns a hash of all the enumeration members keyed by their names.
         def all_by_name
           begin
             @all_by_name ||= all_by_attribute( :name )
@@ -256,7 +263,8 @@ module ActiveRecord
         #     BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
         #     BookingStatus[:foo] === nil #Returns false
         #
-        # You should note that defining an +:on_lookup_failure+ method that raises an exception will cause +===+ to also raise an exception for any lookup failure of +BookingStatus[arg]+.
+        # You should note that defining an +:on_lookup_failure+ method that raises an exception will cause +===+ to
+        # also raise an exception for any lookup failure of +BookingStatus[arg]+.
         def ===(arg)
           case arg
           when nil
