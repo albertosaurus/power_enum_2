@@ -160,7 +160,7 @@ describe 'has_enumerated' do
       @booking.status = ''
     end
 
-    it 'raises ArgumentError if :on_lookup_failure method is not specified when value is passed' do
+    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified when value is passed' do
       @booking.state = :XXX
       @booking.should be_invalid
       @booking.errors.messages[:state].should == ["is invalid"]
@@ -184,7 +184,7 @@ describe 'has_enumerated' do
       @booking.state.should be_nil
     end
 
-    it 'raises ArgumentError if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
+    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
       @booking.state = ''
       @booking.should be_invalid
       @booking.errors.messages[:state].should == ["is invalid"]
