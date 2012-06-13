@@ -12,5 +12,6 @@ class Booking < ActiveRecord::Base
                  :class_name        => 'State',
                  :permit_empty_name => true,
                  :default           => :FL,
-                 :create_scope      => false
+                 :create_scope      => false,
+                 :on_lookup_failure => :validation_error
 end

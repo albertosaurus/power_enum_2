@@ -32,8 +32,12 @@ module ActiveRecord
         # [:on_lookup_failure]
         #   The :on_lookup_failure option in has_enumerated is there because you may want to create an error handler for
         #   situations where the argument passed to status=(arg) is invalid. By default, an invalid value will cause an
-        #   ArgumentError to be raised.  Since this may not be optimal in your situation, you can specify an instance
-        #   method to be called in the case of a lookup failure. The method signature is as follows:
+        #   ArgumentError to be raised.  Since this may not be optimal in your situation, you can do one of two things:
+        #
+        #   1) You can set it to 'validation_error'.  In this case, the invalid value will be cached and returned on
+        #   subsequent lookups, but the model will fail validation.
+        #   2) You can specify an instance method to be called in the case of a lookup failure. The method signature is
+        #   as follows:
         #     <tt>your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)</tt>
         #   The 'operation' arg will be either :read or :write.  In the case of :read you are expected to return
         #   something or raise an exception, while in the case of a :write you don't have to return anything.  Note that
@@ -80,14 +84,14 @@ module ActiveRecord
           module_eval( <<-end_eval, __FILE__, __LINE__ )
             def #{name}
               if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
-                return @invalid_enum_values[:#{name}]
-              end
-
+             	  return @invalid_enum_values[:#{name}]
+             	end
               rval = #{class_name}.lookup_id(self.#{foreign_key})
               if rval.nil? && #{!failure.nil?}
-                return self.send(#{failure.inspect}, :read, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
+                self.send(#{failure.inspect}, :read, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
+              else
+                rval
               end
-              return rval
             end
 
             def #{name}=(arg)
@@ -113,7 +117,7 @@ module ActiveRecord
 
               if val.nil?
                 if #{failure.nil?}
-                  @invalid_enum_values[:#{name}] = arg
+                  raise ArgumentError, "#{self.name}: #{name}= can't assign a #{class_name} for a value of (\#{arg.inspect})"
                 else
                   @invalid_enum_values.delete :#{name}
                   self.send(#{failure.inspect}, :write, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, arg)
@@ -123,13 +127,27 @@ module ActiveRecord
                 self.#{foreign_key} = val.id
               end
             end
-
-            validate do
-              if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
-                errors.add(:#{name}, "is invalid")
-              end
-            end
           end_eval
+
+          if failure.to_s == 'validation_error'
+            module_eval( <<-end_eval, __FILE__, __LINE__ )
+              validate do
+                if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
+                  errors.add(:#{name}, "is invalid")
+                end
+              end
+
+              def validation_error(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
+                @invalid_enum_values ||= {}
+                if operation == :write
+                  @invalid_enum_values[name.to_sym] = lookup_value
+                else
+                  nil
+                end
+              end
+              private :validation_error
+            end_eval
+          end
 
           enumerated_attributes << name
 

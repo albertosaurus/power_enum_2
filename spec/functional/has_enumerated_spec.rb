@@ -144,52 +144,77 @@ describe 'has_enumerated' do
   end
 
   context 'when enum value does not exist' do
-    it 'calls :on_lookup_failure method on assigning' do
-      @booking.should_receive(:not_found_status_handler).
-          with(:write, 'status', 'status_id', 'BookingStatus', 'bad_status')
-      @booking.status = 'bad_status'
+
+    context ':on_lookup_failure method is specified' do
+
+      it 'calls :on_lookup_failure method on assigning' do
+        @booking.should_receive(:not_found_status_handler).
+            with(:write, 'status', 'status_id', 'BookingStatus', 'bad_status')
+        @booking.status = 'bad_status'
+      end
+
+      it 'does not call :on_lookup_failure method on assignment when nil is passed' do
+        @booking.should_receive(:status_id=).with(nil)
+        @booking.status = nil
+      end
+
+      it 'does not call :on_lookup_failure method on assignment when empty string is passed, converting it to nil' do
+        @booking.should_receive(:status_id=).with(nil)
+        @booking.status = ''
+      end
+
+      it 'adds "is invalid" validation error if :on_lookup_failure method is set to "validation_error"' do
+        @booking.state = :XXX
+        @booking.should be_invalid
+        @booking.errors.messages[:state].should == ["is invalid"]
+        @booking.state.should == :XXX
+
+        @booking.state = :IL
+        @booking.valid?
+        @booking.should be_valid
+        @booking.state.should == State[:IL]
+      end
+
+      it 'assigns the foreign key to nil if :on_lookup_failure method is specified and nil or empty string is passed' do
+        @booking.status = :confirmed
+        @booking.status = nil
+        @booking.status.should be_nil
+        @booking.status = ''
+        @booking.status.should be_nil
+      end
+
+      it 'adds "is invalid" validation error if :on_lookup_failure method is  is set to "validation_error" and empty string is passed and :permit_empty_name is set' do
+        @booking.state = ''
+        @booking.should be_invalid
+        @booking.errors.messages[:state].should == ["is invalid"]
+        @booking.state.should == ''
+      end
+
     end
 
-    it 'does not call :on_lookup_failure method on assignment when nil is passed' do
-      @booking.should_receive(:status_id=).with(nil)
-      @booking.status = nil
+    context ':on_lookup_failure not specified' do
+
+      let(:adapter){ Adapter.new }
+
+      it 'should raise ArgumentError if given invalid value' do
+        expect{
+          adapter.connector_type = :foo
+        }.to raise_error(ArgumentError)
+      end
+
+      it 'assigns the foreign key to nil if nil is passed' do
+        adapter.connector_type = nil
+        adapter.connector_type.should == nil
+        adapter.connector_type_id.should == nil
+      end
+
+      it 'converts empty strings to nil and nils out the foreign key' do
+        adapter.connector_type = ''
+        adapter.connector_type.should == nil
+        adapter.connector_type_id.should == nil
+      end
     end
 
-    it 'does not call :on_lookup_failure method on assignment when empty string is passed, converting it to nil' do
-      @booking.should_receive(:status_id=).with(nil)
-      @booking.status = ''
-    end
-
-    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified when value is passed' do
-      @booking.state = :XXX
-      @booking.should be_invalid
-      @booking.errors.messages[:state].should == ["is invalid"]
-      @booking.state.should == :XXX
-
-      @booking.state = :IL
-      @booking.valid?
-      @booking.should be_valid
-    end
-
-    it 'assigns the foreign key to nil if :on_lookup_failure method is specified and nil or empty string is passed' do
-      @booking.status = :confirmed
-      @booking.status = nil
-      @booking.status.should be_nil
-      @booking.status = ''
-      @booking.status.should be_nil
-    end
-
-    it 'assigns the foreign key to nil if :on_lookup_failure is not specified and nil is passed' do
-      @booking.state = nil
-      @booking.state.should be_nil
-    end
-
-    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
-      @booking.state = ''
-      @booking.should be_invalid
-      @booking.errors.messages[:state].should == ["is invalid"]
-      @booking.state.should == ''
-    end
   end
 
   context 'reflections' do

@@ -385,8 +385,12 @@ The `:on_lookup_failure` option in has\_enumerated is there because you may want
 situations where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an
 ArgumentError to be raised.
 
-Of course, this may not be optimal in your situation.  In this case you can specify an *instance* method to be called in
-the case of a lookup failure. The method signature is as follows:
+Of course, this may not be optimal in your situation.  In this case you can do one of two thigs:
+
+1) You can set it to 'validation\_error'.  In this case, the invalid value will be cached and returned on
+subsequent lookups, but the model will fail validation.
+
+2) Specify an *instance* method to be called in the case of a lookup failure. The method signature is as follows:
 
     your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
 
