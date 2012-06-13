@@ -527,3 +527,11 @@ And finally run tests:
 * Subsequent Updates Copyright (c) 2011 Arthur Shagall
 
 Released under the MIT License.  See the LICENSE file for more details.
+
+## Contributing
+
+Contributions are welcome.  However, before issuing a pull request, please make sure of the following:
+
+* All specs are passing.
+* Any new features have test coverage.
+* Anything that breaks backward compatibility has a very good reason for doing so.
