@@ -2,3 +2,4 @@
 .idea/
 Gemfile.lock
 pkg/*
+.rvmrc
