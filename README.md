@@ -225,7 +225,7 @@ With that, your BookingStatus class will have the following methods defined:
 
 #### Class Methods
 
-##### [](arg)
+##### [](*args)
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg.  The arg value can be a
 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field.  Alternatively arg can be
@@ -241,6 +241,10 @@ an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises an
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
 action should be taken,
 therefore b) a fallback action should be easily configurable.
+
+As of version 0.8.0, you can pass in multiple arguments to `[]`.  This returns a list of enums corresponding to the
+passed in values.  Duplicates are filtered out.  For example `BookingStatus[arg1, arg2, arg3]` would be equivalent to
+`[BookingStatus[arg1], BookingStatus[arg2], BookingStatus[arg3]]`.
 
 ##### all
 
@@ -416,6 +420,19 @@ recommended for obvious reasons.
     Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
 
 As of version 0.5.5, it also aliases a pluralized version of the scope, i.e. `:with_statuses`
+
+#### exclude\_enumerated\_attribute scope
+
+As of version 0.8.0, a scope for the inverse of `with_enumerated_attribute` is created, unless the `:create_scope`
+option is set to `false`.  As a result, this allows us to do things like
+
+    Booking.exclude_status :received
+
+This will give us all the Bookings where the status is a value other than `BookingStatus[:received]`.
+
+NOTE: This will NOT pick up instances of Booking where status is nil.
+
+A pluralized version of the scope is also created, so `Booking.exclude_statuses :received, :confirmed` is valid.
 
 ### ActiveRecord::Base Extensions
 

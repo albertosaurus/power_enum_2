@@ -118,23 +118,34 @@ module ActiveRecord
         end
 
         # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
-        # an enum instance.
-        def [](arg)
-          case arg
-          when Symbol
-            return_val = lookup_name(arg.id2name) and return return_val
-          when String
-            return_val = lookup_name(arg) and return return_val
-          when Fixnum
-            return_val = lookup_id(arg) and return return_val
-          when self
-            return arg
-          when nil
+        # an enum instance.  Passing in a list of arguments returns a list of enums.
+        def [](*args)
+          case args.size
+          when 0
             nil
+          when 1
+            arg = args.first
+            case arg
+            when Symbol
+              return_val = lookup_name(arg.id2name) and return return_val
+            when String
+              return_val = lookup_name(arg) and return return_val
+            when Fixnum
+              return_val = lookup_id(arg) and return return_val
+            when self
+              return arg
+            when nil
+              nil
+            else
+              raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"
+            end
+            self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
           else
-            raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
+            args.inject([]){ |buffer, item|
+              buffer << self[item]
+              buffer
+            }.uniq
           end
-          self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
         end
 
         # Enum lookup by id

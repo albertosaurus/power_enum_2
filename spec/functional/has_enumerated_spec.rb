@@ -59,20 +59,32 @@ describe 'has_enumerated' do
 
   context 'enumerated attribute scope' do
 
+    before :each do
+      [:confirmed, :received, :rejected].map{|status|
+        booking = Booking.create(:status => status)
+        booking
+      }
+    end
+
     after :each do
       Booking.destroy_all
     end
 
-    it 'should create a scope for the enumerated attribute by default' do
+    it 'should create a scopes for the enumerated attribute by default' do
       Booking.should respond_to(:with_status)
+      Booking.should respond_to(:exclude_status)
     end
 
     it "should properly alias the plural version of the scope" do
       Booking.should respond_to(:with_statuses)
+      Booking.should respond_to(:exclude_statuses)
     end
 
     it 'should not create a scope if the "create_scope" option is set to false' do
       Booking.should_not respond_to(:with_state)
+      Booking.should_not respond_to(:with_states)
+      Booking.should_not respond_to(:exclude_state)
+      Booking.should_not respond_to(:exclude_states)
     end
 
     it 'the generated scope should work with ids, strings, symbols, and enum instances' do
@@ -90,11 +102,6 @@ describe 'has_enumerated' do
     end
 
     it 'should only fetch the specified bookings' do
-      book = [:confirmed, :received, :rejected].map{|status|
-        booking = Booking.create(:status => status)
-        booking
-      }
-
       bookings = Booking.with_status(:received, :rejected)
       bookings.size.should == 2
       bookings.find{ |booking| booking.status == BookingStatus[:received] }.should_not be_nil
@@ -103,8 +110,12 @@ describe 'has_enumerated' do
       bookings2 = Booking.with_statuses(:received, :rejected)
       bookings2.size.should == 2
       bookings2.should == bookings
+    end
 
-      book.each{|b| b.delete }
+    it 'exclude scope should filter out given booking statuses' do
+      bookings = Booking.exclude_statuses(:received, :confirmed)
+      bookings.size.should == 1
+      bookings.first.status.should ==  BookingStatus[:rejected]
     end
 
   end

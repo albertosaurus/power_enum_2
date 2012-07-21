@@ -51,7 +51,8 @@ module ActiveRecord
         #   Setting this option will generate an after_initialize callback to set a default value on the attribute
         #   unless a non-nil one already exists.
         # [:create_scope]
-        #   Setting this option to 'false' will disable automatically creating a 'with_enum_attribute' scope.
+        #   Setting this option to 'false' will disable automatically creating 'with_enum_attribute' and
+        #   'exclude_enum_attribute' scope.
         #
         # === Example
         #  class Booking < ActiveRecord::Base
@@ -171,12 +172,19 @@ module ActiveRecord
                 }
                 where(:#{foreign_key} => ids)
               }
+              scope :exclude_#{name}, lambda {|*args|
+                ids = #{class_name}.all - args.map{ |arg|
+                  n = #{class_name}[arg]
+                }
+                where(:#{foreign_key} => ids)
+              }
             end_eval
 
             if (name_p = name.pluralize) != name
               module_eval( <<-end_eval, __FILE__, __LINE__)
                 class << self
                   alias_method :with_#{name_p}, :with_#{name}
+                  alias_method :exclude_#{name_p}, :exclude_#{name}
                 end
               end_eval
             end

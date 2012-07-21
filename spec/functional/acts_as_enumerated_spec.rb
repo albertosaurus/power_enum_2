@@ -60,8 +60,29 @@ describe 'acts_as_enumerated' do
         end
 
       end
-    end
 
+      context 'multiple arguments to []' do
+        it 'should look up multiple values' do
+          states = State[:IL, 'WI']
+          states.size.should == 2
+          states.first.should == State[:IL]
+          states.last.should == State[:WI]
+        end
+
+        it 'should handle nils' do
+          states = State[nil, :IL]
+          states.size.should == 2
+          states.first.should == nil
+          states.last.should == State[:IL]
+        end
+
+        it 'should filter out duplicates' do
+          states = State[:IL, :IL]
+          states.size.should == 1
+          states.first.should == State[:IL]
+        end
+      end
+    end
 
     context 'record does not exist' do
       context ':on_lookup_failure is specified' do
@@ -82,6 +103,17 @@ describe 'acts_as_enumerated' do
 
         it 'raises if Fixnum is passed' do
           expect { State[999_999] }.to raise_error ActiveRecord::RecordNotFound
+        end
+
+        it 'handles multiple args to []' do
+          states = State['XXX', 'IL']
+          states.size.should == 2
+          states.first.should be_nil
+          states.last.should == State[:IL]
+
+          State['XXX', 'XXX'].size.should == 1
+
+          expect{ State[999, 'IL'] }.to raise_error ActiveRecord::RecordNotFound
         end
       end
     end
