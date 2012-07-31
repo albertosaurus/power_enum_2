@@ -265,6 +265,19 @@ method.
 
 `BookingStatus.names` will return all the names of the defined enums as an array of symbols.
 
+##### update\_enumerations\_model (since version 0.8.1)
+
+The preferred mechanism to update an enumerations model in migrations and similar.  Pass in a block to this method to
+to perform any updates.
+
+Example:
+
+    BookingStatus.update_enumerations_model do
+      BookingStatus.create :name        => 'Foo',
+                           :description => 'Bar',
+                           :active      => false
+    end
+
 #### Instance Methods
 
 Each enumeration model gets the following instance methods.

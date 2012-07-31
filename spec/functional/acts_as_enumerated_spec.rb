@@ -337,4 +337,29 @@ describe 'acts_as_enumerated' do
       ConnectorType.names.should == [:VGA, :HDMI, :DVI]
     end
   end
+
+  describe 'update_enumerations_model' do
+
+    it 'should not complain if no block given' do
+      expect{
+        ConnectorType.update_enumerations_model
+      }.to_not raise_error
+    end
+
+    it 'should permit enumeration model updates and purge enumeration cache' do
+      ConnectorType.update_enumerations_model do
+        ConnectorType.create :name        => 'Foo',
+                             :description => 'Bar',
+                             :has_sound   => true
+      end
+      ConnectorType.all.size.should == 4
+      ConnectorType['Foo'].should_not be_nil
+
+      ConnectorType.update_enumerations_model do
+        ConnectorType['Foo'].destroy
+      end
+      ConnectorType.all.size.should == 3
+      ConnectorType['Foo'].should be_nil
+    end
+  end
 end

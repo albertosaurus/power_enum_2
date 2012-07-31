@@ -189,6 +189,23 @@ module ActiveRecord
           @all = @all_by_name = @all_by_id = @all_active = nil
         end
 
+        # The preferred method to update an enumerations model.  The same
+        # warnings as 'purge_enumerations_cache' and
+        # 'enumerations_model_update_permitted' apply.  Pass a block to this
+        # method (no args) where you perform your updates.  Cache will be
+        # flushed automatically.
+        def update_enumerations_model
+          if block_given?
+            begin
+              self.enumeration_model_updates_permitted = true
+              yield
+            ensure
+              purge_enumerations_cache
+              self.enumeration_model_updates_permitted = false
+            end
+          end
+        end
+
         # Returns the name of the column this enum uses as the basic underlying value.
         def name_column
           @name_column ||= self.acts_enumerated_name_column
