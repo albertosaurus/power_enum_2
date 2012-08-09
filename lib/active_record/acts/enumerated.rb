@@ -141,10 +141,7 @@ module ActiveRecord
             end
             self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
           else
-            args.inject([]){ |buffer, item|
-              buffer << self[item]
-              buffer
-            }.uniq
+            args.map{ |item| self[item] }.uniq
           end
         end
 
