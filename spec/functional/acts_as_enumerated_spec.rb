@@ -116,6 +116,13 @@ describe 'acts_as_enumerated' do
           expect{ State[999, 'IL'] }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      context ':on_lookup_failure is a lambda' do
+        it 'should call the defined lambda' do
+          Color[:foo].should == :foo
+          Color[nil].should == :bar
+        end
+      end
     end
     
     it 'returns instance when instance is passed' do

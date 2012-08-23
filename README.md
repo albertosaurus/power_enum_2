@@ -217,7 +217,7 @@ is the equivalent of
     class BookingStatus < ActiveRecord::Base
       acts_as_enumerated  :conditions        => 'optional_sql_conditions',
                           :order             => 'optional_sql_order_by',
-                          :on_lookup_failure => :optional_class_method,
+                          :on_lookup_failure => :optional_class_method, #This also works: lambda{ |arg| some_custom_action }
                           :name_column       => 'optional_name_column'  #If required, may override the default name column
     end
 
@@ -239,8 +239,8 @@ an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises an
 `:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
 
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
-action should be taken,
-therefore b) a fallback action should be easily configurable.
+action should be taken, therefore b) a fallback action should be easily configurable.  As of version 0.8.4, you can
+also set `:on_lookup_failure` to a lambda that takes in a single argument (The arg that was passed to `[]`).
 
 As of version 0.8.0, you can pass in multiple arguments to `[]`.  This returns a list of enums corresponding to the
 passed in values.  Duplicates are filtered out.  For example `BookingStatus[arg1, arg2, arg3]` would be equivalent to

@@ -10,5 +10,4 @@ group :development, :test do
   gem 'rspec'
   gem 'sqlite3'
   gem 'genspec', '>= 0.2.7'
-  gem 'pry'
 end

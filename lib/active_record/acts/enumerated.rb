@@ -23,7 +23,8 @@ module ActiveRecord
         #   exception if the arg is a Fixnum or Symbol), :enforce_strict_ids (raises and exception if the arg is a
         #   Fixnum) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).  The purpose of the
         #   :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action
-        #   should be taken, therefore b) a fallback action should be easily configurable.
+        #   should be taken, therefore b) a fallback action should be easily configurable.  You can also give it a
+        #   lambda that takes in a single argument (The arg that was passed to +[]+).
         # [:name_column]
         #   Override for the 'name' column.  By default, assumed to be 'name'.
         #
@@ -50,6 +51,14 @@ module ActiveRecord
         #      logger.error("Invalid status code lookup #{arg.inspect}")
         #      nil
         #    end
+        #  end
+        #
+        # ====Example 4
+        #  class BookingStatus < ActiveRecord::Base
+        #    acts_as_enumerated :conditions        => [:exclude => false],
+        #                       :order             => 'created_at DESC',
+        #                       :on_lookup_failure => lambda { |arg| raise CustomError, "BookingStatus lookup failed; #{arg}" },
+        #                       :name_column       => :status_code
         #  end
         def acts_as_enumerated(options = {})
           valid_keys = [:conditions, :order, :on_lookup_failure, :name_column]
@@ -139,11 +148,27 @@ module ActiveRecord
             else
               raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"
             end
-            self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
+
+            handle_lookup_failure(arg)
           else
             args.map{ |item| self[item] }.uniq
           end
         end
+
+        # Deals with a lookup failure for the given argument.
+        def handle_lookup_failure(arg)
+          if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
+            case lookup_failure_handler
+            when Proc
+              lookup_failure_handler.call(arg)
+            else
+              self.send(lookup_failure_handler, arg)
+            end
+          else
+            self.send(:enforce_none, arg)
+          end
+        end
+        private :handle_lookup_failure
 
         # Enum lookup by id
         def lookup_id(arg)

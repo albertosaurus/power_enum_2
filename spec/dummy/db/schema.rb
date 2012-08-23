@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120229205305) do
+ActiveRecord::Schema.define(:version => 20120823014841) do
 
   create_table "adapters", :force => true do |t|
     t.integer  "connector_type_id"
@@ -31,6 +31,12 @@ ActiveRecord::Schema.define(:version => 20120229205305) do
     t.datetime "updated_at", :null => false
     t.integer  "state_id"
   end
+
+  create_table "colors", :force => true do |t|
+    t.string "name", :null => false
+  end
+
+  add_index "colors", ["name"], :name => "index_colors_on_name", :unique => true
 
   create_table "connector_types", :force => true do |t|
     t.string   "name",        :limit => 50,                   :null => false
