@@ -1,6 +1,6 @@
 # Power Enum
 
-https://github.com/albertosaurus/enumerations\_mixin
+https://github.com/albertosaurus/power\_enum
 
 Enumerations for Rails 3.X Done Right.
 
@@ -12,9 +12,8 @@ It is particularly suitable for scenarios where your Rails application is not th
 when it's used for analytics or reporting.
 
 Power Enum is a fork of the Rails 3 modernization made by the fine folks at Protocool
-https://github.com/protocool/enumerations\_mixin to the original plugin by Trevor Squires located at
-https://github.com/protocool/enumerations\_mixin.  While many of the core ideas remain, it has been reworked and a full
-test suite written to facilitate further development.
+https://github.com/protocool/enumerations\_mixin to the original plugin by Trevor Squires.  While many of the core ideas
+remain, it has been reworked and a full test suite written to facilitate further development.
 
 At it's most basic level, it allows you to say things along the lines of:
 
@@ -22,8 +21,7 @@ At it's most basic level, it allows you to say things along the lines of:
     booking.status = :confirmed
     booking = Booking.create( :status => :rejected )
 
-    Booking.find :first,
-                 :conditions => ['status_id = ?', BookingStatus[:provisional].id]
+    Booking.where(:status_id => BookingStatus[:provisional])
 
     BookingStatus.all.collect {|status|, [status.name, status.id]}
 
@@ -402,7 +400,7 @@ The `:on_lookup_failure` option in has\_enumerated is there because you may want
 situations where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an
 ArgumentError to be raised.
 
-Of course, this may not be optimal in your situation.  In this case you can do one of two thigs:
+Of course, this may not be optimal in your situation.  In this case you can do one of three things:
 
 1) You can set it to 'validation\_error'.  In this case, the invalid value will be cached and returned on
 subsequent lookups, but the model will fail validation.
@@ -416,6 +414,14 @@ raise an exception, while in the case of a `:write` you don't have to return any
 
 Note that there's enough information in the method signature that you can specify one method to handle all lookup
 failures for all has\_enumerated fields if you happen to have more than one defined in your model.
+
+3) (Since version 0.8.5) Give it a lambda function.  In that case, the lambda needs to accept the ActiveRecord model as
+its first argument, with the rest of the arguments being identical to the signature of the lookup handler instance
+method.
+
+    :on_lookup_failure => lambda{ |record, op, attr, fk, cl_name, value|
+       # handle lookup failure
+    }
 
 NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out
 the foreign key.  The `:on_lookup_failure` will be bypassed.

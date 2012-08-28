@@ -203,6 +203,20 @@ describe 'has_enumerated' do
 
     end
 
+    context ':on_lookup_failure lambda' do
+      it 'should call the lambda expression' do
+        widget = Widget.new
+        widget.connector_type=(:foobarbaz)
+        res = widget.lookup
+        res[0].should == widget
+        res[1].should == :write
+        res[2].should == 'connector_type'
+        res[3].should == 'connector_type_id'
+        res[4].should == 'ConnectorType'
+        res[5].should == :foobarbaz
+      end
+    end
+
     context ':on_lookup_failure not specified' do
 
       let(:adapter){ Adapter.new }

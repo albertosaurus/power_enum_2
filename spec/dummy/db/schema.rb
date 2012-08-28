@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120823014841) do
+ActiveRecord::Schema.define(:version => 20120828031933) do
 
   create_table "adapters", :force => true do |t|
     t.integer  "connector_type_id"
@@ -53,6 +53,12 @@ ActiveRecord::Schema.define(:version => 20120823014841) do
     t.string   "state_code"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "widgets", :force => true do |t|
+    t.integer  "connector_type_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
 end
