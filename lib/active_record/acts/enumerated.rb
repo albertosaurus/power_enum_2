@@ -9,6 +9,11 @@ module ActiveRecord
       
       module ClassMethods
 
+        # Returns false for ActiveRecord models that do not act as enumerated.
+        def acts_as_enumerated?
+          false
+        end
+
         # Declares the model as enumerated.  See the README for detailed usage instructions.
         #
         # === Supported options
@@ -100,6 +105,11 @@ module ActiveRecord
       
       module EnumClassMethods
         attr_accessor :enumeration_model_updates_permitted
+
+        # Returns true for ActiveRecord models that act as enumerated.
+        def acts_as_enumerated?
+          true
+        end
 
         # Returns all the enum values.  Caches results after the first time this method is run.
         def all

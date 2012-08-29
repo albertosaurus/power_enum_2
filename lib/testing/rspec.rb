@@ -42,9 +42,8 @@ if defined? RSpec
     match do |enum|
       enum_class = get_enum_class(enum)
 
-      if enum_class.respond_to?(:[]) &&
-          enum_class.respond_to?(:enumeration_model_updates_permitted) &&
-          enum_class.respond_to?(:purge_enumerations_cache)
+      if enum_class.respond_to?(:acts_as_enumerated?) &&
+          enum_class.acts_as_enumerated?
 
         if @items
           begin
@@ -153,7 +152,8 @@ if defined? RSpec
   #     end
   RSpec::Matchers.define :match_enum do |attribute|
     match do |item|
-      if item.class.respond_to?(:[])
+      if item.class.respond_to?(:acts_as_enumerated?) &&
+          item.class.acts_as_enumerated?
         begin
           item.class[attribute] == item
         rescue Exception

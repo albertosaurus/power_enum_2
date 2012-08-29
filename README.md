@@ -276,6 +276,11 @@ Example:
                            :active      => false
     end
 
+##### acts\_as\_enumerated? (since version 0.8.6)
+
+Returns `true` for ActiveRecord models that act as enumerated, `false` for others.  So
+`BookingStatus.acts_as_enumerated?` would return `true`, while `Booking.acts_as_enumerated?` would return `false`.
+
 #### Instance Methods
 
 Each enumeration model gets the following instance methods.
@@ -542,6 +547,8 @@ Tests if an enum instance matches the given value, which may be a symbol, id, st
         Booking.new.status.should match_enum(:received)
       end
     end
+
+Of course `Booking.new.status.should === :received` still works, but is liable to produce false positives.
 
 ## How to run tests
 

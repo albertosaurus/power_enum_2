@@ -9,7 +9,6 @@ describe 'acts_as_enumerated' do
     State.should respond_to :[]
   end
 
-
   describe '[]' do
 
     context 'record exists' do
@@ -367,6 +366,16 @@ describe 'acts_as_enumerated' do
       end
       ConnectorType.all.size.should == 3
       ConnectorType['Foo'].should be_nil
+    end
+  end
+
+  describe 'acts_as_enumerated?' do
+    it 'enum models should act as enumerated' do
+      ConnectorType.acts_as_enumerated?.should == true
+    end
+
+    it 'models which are not enums should not act as enumerated' do
+      Booking.acts_as_enumerated?.should == false
     end
   end
 end
