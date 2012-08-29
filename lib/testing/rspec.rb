@@ -143,4 +143,38 @@ if defined? RSpec
     end
   end
 
+  # Tests if an enum instance matches the given value, which may be a symbol,
+  # id, string, or enum instance:
+  #
+  #     describe Booking do
+  #       it "status should be 'received' for a new booking" do
+  #         Booking.new.status.should match_enum(:received)
+  #       end
+  #     end
+  RSpec::Matchers.define :match_enum do |attribute|
+    match do |item|
+      if item.class.respond_to?(:[])
+        begin
+          item.class[attribute] == item
+        rescue Exception
+          false
+        end
+      else
+        false
+      end
+    end
+
+    failure_message_for_should do
+      "expected #{attribute} to match the enum"
+    end
+
+    failure_message_for_should_not do
+      "expected #{attribute} to not match the enum"
+    end
+
+    description do
+      "match enum value of #{attribute}"
+    end
+  end
+
 end

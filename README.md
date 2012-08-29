@@ -533,6 +533,16 @@ This is also valid:
       end
     end
 
+#### match\_enum (Since version 0.8.6)
+
+Tests if an enum instance matches the given value, which may be a symbol, id, string, or enum instance:
+
+    describe Booking do
+      it "status should be 'received' for a new booking" do
+        Booking.new.status.should match_enum(:received)
+      end
+    end
+
 ## How to run tests
 
 Go to the 'dummy' project:
