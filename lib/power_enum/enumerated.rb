@@ -351,6 +351,8 @@ module PowerEnum::Enumerated
       self.name.to_sym
     end
 
+    alias_method :to_sym, :name_sym
+
     # By default enumeration #to_s should return stringified name of the enum. BookingStatus[:foo].to_s returns "foo"
     def to_s
       self.name.to_s

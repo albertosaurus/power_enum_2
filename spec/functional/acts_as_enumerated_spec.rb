@@ -228,6 +228,14 @@ describe 'acts_as_enumerated' do
     end
   end
 
+  describe 'to_sym' do
+
+    it 'to_sym should alias to name_sym' do
+      State.all.each{ |st| st.to_sym.should == st.name_sym }
+    end
+
+  end
+
   specify "#to_s" do
     BookingStatus[:confirmed].to_s.should == 'confirmed'
   end

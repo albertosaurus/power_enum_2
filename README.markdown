@@ -353,7 +353,9 @@ BookingStatus[:foo] === nil #Returns false
 You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an
 exception for any lookup failure of `BookingStatus[arg]`.
 
-`like?` is aliased to `===`
+##### like?(arg)
+
+Aliased to `===`
 
 ##### in?(*list)
 
@@ -372,6 +374,10 @@ Returns the 'name' of the enum, i.e. the value in the `:name_column` attribute o
 ##### name\_sym
 
 Returns the symbol representation of the name of the enum.  `BookingStatus[:foo].name_sym` returns :foo.
+
+##### to\_sym
+
+Aliased to `name_sym` (Since version 0.9.0).
 
 ##### active?
 
