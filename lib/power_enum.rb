@@ -6,8 +6,8 @@ class PowerEnum < Rails::Engine
 
   initializer 'power_enum' do
     ActiveSupport.on_load(:active_record) do
-      include ActiveRecord::Acts::Enumerated
-      include ActiveRecord::Aggregations::HasEnumerated
+      include PowerEnum::Enumerated
+      include PowerEnum::HasEnumerated
       include PowerEnum::Reflection
 
       ActiveRecord::ConnectionAdapters.module_eval do
