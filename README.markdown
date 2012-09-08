@@ -17,7 +17,7 @@ remain, it has been reworked and a full test suite written to facilitate further
 
 At it's most basic level, it allows you to say things along the lines of:
 
-'''ruby
+```ruby
 # Create a provisional booking
 booking = Booking.new( :status => BookingStatus[:provisional] )
 # Set the booking status to 'confirmed'
@@ -34,7 +34,7 @@ BookingStatus.all.collect { |status|, [status.name, status.id] }
 
 # built in scopes make life easier
 Booking.with_status( :provisional, :confirmed )
-'''
+```
 See "How to use it" below for more information.
 
 ## Requirements
@@ -100,7 +100,7 @@ from a pre-test Rake task.
 
 If you're using Rails 3.0, your migration file will look something like this:
 
-'''ruby
+```ruby
 class CreateEnumBookingStatus < ActiveRecord::Migration
 
   def self.up
@@ -112,11 +112,11 @@ class CreateEnumBookingStatus < ActiveRecord::Migration
   end
 
 end
-'''
+```
     
 If you're using Rails 3.1 or later, it will look something like this:
 
-'''ruby
+```ruby
 class CreateEnumBookingStatus < ActiveRecord::Migration
 
   def change
@@ -124,22 +124,22 @@ class CreateEnumBookingStatus < ActiveRecord::Migration
   end
 
 end
-'''
+```
 
 You can now customize it.
 
-'''ruby
+```ruby
 create_enum :booking_status, :name_limit => 50
 # The above is equivalent to saying
 # create_table :booking_statuses do |t|
 #   t.string :name, :limit => 50, :null => false
 # end
-'''
+```
 
 Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign
 key relationship to the booking\_statuses table.
 
-'''ruby
+```ruby
 create_table :bookings do |t|
   t.integer :status_id
 
@@ -150,17 +150,17 @@ end
 # Ideally, you would use a gem of some sort to handle this.
 execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk'"\
     " FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
-'''
+```
 
 It's easier to use the `references` method if you intend to stick to the default naming convention for reference columns.
 
-'''ruby
+```ruby
 create_table :bookings do |t|
   t.references :booking_status # Same as t.integer booking_status_id
 
   t.timestamps
 end
-'''
+```
     
 There are two methods added to Rails migrations:
 
@@ -179,22 +179,22 @@ You can also pass in a block that takes a table object as an argument, like `cre
 
 Example:
 
-'''ruby
+```ruby
 create_enum :booking_status
-'''
+```
 
 is the equivalent of
 
-'''ruby
+```ruby
 create_table :booking_statuses do |t|
   t.string :name, :null => false
 end
 add_index :booking_statuses, [:name], :unique => true
-'''
+```
 
 In a more complex case:
 
-'''ruby
+```ruby
 create_enum :booking_status,
             :name_column => :booking_name,
             :name_limit  => 50,
@@ -202,11 +202,11 @@ create_enum :booking_status,
             :desc_limit  => 100,
             :active      => true,
             :timestamps  => true
-'''
+```
 
 is the equivalent of
 
-'''ruby
+```ruby
 create_table :booking_statuses do |t|
   t.string :booking_name, :limit => 50, :null => false
   t.string :description, :limit => 100
@@ -214,25 +214,25 @@ create_table :booking_statuses do |t|
   t.timestamps
 end
 add_index :booking_statuses, [:booking_name], :unique => true
-'''
+```
 
 You can also customize the creation process by using a block:
 
-'''ruby
+```ruby
 create_enum :booking_status do |t|
   t.boolean :first_booking, :null => false
 end
-'''
+```
 
 is the equivalent of
 
-'''ruby
+```ruby
 create_table :booking_statuses do |t|
   t.string :name, :null => false
   t.boolean :first_booking, :null => false
 end
 add_index :booking_statuses, [:name], :unique => true
-'''
+```
 
 Notice that a unique index is automatically created on the specified name column.
 
@@ -242,26 +242,26 @@ Drops the enum table.  `enum_name` will be automatically pluralized.
 
 Example:
 
-'''ruby
+```ruby
 remove_enum :booking_status
-'''
+```
     
 is the equivalent of
 
-'''ruby
+```ruby
 drop_table :booking_statuses
-'''
+```
 
 ### acts\_as\_enumerated
 
-'''ruby
+```ruby
 class BookingStatus < ActiveRecord::Base
   acts_as_enumerated  :conditions        => 'optional_sql_conditions',
                       :order             => 'optional_sql_order_by',
                       :on_lookup_failure => :optional_class_method, #This also works: lambda{ |arg| some_custom_action }
                       :name_column       => 'optional_name_column'  #If required, may override the default name column
 end
-'''
+```
 
 With that, your BookingStatus class will have the following methods defined:
 
@@ -314,13 +314,13 @@ to perform any updates.
 
 Example:
 
-'''ruby
+```ruby
 BookingStatus.update_enumerations_model do
   BookingStatus.create :name        => 'Foo',
                        :description => 'Bar',
                        :active      => false
 end
-'''
+```
 
 ##### acts\_as\_enumerated? (since version 0.8.6)
 
@@ -342,13 +342,13 @@ Behavior depends on the type of `arg`.
 
 Examples:
 
-'''ruby
+```ruby
 BookingStatus[:foo] === :foo #Returns true
 BookingStatus[:foo] === 'foo' #Returns true
 BookingStatus[:foo] === :bar #Returns false
 BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
 BookingStatus[:foo] === nil #Returns false
-'''
+```
 
 You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an
 exception for any lookup failure of `BookingStatus[arg]`.
@@ -361,9 +361,9 @@ Returns true if any element in the list returns true for `===(arg)`, false other
 
 Example:
 
-'''ruby
+```ruby
 BookingStatus[:foo].in? :foo, :bar, :baz #Returns true
-'''
+```
 
 ##### name
 
@@ -396,12 +396,12 @@ into the database.
 
 Using the above example you would do the following:
 
-'''ruby
+```ruby
 BookingStatus.enumeration_model_updates_permitted = true
 ['pending', 'confirmed', 'canceled'].each do | status_name |
     BookingStatus.create( :name => status_name )
 end
-'''
+```
 
 Note that a `:presence` and `:uniqueness` validation is automatically defined on each model for the name column.
 
@@ -411,7 +411,7 @@ First of all, note that you *could* specify the relationship to an `acts_as_enum
 association.  However, `has_enumerated` is preferable because you aren't really associated to the enumerated value, you
 are *aggregating* it. As such, the `has_enumerated` macro behaves more like an aggregation than an association.
 
-'''ruby
+```ruby
 class Booking < ActiveRecord::Base
   has_enumerated  :status,
                   :class_name        => 'BookingStatus',
@@ -421,7 +421,7 @@ class Booking < ActiveRecord::Base
                   :default           => :unconfirmed,  #Default value of the attribute.
                   :create_scope      => false  #Setting this to false disables the automatic creation of the 'with_status' scope.
 end
-'''
+```
 
 By default, the foreign key is interpreted to be the name of your has\_enumerated field (in this case 'booking\_status')
 plus '\_id'.  Since we chose to make the column name 'status\_id' for the sake of brevity, we must explicitly designate
@@ -446,21 +446,21 @@ id directly.
 
 example:
 
-'''ruby
+```ruby
 mybooking.status = :confirmed
-'''
+```
 
 this is equivalent to:
 
-'''ruby
+```ruby
 mybooking.status = 'confirmed'
-'''
+```
 
 or:
 
-'''ruby
+```ruby
 mybooking.status = BookingStatus[:confirmed]
-'''
+```
 
 The `:on_lookup_failure` option in has\_enumerated is there because you may want to create an error handler for
 situations where the argument passed to `status=(arg)` is invalid.  By default, an invalid value will cause an
@@ -473,9 +473,9 @@ subsequent lookups, but the model will fail validation.
 
 2) Specify an *instance* method to be called in the case of a lookup failure. The method signature is as follows:
 
-'''ruby
+```ruby
 your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
-'''
+```
 
 The 'operation' arg will be either `:read` or `:write`.  In the case of `:read` you are expected to return something or
 raise an exception, while in the case of a `:write` you don't have to return anything.
@@ -487,11 +487,11 @@ failures for all has\_enumerated fields if you happen to have more than one defi
 its first argument, with the rest of the arguments being identical to the signature of the lookup handler instance
 method.
 
-'''ruby
+```ruby
 :on_lookup_failure => lambda{ |record, op, attr, fk, cl_name, value|
    # handle lookup failure
 }
-'''
+```
 
 NOTE: A `nil` is always considered to be a valid value for `status=(arg)` since it's assumed you're trying to null out
 the foreign key.  The `:on_lookup_failure` will be bypassed.
@@ -501,16 +501,16 @@ the foreign key.  The `:on_lookup_failure` will be bypassed.
 Unless the `:create_scope` option is set to `false`, a scope is automatically created that takes a list of enums as
 arguments.  This allows us to say things like:
 
-'''ruby
+```ruby
 Booking.with_status :confirmed, :received
-'''
+```
 
 Strings, symbols, ids, or enum instances are all valid arguments.  For example, the following would be valid, though not
 recommended for obvious reasons.
 
-'''ruby
+```ruby
 Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
-'''
+```
 
 As of version 0.5.5, it also aliases a pluralized version of the scope, i.e. `:with_statuses`
 
@@ -519,9 +519,9 @@ As of version 0.5.5, it also aliases a pluralized version of the scope, i.e. `:w
 As of version 0.8.0, a scope for the inverse of `with_enumerated_attribute` is created, unless the `:create_scope`
 option is set to `false`.  As a result, this allows us to do things like
 
-'''ruby
+```ruby
 Booking.exclude_status :received
-'''
+```
 
 This will give us all the Bookings where the status is a value other than `BookingStatus[:received]`.
 
@@ -562,36 +562,36 @@ A pair of custom RSpec matchers are included to streamline testing of enums and 
 
 This is used to test that a model acts as enumerated.  Example:
 
-'''ruby
+```ruby
 describe BookingStatus do
   it { should act_as_enumerated }
 end
-'''
+```
 
 This also works:
 
-'''ruby
+```ruby
 describe BookingStatus do
   it "should act as enumerated" do
     BookingStatus.should act_as_enumerated
   end
 end
-'''
+```
 
 You can use the `with_items` chained matcher to test that each enum is properly seeded:
 
-'''ruby
+```ruby
 describe BookingStatus do
   it {
     should act_as_enumerated.with_items(:confirmed, :received, :rejected)
   }
 end
-'''
+```
 
 You can also pass in hashes if you want to be thorough and test out all the attributes of each enum.  If
 you do this, you must pass in the `:name` attribute in each hash
 
-'''ruby
+```ruby
 describe BookingStatus do
   it {
     should act_as_enumerated.with_items(
@@ -601,39 +601,39 @@ describe BookingStatus do
     )
   }
 end
-'''
+```
 
 #### have\_enumerated
 
 This is used to test that a model has enumerated the given attribute:
 
-'''ruby
+```ruby
 describe Booking do
   it { should have_enumerated(:status) }
 end
-'''
+```
 
 This is also valid:
 
-'''ruby
+```ruby
 describe Booking do
   it "Should have enumerated the status attribute" do
     Booking.should have_enumerated(:status)
   end
 end
-'''
+```
 
 #### match\_enum (Since version 0.8.6)
 
 Tests if an enum instance matches the given value, which may be a symbol, id, string, or enum instance:
 
-'''ruby
+```ruby
 describe Booking do
   it "status should be 'received' for a new booking" do
     Booking.new.status.should match_enum(:received)
   end
 end
-'''
+```
 
 Of course `Booking.new.status.should === :received` still works, but is liable to produce false positives.
 
