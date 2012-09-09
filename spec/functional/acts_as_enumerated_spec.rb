@@ -16,21 +16,21 @@ describe 'acts_as_enumerated' do
         it 'returns a record found by name if String is passed' do
           status = BookingStatus['confirmed']
           status.should be_an_instance_of BookingStatus
-          status.__name__.should == 'confirmed'
+          status.__enum_name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
 
         it 'returns a record found by name if Symbol is passed' do
           status = BookingStatus[:confirmed]
           status.should be_an_instance_of BookingStatus
-          status.__name__.should == 'confirmed'
+          status.__enum_name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
 
         it 'returns a record found by id when Fixnum is passed' do
           status = BookingStatus[1]
           status.should be_an_instance_of BookingStatus
-          status.__name__.should == 'confirmed'
+          status.__enum_name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
         
@@ -192,6 +192,21 @@ describe 'acts_as_enumerated' do
     end
   end
 
+  describe 'name' do
+    it 'should create a name alias by default' do
+      State[:IL].respond_to?(:name).should be_true
+    end
+
+    it 'should not create a name alias if :name_alias is set to false' do
+      Fruit[:apple].respond_to?(:name).should be_false
+    end
+
+    specify "#name" do
+      BookingStatus[:confirmed].name.should == 'confirmed'
+      State[:IL].name.should == 'IL'
+    end
+  end
+
   describe 'in?' do
     it 'in? should find by Symbol, String, or Fixnum' do
       [1, :IL, 'IL'].each do |arg|
@@ -200,16 +215,16 @@ describe 'acts_as_enumerated' do
     end
   end
 
-  describe '__name__' do
+  describe '__enum_name__' do
     context ':name_column is not specified' do
-      it '__name__ should return value of "name" attribute' do
-        BookingStatus[:confirmed].__name__.should == 'confirmed'
+      it '__ should return value of "name" attribute' do
+        BookingStatus[:confirmed].__enum_name__.should == 'confirmed'
       end
     end
 
     context ':name_column is specified to be :state_code' do
-      it '__name__ should return value of the "name_column" attribute' do
-        State[:IL].__name__.should == 'IL'
+      it '__enum_name__ should return value of the "name_column" attribute' do
+        State[:IL].__enum_name__.should == 'IL'
       end
     end
   end
@@ -239,11 +254,6 @@ describe 'acts_as_enumerated' do
   specify "#to_s" do
     BookingStatus[:confirmed].to_s.should == 'confirmed'
     State[:IL].to_s.should == 'IL'
-  end
-
-  specify "#name" do
-    BookingStatus[:confirmed].name.should == BookingStatus[:confirmed].to_s
-    State[:IL].name.should == State[:IL].to_s
   end
 
   describe 'name_column' do
@@ -347,7 +357,7 @@ describe 'acts_as_enumerated' do
     it 'connector types should be ordered by name in descending order' do
       expected = ['VGA', 'HDMI', 'DVI']
       ConnectorType.all.each_with_index do |con, index|
-        con.__name__.should == expected[index]
+        con.__enum_name__.should == expected[index]
       end
     end
   end
@@ -355,6 +365,10 @@ describe 'acts_as_enumerated' do
   describe 'names' do
     it "should return the names of an enum as an array of symbols" do
       ConnectorType.names.should == [:VGA, :HDMI, :DVI]
+    end
+
+    it 'should return names if there is no :name alias' do
+      Fruit.names.should == [:apple, :peach, :pear]
     end
   end
 

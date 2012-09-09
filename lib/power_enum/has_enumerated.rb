@@ -76,7 +76,7 @@ module PowerEnum::HasEnumerated # :nodoc:
     #                    :on_lookup_failure => lambda{ |record, op, attr, fk, cl_name, value|
     #                      # handle lookup failure
     #                    }
-                #  end
+    #  end
     def has_enumerated(part_id, options = {})
       options.assert_valid_keys( :class_name,
                                  :foreign_key,
@@ -88,12 +88,12 @@ module PowerEnum::HasEnumerated # :nodoc:
       reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
       self.reflections = self.reflections.merge(part_id => reflection)
 
-      name         = part_id.to_s
-      class_name   = reflection.class_name
-      foreign_key  = reflection.foreign_key
-      failure_opt  = options[:on_lookup_failure]
-      empty_name   = options[:permit_empty_name]
-      create_scope = options[:create_scope]
+      name            = part_id.to_s
+      class_name      = reflection.class_name
+      foreign_key     = reflection.foreign_key
+      failure_opt     = options[:on_lookup_failure]
+      empty_name      = options[:permit_empty_name]
+      create_scope    = options[:create_scope]
 
       failure_handler = get_lookup_failure_handler(failure_opt)
 
@@ -212,7 +212,7 @@ module PowerEnum::HasEnumerated # :nodoc:
 
     end #has_enumerated
 
-    def get_lookup_failure_handler(failure_opt)
+    def get_lookup_failure_handler(failure_opt) # :nodoc:
       if failure_opt.nil?
         nil
       else

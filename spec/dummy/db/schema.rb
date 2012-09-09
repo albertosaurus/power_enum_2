@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120828031933) do
+ActiveRecord::Schema.define(:version => 20120909203515) do
 
   create_table "adapters", :force => true do |t|
     t.integer  "connector_type_id"
@@ -48,6 +48,13 @@ ActiveRecord::Schema.define(:version => 20120828031933) do
   end
 
   add_index "connector_types", ["name"], :name => "index_connector_types_on_name", :unique => true
+
+  create_table "fruits", :force => true do |t|
+    t.string "fruit_name",  :null => false
+    t.string "description"
+  end
+
+  add_index "fruits", ["fruit_name"], :name => "index_fruits_on_fruit_name", :unique => true
 
   create_table "states", :force => true do |t|
     t.string   "state_code"

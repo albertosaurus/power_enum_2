@@ -260,6 +260,9 @@ class BookingStatus < ActiveRecord::Base
                       :order             => 'optional_sql_order_by',
                       :on_lookup_failure => :optional_class_method, #This also works: lambda{ |arg| some_custom_action }
                       :name_column       => 'optional_name_column'  #If required, may override the default name column
+                      :alias_name        => false                   #If set to false and have name_column set, will not
+                                                                    #  alias :name to the name column attribute
+                                                                    #  (version 0.9.0).
 end
 ```
 
@@ -343,11 +346,11 @@ Behavior depends on the type of `arg`.
 Examples:
 
 ```ruby
-BookingStatus[:foo] === :foo #Returns true
-BookingStatus[:foo] === 'foo' #Returns true
-BookingStatus[:foo] === :bar #Returns false
+BookingStatus[:foo] === :foo               #Returns true
+BookingStatus[:foo] === 'foo'              #Returns true
+BookingStatus[:foo] === :bar               #Returns false
 BookingStatus[:foo] === [:foo, :bar, :baz] #Returns true
-BookingStatus[:foo] === nil #Returns false
+BookingStatus[:foo] === nil                #Returns false
 ```
 
 You should note that defining an `:on_lookup_failure` method that raises an exception will cause `===` to also raise an
@@ -373,7 +376,8 @@ Returns the string representation of the enum, i.e. the value in the `:name_colu
 
 ##### name
 
-By default, aliased to `to_s`.
+By default, aliased to the string representation of the `:name_column` attribute.  To avoid this, set the `alias_name`
+option to `false`.
 
 ##### name\_sym
 

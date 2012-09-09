@@ -30,6 +30,9 @@ module PowerEnum::Enumerated
     #   lambda that takes in a single argument (The arg that was passed to +[]+).
     # [:name_column]
     #   Override for the 'name' column.  By default, assumed to be 'name'.
+    # [:alias_name]
+    #   By default, if a name column is not 'name', will create an alias of 'name' to the name_column attribute.  Set
+    #   this to +false+ if you don't want this behavior.
     #
     # === Examples
     #
@@ -99,12 +102,12 @@ module PowerEnum::Enumerated
           before_destroy :enumeration_model_update
           validates name_column, :presence => true, :uniqueness => true
 
-          define_method :__name__ do
+          define_method :__enum_name__ do
             read_attribute( name_column ).to_s
           end
 
-          unless name_column == :name || alias_name == false
-            alias_method :name, :to_s
+          if alias_name && name_column != :name
+            alias_method :name, :__enum_name__
           end
         end # class_eval
       end
@@ -262,7 +265,7 @@ module PowerEnum::Enumerated
     # Returns a hash of all the enumeration members keyed by their names.
     def all_by_name
       begin
-        @all_by_name ||= all_by_attribute( :__name__ )
+        @all_by_name ||= all_by_attribute( :__enum_name__ )
       rescue NoMethodError => err
         if err.name == name_column
           raise TypeError, "#{self.name}: you need to define a '#{name_column}' column in the table '#{table_name}'"
@@ -358,14 +361,14 @@ module PowerEnum::Enumerated
 
     # Returns the symbol representation of the name of the enum. BookingStatus[:foo].name_sym returns :foo.
     def name_sym
-      self.__name__.to_sym
+      self.__enum_name__.to_sym
     end
 
     alias_method :to_sym, :name_sym
 
     # By default enumeration #to_s should return stringified name of the enum. BookingStatus[:foo].to_s returns "foo"
     def to_s
-      self.__name__
+      self.__enum_name__
     end
 
     # Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
