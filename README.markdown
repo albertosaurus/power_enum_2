@@ -367,9 +367,13 @@ Example:
 BookingStatus[:foo].in? :foo, :bar, :baz #Returns true
 ```
 
+##### to_s
+
+Returns the string representation of the enum, i.e. the value in the `:name_column` attribute of the enumeration model.
+
 ##### name
 
-Returns the 'name' of the enum, i.e. the value in the `:name_column` attribute of the enumeration model.
+By default, aliased to `to_s`.
 
 ##### name\_sym
 

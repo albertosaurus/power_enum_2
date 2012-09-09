@@ -231,4 +231,4 @@ module PowerEnum::HasEnumerated # :nodoc:
 
   end #module MacroMethods
 
-end #module HasEnumerated
+end #module PowerEnum::HasEnumerated

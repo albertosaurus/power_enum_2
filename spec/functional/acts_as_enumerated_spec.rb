@@ -16,21 +16,21 @@ describe 'acts_as_enumerated' do
         it 'returns a record found by name if String is passed' do
           status = BookingStatus['confirmed']
           status.should be_an_instance_of BookingStatus
-          status.name.should == 'confirmed'
+          status.__name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
 
         it 'returns a record found by name if Symbol is passed' do
           status = BookingStatus[:confirmed]
           status.should be_an_instance_of BookingStatus
-          status.name.should == 'confirmed'
+          status.__name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
 
         it 'returns a record found by id when Fixnum is passed' do
           status = BookingStatus[1]
           status.should be_an_instance_of BookingStatus
-          status.name.should == 'confirmed'
+          status.__name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
         
@@ -200,16 +200,16 @@ describe 'acts_as_enumerated' do
     end
   end
 
-  describe 'name' do
+  describe '__name__' do
     context ':name_column is not specified' do
-      it 'name should return value of "name" attribute' do
-        BookingStatus[:confirmed].name.should == 'confirmed'
+      it '__name__ should return value of "name" attribute' do
+        BookingStatus[:confirmed].__name__.should == 'confirmed'
       end
     end
 
     context ':name_column is specified to be :state_code' do
-      it 'name should return value of the "name_column" attribute' do
-        State[:IL].name.should == 'IL'
+      it '__name__ should return value of the "name_column" attribute' do
+        State[:IL].__name__.should == 'IL'
       end
     end
   end
@@ -238,6 +238,12 @@ describe 'acts_as_enumerated' do
 
   specify "#to_s" do
     BookingStatus[:confirmed].to_s.should == 'confirmed'
+    State[:IL].to_s.should == 'IL'
+  end
+
+  specify "#name" do
+    BookingStatus[:confirmed].name.should == BookingStatus[:confirmed].to_s
+    State[:IL].name.should == State[:IL].to_s
   end
 
   describe 'name_column' do
@@ -341,7 +347,7 @@ describe 'acts_as_enumerated' do
     it 'connector types should be ordered by name in descending order' do
       expected = ['VGA', 'HDMI', 'DVI']
       ConnectorType.all.each_with_index do |con, index|
-        con.name.should == expected[index]
+        con.__name__.should == expected[index]
       end
     end
   end
