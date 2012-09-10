@@ -77,7 +77,7 @@ module PowerEnum::Enumerated
         end
       end
 
-      name_column = if options.has_key?(:name_column) then
+      name_column = if options.has_key?(:name_column) && !options[:name_column].blank? then
                       options[:name_column].to_s.to_sym
                     else
                       :name

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120909203515) do
+ActiveRecord::Schema.define(:version => 20120909235526) do
 
   create_table "adapters", :force => true do |t|
     t.integer  "connector_type_id"
@@ -61,6 +61,12 @@ ActiveRecord::Schema.define(:version => 20120909203515) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "virtual_enums", :force => true do |t|
+    t.string "name", :null => false
+  end
+
+  add_index "virtual_enums", ["name"], :name => "index_virtual_enums_on_name", :unique => true
 
   create_table "widgets", :force => true do |t|
     t.integer  "connector_type_id"
