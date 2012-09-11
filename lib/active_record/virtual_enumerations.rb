@@ -74,18 +74,19 @@ module ActiveRecord # :nodoc:
 
     # Creates a constant for a virtual enum if a config is defined for it.
     def self.synthesize_if_defined(const)
-      options = @config[const]
-      return nil unless options
+      if @config && options = @config[const]
+        class_declaration = "class #{const} < #{options[:extends]}; end"
 
-      class_declaration = "class #{const} < #{options[:extends]}; end"
+        eval( class_declaration, TOPLEVEL_BINDING, __FILE__, __LINE__ )
 
-      eval( class_declaration, TOPLEVEL_BINDING, __FILE__, __LINE__ )
+        virtual_enum_class = const_get( const )
 
-      virtual_enum_class = const_get( const )
+        inject_class_options( virtual_enum_class, options )
 
-      inject_class_options( virtual_enum_class, options )
-
-      virtual_enum_class
+        virtual_enum_class
+      else
+        nil
+      end
     end
 
     def self.inject_class_options( virtual_enum_class, options ) # :nodoc:
