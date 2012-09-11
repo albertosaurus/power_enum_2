@@ -1,22 +1,14 @@
 require 'spec_helper'
 
 describe ActiveRecord::VirtualEnumerations do
-  before :all do
-    ActiveRecord::VirtualEnumerations.define do |config|
-      config.define('VirtualEnum', :on_lookup_failure => :enforce_strict) {
-        def virtual_enum_id
-          id
-        end
-      }
-    end
-  end
+
+  # See spec/dummy/config/initializers/virtual_enumerations.rb
 
   it 'should define VirtualEnum enum model' do
     VirtualEnum.acts_as_enumerated?.should be_true
   end
 
   it 'VirtualEnum should function as an enum' do
-    puts "names: #{VirtualEnum.names.inspect}"
     VirtualEnum[:virtual_enum].should_not be_nil
   end
 
@@ -30,5 +22,24 @@ describe ActiveRecord::VirtualEnumerations do
     f = VirtualEnum[:virtual_enum]
     f.respond_to?(:virtual_enum_id).should be_true
     f.virtual_enum_id.should == f.id
+  end
+
+  context 'ShadowEnum' do
+
+    it 'should have a shadow enum' do
+      ShadowEnum[:virtual_enum].should_not be_nil
+    end
+
+  end
+
+  context 'PirateEnum' do
+    it 'should have a pirate enum' do
+      PirateEnum[:virtual_enum].should_not be_nil
+    end
+
+    it 'should not execute the config block for VirtualEnum' do
+      PirateEnum[:foo].should be_nil
+      PirateEnum[:foo].respond_to?(:virtual_enum_id).should be_false
+    end
   end
 end

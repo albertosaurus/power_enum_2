@@ -9,15 +9,14 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Trevor Squires", "Pivotal Labs", "Arthur Shagall", "Sergey Potapov"]
-  s.date = "2012-09-08"
+  s.date = "2012-09-11"
   s.description = "Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.\nIt allows you to cleanly solve many of the problems that the traditional Rails alternatives handle poorly if at all.\nIt is particularly suitable for scenarios where your Rails application is not the only user of the database, such as\nwhen it's used for analytics or reporting.\n"
   s.email = "arthur.shagall@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.md"
+    "README.markdown"
   ]
   s.files = [
-    "examples/virtual_enumerations_sample.rb",
     "lib/active_record/virtual_enumerations.rb",
     "lib/generators/enum/USAGE",
     "lib/generators/enum/enum_generator.rb",

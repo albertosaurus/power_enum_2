@@ -101,7 +101,7 @@ module ActiveRecord # :nodoc:
       # If necessary, set the table name
       unless (table_name = options[:table_name]).blank?
         virtual_enum_class.class_eval do
-          set_table_name table_name
+          self.table_name = table_name
         end
       end
 

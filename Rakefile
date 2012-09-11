@@ -12,7 +12,7 @@ when it's used for analytics or reporting.
     gem.email = "arthur.shagall@gmail.com"
     gem.homepage = "http://github.com/albertosaurus/power_enum"
     gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
-    gem.files = Dir["{lib}/**/*"] + Dir["{examples}/**/*"]
+    gem.files = Dir["{lib}/**/*"]
   end
 rescue
   puts "Jeweler or one of its dependencies is not installed."
