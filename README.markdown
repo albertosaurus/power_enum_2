@@ -558,15 +558,72 @@ Returns an array of attributes which are enumerated.
 
 ### ActiveRecord::VirtualEnumerations
 
-In many instances, your `acts_as_enumerated` classes will do nothing more than just act as enumerated.
+In many instances, your `acts_as_enumerated` classes will do nothing more than just act as enumerated.  In that case,
+you can use ActiveRecord::VirtualEnumerations to reduce that clutter.
 
-In that case there isn't much point cluttering up your models directory with those class files. You can use
-ActiveRecord::VirtualEnumerations to reduce that clutter.
+Create a custom Rails initializer: Rails.root/config/initializers/virtual\_enumerations.rb
 
-Copy virtual\_enumerations\_sample.rb to Rails.root/config/initializers/virtual\_enumerations.rb and configure it
-accordingly.
+```ruby
+ActiveRecord::VirtualEnumerations.define do |config|
 
-See virtual\_enumerations\_sample.rb in the examples directory of this gem for a full description.
+  # Define the enum class
+  config.define 'ClassName',
+                :table_name        => 'table',
+                :extends           => 'SuperclassName',
+                :conditions        => ['something = ?', "value"],
+                :order             => 'column ASC',
+                :on_lookup_failure => :enforce_strict,
+                :name_column       => 'name_column',
+                :alias_name        => false {
+    # This gets evaluated within the class scope of the enum class.
+    def to_s
+      "#{id} - #{name}"
+    end
+  }
+
+end
+```
+
+Only the 'ClassName' argument is required.  `:table_name` is used to define a custom table name while the `:extends`
+option is used to set a custom superclass.  Class names can be either camel-cased like ClassName or with
+underscores, like class\_name.  Strings and symbols are both fine.
+
+If you need to fine-tune the definition of the enum class, you can optionally pass in a block, which will be
+evaluated in the context of the enum class.
+
+Example:
+
+```ruby
+config.define :color, :on_lookup_failure => :enforce_strict, do
+  def to_argb(alpha)
+    case self.to_sym
+    when :white
+      [alpha, 255, 255, 255]
+    when :red
+      [alpha, 255, 0, 0]
+    when :blue
+      [alpha, 0, 0, 255]
+    when :yellow
+      [alpha, 255, 255, 0]
+    when :black
+      [alpha, 0, 0, 0]
+    end
+  end
+end
+```
+
+As a convenience, if multiple enums share the same configuration, you can pass all of them to config.define.
+
+```ruby
+config.define :booking_status, :connector_type, :color, :order => :name
+```
+
+STI is also supported:
+
+```ruby
+config.define :base_enum, :name_column => ;foo
+config.define :booking_status, :connector_type, :color, :extends => :base_enum
+```
 
 ### Testing (Since version 0.6.0)
 
