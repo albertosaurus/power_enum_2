@@ -283,6 +283,10 @@ describe 'acts_as_enumerated' do
   end
 
   describe 'validations' do
+    before :each do
+      BookingStatus.enumeration_model_updates_permitted = false
+    end
+
     it 'Should not permit the creation of new enumeration models by default' do
       bs = BookingStatus.create(:name => 'unconfirmed')
       bs.new_record?.should == true

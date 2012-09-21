@@ -1,0 +1,14 @@
+Description:
+    Create the VirtualEnumerations initializer for PowerEnum.
+
+Example:
+    rails generate virtual_enumerations_initializer
+
+    This will create:
+        VirtualEnumerations initializer: config/initializers/virtual_enumerations.rb
+
+Example 2:
+    rails generate virtual_enumerations_initializer power_enum_init
+
+    This will create:
+        VirtualEnumerations initializer: config/initializers/power_enum_init.rb
