@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "power_enum"
-  s.version = "0.9.1"
+  s.version = "0.9.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Trevor Squires", "Pivotal Labs", "Arthur Shagall", "Sergey Potapov"]
-  s.date = "2012-09-11"
+  s.date = "2012-09-22"
   s.description = "Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.\nIt allows you to cleanly solve many of the problems that the traditional Rails alternatives handle poorly if at all.\nIt is particularly suitable for scenarios where your Rails application is not the only user of the database, such as\nwhen it's used for analytics or reporting.\n"
   s.email = "arthur.shagall@gmail.com"
   s.extra_rdoc_files = [
@@ -23,6 +23,9 @@ Gem::Specification.new do |s|
     "lib/generators/enum/templates/model.rb.erb",
     "lib/generators/enum/templates/rails30_migration.rb.erb",
     "lib/generators/enum/templates/rails31_migration.rb.erb",
+    "lib/generators/virtual_enumerations_initializer/USAGE",
+    "lib/generators/virtual_enumerations_initializer/templates/virtual_enumerations.rb.erb",
+    "lib/generators/virtual_enumerations_initializer/virtual_enumerations_initializer_generator.rb",
     "lib/power_enum.rb",
     "lib/power_enum/enumerated.rb",
     "lib/power_enum/has_enumerated.rb",

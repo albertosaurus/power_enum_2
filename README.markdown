@@ -82,7 +82,9 @@ In the following example, we'll look at a Booking that can have several types of
 
 Invoke the generator to create a basic enum:
 
-`rails generate enum booking_status`
+```bash
+rails generate enum booking_status
+```
 
 You should see output similar to this:
 
@@ -562,6 +564,15 @@ In many instances, your `acts_as_enumerated` classes will do nothing more than j
 you can use ActiveRecord::VirtualEnumerations to reduce that clutter.
 
 Create a custom Rails initializer: Rails.root/config/initializers/virtual\_enumerations.rb
+
+As of version 0.9.2, there is a built in generator for this:
+
+```bash
+rails generate virtual_enumerations_initializer
+```
+
+Configure as appropriate.
+
 
 ```ruby
 ActiveRecord::VirtualEnumerations.define do |config|
