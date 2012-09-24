@@ -399,6 +399,22 @@ describe 'acts_as_enumerated' do
       ConnectorType.all.size.should == 3
       ConnectorType['Foo'].should be_nil
     end
+
+    it 'should allow a block with an argument' do
+      ConnectorType.update_enumerations_model do |klass|
+        klass.create :name        => 'Foo',
+                     :description => 'Bar',
+                     :has_sound   => true
+      end
+      ConnectorType.all.size.should == 4
+      ConnectorType['Foo'].should_not be_nil
+
+      ConnectorType.update_enumerations_model do |klass|
+        klass['Foo'].destroy
+      end
+      ConnectorType.all.size.should == 3
+      ConnectorType['Foo'].should be_nil
+    end
   end
 
   describe 'acts_as_enumerated?' do

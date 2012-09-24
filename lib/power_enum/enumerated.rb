@@ -235,13 +235,19 @@ module PowerEnum::Enumerated
     # The preferred method to update an enumerations model.  The same
     # warnings as 'purge_enumerations_cache' and
     # 'enumerations_model_update_permitted' apply.  Pass a block to this
-    # method (no args) where you perform your updates.  Cache will be
-    # flushed automatically.
-    def update_enumerations_model
+    # method where you perform your updates.  Cache will be
+    # flushed automatically.  If your block takes an argument, will pass in
+    # the model class.  The argument is optional.
+    def update_enumerations_model(&block)
       if block_given?
         begin
           self.enumeration_model_updates_permitted = true
-          yield
+          case block.arity
+          when 0
+            yield
+          else
+            yield self
+          end
         ensure
           purge_enumerations_cache
           self.enumeration_model_updates_permitted = false

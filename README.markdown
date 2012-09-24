@@ -327,6 +327,16 @@ BookingStatus.update_enumerations_model do
 end
 ```
 
+Example 2 (since version 0.9.3):
+
+```ruby
+BookingStatus.update_enumerations_model do |klass|
+  klass.create :name        => 'Foo',
+               :description => 'Bar',
+               :active      => false
+end
+```
+
 ##### acts\_as\_enumerated? (since version 0.8.6)
 
 Returns `true` for ActiveRecord models that act as enumerated, `false` for others.  So
