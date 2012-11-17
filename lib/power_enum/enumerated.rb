@@ -125,10 +125,15 @@ module PowerEnum::Enumerated
     # Returns all the enum values.  Caches results after the first time this method is run.
     def all
       return @all if @all
+      @all = load_all.collect{|val| val.freeze}.freeze
+    end
+
+    def load_all
       conditions = self.acts_enumerated_conditions
       order = self.acts_enumerated_order
-      @all = where(conditions).order(order).collect{|val| val.freeze}.freeze
+      where(conditions).order(order)
     end
+    private :load_all
 
     # Returns all the active enum values.  See the 'active?' instance method.
     def active
@@ -242,6 +247,9 @@ module PowerEnum::Enumerated
       if block_given?
         begin
           self.enumeration_model_updates_permitted = true
+          purge_enumerations_cache
+          @all = load_all
+          @enumerations_model_updating = true
           case block.arity
           when 0
             yield
@@ -250,9 +258,16 @@ module PowerEnum::Enumerated
           end
         ensure
           purge_enumerations_cache
+          @enumerations_model_updating = false
           self.enumeration_model_updates_permitted = false
         end
       end
+    end
+
+    # Returns true if the enumerations model is in the middle of an
+    # update_enumerations_model block, false otherwise.
+    def enumerations_model_updating?
+      !!@enumerations_model_updating
     end
 
     # Returns the name of the column this enum uses as the basic underlying value.
@@ -282,10 +297,12 @@ module PowerEnum::Enumerated
     private :all_by_name
 
     def all_by_attribute(attr)
-      all.inject({}) { |memo, item|
+      aba = all.inject({}) { |memo, item|
         memo[item.send(attr)] = item
         memo
-      }.freeze
+      }
+      aba.freeze unless enumerations_model_updating?
+      aba
     end
     private :all_by_attribute
 

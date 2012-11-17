@@ -394,6 +394,12 @@ describe 'acts_as_enumerated' do
       ConnectorType['Foo'].should_not be_nil
 
       ConnectorType.update_enumerations_model do
+        ConnectorType['Foo'].description = 'foobar'
+        ConnectorType['Foo'].save!
+      end
+      ConnectorType['Foo'].description.should == 'foobar'
+
+      ConnectorType.update_enumerations_model do
         ConnectorType['Foo'].destroy
       end
       ConnectorType.all.size.should == 3
@@ -408,6 +414,12 @@ describe 'acts_as_enumerated' do
       end
       ConnectorType.all.size.should == 4
       ConnectorType['Foo'].should_not be_nil
+
+      ConnectorType.update_enumerations_model do |klass|
+        klass['Foo'].description = 'foobar'
+        klass['Foo'].save!
+      end
+      ConnectorType['Foo'].description.should == 'foobar'
 
       ConnectorType.update_enumerations_model do |klass|
         klass['Foo'].destroy
