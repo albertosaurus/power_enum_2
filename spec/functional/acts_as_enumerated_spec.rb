@@ -130,6 +130,75 @@ describe 'acts_as_enumerated' do
       state2.should == state
     end
 
+  end # describe '[]'
+
+  describe 'contains?' do
+
+    context 'item exists' do
+
+      context ':name_column is not explicitly specified' do
+
+        it 'returns true if looking up String' do
+          BookingStatus.contains?('confirmed').should be_true
+        end
+
+        it 'returns true if looking up by Symbol' do
+          BookingStatus.contains?(:confirmed).should be_true
+        end
+
+        it 'returns true if looking up by id' do
+          BookingStatus.contains?(1).should be_true
+        end
+
+        it 'return true if passing in an enum instance' do
+          BookingStatus.contains?(BookingStatus.all.first).should be_true
+        end
+
+      end # context ':name_column is not explicitly specified'
+
+      context ':name_column is specified' do
+
+        it 'returns true if looking up String' do
+          State.contains?('IL').should be_true
+        end
+
+        it 'returns true if looking up by Symbol' do
+          State.contains?(:IL).should be_true
+        end
+
+        it 'returns true if looking up by id' do
+          State.contains?(1).should be_true
+        end
+
+        it 'return true if passing in an enum instance' do
+          State.contains?(State.all.first).should be_true
+        end
+      end # context ':name_column is specified'
+
+    end # context 'item exists'
+
+    context 'item does not exist' do
+
+      it 'returns false when passing in a nil' do
+        BookingStatus.contains?(nil).should be_false
+      end
+
+      it 'returns false when passing in a random value' do
+        BookingStatus.contains?(Booking.new).should be_false
+      end
+
+      it 'returns false when a lookup by id fails' do
+        State.contains?(999999).should be_false
+      end
+
+      it 'returns false when a lookup by Symbol fails' do
+        State.contains?(:XXX).should be_false
+      end
+
+      it 'returns false when a lookup by String fails' do
+        State.contains?('XXX').should be_false
+      end
+    end
   end
 
   describe '===' do

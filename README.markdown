@@ -293,6 +293,12 @@ As of version 0.8.0, you can pass in multiple arguments to `[]`.  This returns a
 passed in values.  Duplicates are filtered out.  For example `BookingStatus[arg1, arg2, arg3]` would be equivalent to
 `[BookingStatus[arg1], BookingStatus[arg2], BookingStatus[arg3]]`.
 
+##### contains?(arg) (since version 0.10.0)
+
+`BookingStatus.contains?(arg)` returns `true if` the given Symbol, String or id has a member instance in the enumeration,
+`false` otherwise.  Returns `true` if the argument is an enum instance, returns `false` if the argument  is `nil` or any
+other value.
+
 ##### all
 
 `BookingStatus.all` returns an array of all BookingStatus records that match the `:conditions` specified in

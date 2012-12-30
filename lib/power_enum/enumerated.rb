@@ -138,13 +138,13 @@ module PowerEnum::Enumerated
     # Returns all the active enum values.  See the 'active?' instance method.
     def active
       return @all_active if @all_active
-      @all_active = all.select{ |enum| enum.active? }.freeze
+      @all_active = all.find_all{ |enum| enum.active? }.freeze
     end
 
     # Returns all the inactive enum values.  See the 'inactive?' instance method.
     def inactive
       return @all_inactive if @all_inactive
-      @all_inactive = all.select{ |enum| !enum.active? }.freeze
+      @all_inactive = all.find_all{ |enum| !enum.active? }.freeze
     end
 
     # Returns the names of all the enum values as an array of symbols.
@@ -153,7 +153,8 @@ module PowerEnum::Enumerated
     end
 
     # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
-    # an enum instance.  Passing in a list of arguments returns a list of enums.
+    # an enum instance.  Passing in a list of arguments returns a list of
+    # enums.  When called with no arguments, returns nil.
     def [](*args)
       case args.size
       when 0
@@ -178,6 +179,25 @@ module PowerEnum::Enumerated
         handle_lookup_failure(arg)
       else
         args.map{ |item| self[item] }.uniq
+      end
+    end
+
+    # Returns <tt>true</tt> if the given Symbol, String or id has a member
+    # instance in the enumeration, <tt>false</tt> otherwise.  Returns <tt>true</tt>
+    # if the argument is an enum instance, returns <tt>false</tt> if the argument
+    # is nil or any other value.
+    def contains?(arg)
+      case arg
+      when Symbol
+        !!lookup_name(arg.id2name)
+      when String
+        !!lookup_name(arg)
+      when Fixnum
+        !!lookup_id(arg)
+      when self
+        true
+      else
+        false
       end
     end
 
