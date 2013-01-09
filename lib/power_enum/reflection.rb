@@ -23,8 +23,8 @@ module PowerEnum::Reflection
     end
 
     # Extend associations with enumerations, preferring enumerations
-    def reflect_on_all_associations_with_enumeration
-      reflect_on_all_enumerated + reflect_on_all_associations_without_enumeration
+    def reflect_on_all_associations_with_enumeration(macro = nil)
+      reflect_on_all_enumerated + reflect_on_all_associations_without_enumeration(macro)
     end
 
     # Extend associations with enumerations, preferring enumerations
@@ -34,6 +34,8 @@ module PowerEnum::Reflection
   end
 
   class EnumerationReflection < ActiveRecord::Reflection::MacroReflection
+    attr_reader :counter_cache_column
+
     def initialize( name, options, active_record )
       super :has_enumerated, name, options, active_record
     end

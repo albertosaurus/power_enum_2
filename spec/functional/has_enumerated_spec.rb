@@ -49,6 +49,7 @@ describe 'has_enumerated' do
     reflection.klass.should == BookingStatus
     reflection.options[:foreign_key].should == :status_id
     reflection.options[:on_lookup_failure].should == :not_found_status_handler
+    reflection.should respond_to(:counter_cache_column)
   end
 
   it 'enumerated_attributes should contain the list of has_enumerated attributes and nothing else' do
