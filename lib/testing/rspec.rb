@@ -59,6 +59,7 @@ if defined? RSpec
       end
     end
 
+    # Returns the class of <tt>enum</tt>, or enum if it's a class.
     def get_enum_class(enum)
       if enum.is_a?(Class)
          enum
@@ -67,6 +68,7 @@ if defined? RSpec
        end
     end
 
+    # Validates the given enum.
     def validate_enum(enum_class, item)
       case item
       when String, Symbol, Fixnum

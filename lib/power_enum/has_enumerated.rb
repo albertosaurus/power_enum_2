@@ -85,6 +85,7 @@ module PowerEnum::HasEnumerated # :nodoc:
                                  :default,
                                  :create_scope )
 
+      # Add a reflection for the enumerated attribute.
       reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
       self.reflections = self.reflections.merge(part_id => reflection)
 
@@ -212,6 +213,7 @@ module PowerEnum::HasEnumerated # :nodoc:
 
     end #has_enumerated
 
+    # If the lookup failure handler is a method name, wraps it in a lambda.
     def get_lookup_failure_handler(failure_opt) # :nodoc:
       if failure_opt.nil?
         nil

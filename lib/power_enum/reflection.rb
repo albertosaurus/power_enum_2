@@ -1,6 +1,9 @@
 # Copyright (c) 2011 Artem Kuzko
+# Copyright (c) 2013 Zach Belzer
+# Copyright (c) 2013 Arthur Shagall
 # Released under the MIT license.  See LICENSE for details.
 
+# Used to patch ActiveRecord reflections.
 module PowerEnum::Reflection
   extend ActiveSupport::Concern
 
@@ -33,6 +36,7 @@ module PowerEnum::Reflection
     end
   end
 
+  # Reflection class for enum reflections.  See ActiveRecord::Reflection
   class EnumerationReflection < ActiveRecord::Reflection::MacroReflection
     attr_reader :counter_cache_column
 

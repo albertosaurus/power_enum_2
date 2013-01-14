@@ -3,7 +3,7 @@ require 'spec_helper'
 describe :enum do
   context 'no arguments or options' do
     it 'should generate an error message' do
-      proc { subject.should output("No value provided for required arguments 'enum_name'") }.should raise_error
+      subject.should output("No value provided for required arguments 'enum_name'")
     end
   end
 

@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '>= 3.0.0'
+gem 'rails', '~> 3.1'
 
 group :development do
   gem 'jeweler'
@@ -9,5 +9,6 @@ end
 group :development, :test do
   gem 'rspec'
   gem 'sqlite3'
-  gem 'genspec', '>= 0.2.7'
+  # Use standard genspec once my pull request is merged.
+  gem 'genspec', '>= 0.2.7', :git => 'git://github.com/albertosaurus/genspec.git'
 end

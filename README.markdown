@@ -2,7 +2,10 @@
 
 https://github.com/albertosaurus/power_enum
 
-Enumerations for Rails 3.X Done Right.
+Enumerations for Rails 3.1/3.2 Done Right.
+
+NOTICE: Version 1.0 removes support from Rails 3.0, as that version of Rails has no longer been supported for
+some time.  The last version to support Rails 3.0 was 0.11.1.
 
 ## What is this?:
 
@@ -40,7 +43,7 @@ See "How to use it" below for more information.
 ## Requirements
 
 * Ruby 1.8.7, 1.9.2, 1.9.3, JRuby 1.6+
-* Rails 3.0, 3.1, 3.2
+* Rails 3.1, 3.2
 
 ## Installation
 
@@ -100,23 +103,7 @@ from a pre-test Rake task.
 
 ### migration
 
-If you're using Rails 3.0, your migration file will look something like this:
-
-```ruby
-class CreateEnumBookingStatus < ActiveRecord::Migration
-
-  def self.up
-    create_enum :booking_status
-  end
-
-  def self.down
-    remove_enum :booking_status
-  end
-
-end
-```
-    
-If you're using Rails 3.1 or later, it will look something like this:
+When you open your migration file, it will look something like this:
 
 ```ruby
 class CreateEnumBookingStatus < ActiveRecord::Migration
@@ -150,6 +137,8 @@ end
 
 # It's highly recommended to add a foreign key constraint here.
 # Ideally, you would use a gem of some sort to handle this.
+# I have been using PgPower https://rubygems.org/gems/pg_power with much
+# success.
 execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk'"\
     " FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
 ```
@@ -762,7 +751,7 @@ And finally run tests:
 * Initial Version Copyright (c) 2005 Trevor Squires
 * Rails 3 Updates Copyright (c) 2010 Pivotal Labs
 * Initial Test Suite Copyright (c) 2011 Sergey Potapov
-* Subsequent Updates Copyright (c) 2011-2012 Arthur Shagall
+* Subsequent Updates Copyright (c) 2011-2013 Arthur Shagall
 
 Released under the MIT License.  See the LICENSE file for more details.
 
