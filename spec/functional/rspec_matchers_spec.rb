@@ -51,6 +51,31 @@ describe "RSpec Matchers" do
       it{ should_not act_as_enumerated }
     end
 
+    describe 'matcher behavior' do
+      subject{ act_as_enumerated.with_items(:foo, :bar, :baz) }
+
+      it 'should have the correct description' do
+        subject.description.should eq('act as enumerated')
+      end
+
+      it 'should have the correct failure message for should' do
+        subject.failure_message_for_should.should eq("should act as enumerated and have members #{[:foo, :bar, :baz].inspect}")
+      end
+
+      it 'should have the correct failure message for should_not' do
+        subject.failure_message_for_should_not.should eq("should not act as enumerated with members #{[:foo, :bar, :baz].inspect}")
+      end
+
+      it 'validate_enum should handle a random item value' do
+        subject.validate_enum(BookingStatus, 1.5).should be_false
+      end
+
+      it 'should handle an exception in validate_enum' do
+        subject.should_receive(:validate_enum).and_raise(RuntimeError)
+        subject.matches?(BookingStatus).should be_false
+      end
+    end
+
   end
 
   context "has_enumerated" do
@@ -60,6 +85,22 @@ describe "RSpec Matchers" do
 
     it "Booking should have enumerated state" do
       Booking.should have_enumerated(:state)
+    end
+
+    describe 'matcher behavior' do
+      subject{ have_enumerated(:foo) }
+
+      it 'should have the correct description' do
+        subject.description.should eq('have enumerated foo')
+      end
+
+      it 'should have the correct failure message for should' do
+        subject.failure_message_for_should.should eq('expected foo to be an enumerated attribute')
+      end
+
+      it 'should have the correct failure message for should_not' do
+        subject.failure_message_for_should_not.should eq('expected foo to not be an enumerated attribute')
+      end
     end
   end
 
@@ -95,6 +136,26 @@ describe "RSpec Matchers" do
 
     it 'should not match random junk' do
       booking.status.should_not match_enum({})
+    end
+
+    it 'matcher should still work on non-enum classes' do
+      booking.should_not match_enum(nil)
+    end
+
+    describe 'matcher behavior' do
+      subject{ match_enum(:foo) }
+
+      it 'should have the correct description' do
+        subject.description.should eq('match enum value of foo')
+      end
+
+      it 'should have the correct failure message for should' do
+        subject.failure_message_for_should.should eq('expected foo to match the enum')
+      end
+
+      it 'should have the correct failure message for should_not' do
+        subject.failure_message_for_should_not.should eq('expected foo to not match the enum')
+      end
     end
   end
 

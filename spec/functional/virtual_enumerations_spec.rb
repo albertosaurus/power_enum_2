@@ -42,4 +42,21 @@ describe ActiveRecord::VirtualEnumerations do
       PirateEnum[:foo].respond_to?(:virtual_enum_id).should be_false
     end
   end
+
+  describe ActiveRecord::VirtualEnumerations::Config do
+    let(:config){ ActiveRecord::VirtualEnumerations::Config.new }
+
+    it 'should raise ArgumentError if it can\'t get the came case name of the argument' do
+      expect{
+        config.define('')
+      }.to raise_error(ArgumentError, "ActiveRecord::VirtualEnumerations.define - invalid class_name argument (#{''.inspect})")
+    end
+
+    it 'should raise ArgumentError if the same class is defined twice' do
+      config.define('foo')
+      expect{
+        config.define('foo')
+      }.to raise_error(ArgumentError, "ActiveRecord::VirtualEnumerations.define - class_name already defined (Foo)")
+    end
+  end
 end

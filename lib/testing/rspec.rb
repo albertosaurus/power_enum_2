@@ -98,7 +98,7 @@ if defined? RSpec
     failure_message_for_should_not do
       message = "should not act as enumerated"
       if @items
-        message << " and not have members #{@items.inspect}"
+        message << " with members #{@items.inspect}"
       end
       message
     end
