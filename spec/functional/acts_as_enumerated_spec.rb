@@ -9,6 +9,75 @@ describe 'acts_as_enumerated' do
     State.should respond_to :[]
   end
 
+  describe 'all_by_name' do
+
+    def flush_cache(klass)
+      tmp = klass.enumeration_model_updates_permitted
+      begin
+        klass.enumeration_model_updates_permitted = true
+        klass.purge_enumerations_cache
+
+        yield klass
+        BookingStatus.should_receive(:name_column).twice.and_return('name_column')
+        BookingStatus.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'name_column'))
+        expect{
+          BookingStatus.send(:all_by_name)
+        }.to raise_error(TypeError)
+      ensure
+        klass.purge_enumerations_cache
+        klass.enumeration_model_updates_permitted = tmp
+      end
+    end
+
+    it 'should raise a TypeError if the name column is not defined' do
+      flush_cache(BookingStatus) do |klass|
+        klass.should_receive(:name_column).twice.and_return('name_column')
+        klass.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'name_column'))
+        expect{
+          klass.send(:all_by_name)
+        }.to raise_error(TypeError)
+      end
+    end
+
+    it 'should raise NoMethodError for any unrelated NoMethodError' do
+      flush_cache(BookingStatus) do |klass|
+        klass.should_receive(:name_column).and_return('name_column')
+        klass.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'foo'))
+        expect{
+          klass.send(:all_by_name)
+        }.to raise_error(NoMethodError)
+      end
+    end
+  end
+
+  describe 'purge_enumerations_cache' do
+    it 'should raise a runtime error unless enumeration model updates are permitted' do
+      tmp = BookingStatus.enumeration_model_updates_permitted
+      begin
+        BookingStatus.enumeration_model_updates_permitted = false
+        expect{
+          BookingStatus.purge_enumerations_cache
+        }.to raise_error(RuntimeError)
+      ensure
+        BookingStatus.enumeration_model_updates_permitted = tmp
+      end
+    end
+  end
+
+  describe 'enforce' do
+    {
+        :enforce_strict_literals => :foo,
+        :enforce_strict_ids => 1,
+        :enforce_strict_symbols => :foo
+    }.each_pair do |method, argument|
+      it "should raise ActiveRecord::RecordNotFound when #{method} is called" do
+        expect{
+          BookingStatus.send(method, argument)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe '[]' do
 
     context 'record exists' do
@@ -231,6 +300,19 @@ describe 'acts_as_enumerated' do
       it '=== should reject nil' do
         BookingStatus[:confirmed].should_not === nil
       end
+
+      it '=== should match if a member of the array matches' do
+        BookingStatus[:confirmed].should === [:confirmed, :foo]
+      end
+
+      it '=== should reject if no member of the array matches' do
+        BookingStatus[:confirmed].should_not === [:baz, :bar, :foo]
+      end
+
+      it '=== should reject random garbage' do
+        BookingStatus[:confirmed].should_not === 2.5
+      end
+
     end
 
     context ':name_column is specified and on_lookup_failure defined as enforce_strict_literals' do
@@ -258,6 +340,19 @@ describe 'acts_as_enumerated' do
       it '=== should reject nil' do
         State[:IL].should_not === nil
       end
+
+      it '=== should match if a member of the array matches' do
+        State[:IL].should === [:IL, :foo]
+      end
+
+      it '=== should reject if no member of the array matches' do
+        State[:IL].should_not === [nil, nil, nil]
+      end
+
+      it '=== should reject random garbage' do
+        State[:IL].should_not === 2.5
+      end
+
     end
   end
 
@@ -279,8 +374,12 @@ describe 'acts_as_enumerated' do
   describe 'in?' do
     it 'in? should find by Symbol, String, or Fixnum' do
       [1, :IL, 'IL'].each do |arg|
-        State[:IL].in?(arg).should == true
+        State[:IL].in?(arg).should be_true
       end
+    end
+
+    it 'in? should return false if nothing matches' do
+      State[:IL].in?(nil).should be_false
     end
   end
 

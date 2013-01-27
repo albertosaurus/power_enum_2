@@ -12,3 +12,7 @@ group :development, :test do
   # Use standard genspec once my pull request is merged.
   gem 'genspec', '>= 0.2.7', :git => 'git://github.com/albertosaurus/genspec.git'
 end
+
+group :test do
+  gem 'simplecov', :require => false
+end
