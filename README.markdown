@@ -2,6 +2,8 @@
 
 https://github.com/albertosaurus/power_enum
 
+[![Build Status](https://travis-ci.org/albertosaurus/power_enum.png)](https://travis-ci.org/albertosaurus/power_enum)
+
 Enumerations for Rails 3.1/3.2 Done Right.
 
 NOTICE: Version 1.0 removes support from Rails 3.0, as that version of Rails has no longer been supported for
