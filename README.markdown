@@ -726,15 +726,25 @@ Of course `Booking.new.status.should === :received` still works, but is liable t
 
 ## How to run tests
 
+### Prepare the test database
+
+#### Automatically (preferred)
+
+Execute the test setup script:
+
+    script/test_setup.sh
+
+#### Manually (if required)
+
 Go to the 'dummy' project:
     
     cd ./spec/dummy
 
+If this is your first time, create the test database
+
+    RAILS_ENV=test bundle exec rake db:create
+
 Run migrations for test environment:
-
-    RAILS_ENV=test rake db:migrate
-
-You may need to use `bundle exec` if you have gem conflicts:
 
     RAILS_ENV=test bundle exec rake db:migrate
 
@@ -742,9 +752,9 @@ Go back to gem root directory:
 
     cd ../../
 
-And finally run tests:
+### Run tests
 
-    rake spec
+    bundle exec rake spec
 
 ## Copyrights and License
 
@@ -760,5 +770,5 @@ Released under the MIT License.  See the LICENSE file for more details.
 Contributions are welcome.  However, please make sure of the following before issuing a pull request:
 
 * All specs are passing.
-* Any new features have test coverage.
+* Any new features have test coverage.  Use the SimpleCov report to confirm.
 * Anything that breaks backward compatibility has a very good reason for doing so.

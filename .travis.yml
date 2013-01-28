@@ -1,0 +1,11 @@
+language: ruby
+before_script:
+  - script/test_setup.sh
+script: 'bundle exec rake spec'
+rvm:
+  - 1.9.3
+  - jruby-19mode
+jdk:
+  - openjdk7
+  - oraclejdk7
+
