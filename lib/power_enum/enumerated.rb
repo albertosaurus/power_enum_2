@@ -77,41 +77,56 @@ module PowerEnum::Enumerated
         end
       end
 
-      name_column = if options.has_key?(:name_column) && !options[:name_column].blank? then
-                      options[:name_column].to_s.to_sym
-                    else
-                      :name
-                    end
-
-      alias_name = if options.has_key?(:alias_name) then
-                     options[:alias_name]
-                   else
-                     true
-                   end
-
       class_attribute :acts_enumerated_name_column
-      self.acts_enumerated_name_column = name_column
+      self.acts_enumerated_name_column = get_name_column(options)
 
       unless self.is_a? PowerEnum::Enumerated::EnumClassMethods
-        extend PowerEnum::Enumerated::EnumClassMethods
-
-        class_eval do
-          include PowerEnum::Enumerated::EnumInstanceMethods
-
-          before_save :enumeration_model_update
-          before_destroy :enumeration_model_update
-          validates name_column, :presence => true, :uniqueness => true
-
-          define_method :__enum_name__ do
-            read_attribute( name_column ).to_s
-          end
-
-          if alias_name && name_column != :name
-            alias_method :name, :__enum_name__
-          end
-        end # class_eval
+        extend_enum_class_methods( options )
       end
     end
+
+    # Injects the class methods into model
+    def extend_enum_class_methods(options) #:nodoc:
+      extend PowerEnum::Enumerated::EnumClassMethods
+
+      class_eval do
+        include PowerEnum::Enumerated::EnumInstanceMethods
+
+        before_save :enumeration_model_update
+        before_destroy :enumeration_model_update
+        validates acts_enumerated_name_column, :presence => true, :uniqueness => true
+
+        define_method :__enum_name__ do
+          read_attribute(acts_enumerated_name_column).to_s
+        end
+
+        if should_alias_name?(options) && acts_enumerated_name_column != :name
+          alias_method :name, :__enum_name__
+        end
+      end # class_eval
+
+    end
+    private :extend_enum_class_methods
+
+    # Determines if the name column should be explicitly aliased
+    def should_alias_name?(options) #:nodoc:
+      if options.has_key?(:alias_name) then
+        options[:alias_name]
+      else
+        true
+      end
+    end
+    private :should_alias_name?
+
+    # Extracts the name column from options or gives the default
+    def get_name_column(options) #:nodoc:
+      if options.has_key?(:name_column) && !options[:name_column].blank? then
+        options[:name_column].to_s.to_sym
+      else
+        :name
+      end
+    end
+    private :get_name_column
   end
 
   module EnumClassMethods

@@ -19,7 +19,7 @@ module PowerEnum::HasEnumerated # :nodoc:
       enumerated_attributes.include? attribute.to_s
     end
 
-    # Defines an enumerated attribute with the given name on the model.  Also accepts a hash of options as an
+    # Defines an enumerated attribute with the given attribute_name on the model.  Also accepts a hash of options as an
     # optional second argument.
     #
     # === Supported options
@@ -37,7 +37,7 @@ module PowerEnum::HasEnumerated # :nodoc:
     #   subsequent lookups, but the model will fail validation.
     #   2) You can specify an instance method to be called in the case of a lookup failure. The method signature is
     #   as follows:
-    #     <tt>your_lookup_handler(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)</tt>
+    #     <tt>your_lookup_handler(operation, attribute_name, name_foreign_key, acts_enumerated_class_name, lookup_value)</tt>
     #   The 'operation' arg will be either :read or :write.  In the case of :read you are expected to return
     #   something or raise an exception, while in the case of a :write you don't have to return anything.  Note that
     #   there's enough information in the method signature that you can specify one method to handle all lookup
@@ -89,35 +89,62 @@ module PowerEnum::HasEnumerated # :nodoc:
       reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
       self.reflections = self.reflections.merge(part_id => reflection)
 
-      name            = part_id.to_s
-      class_name      = reflection.class_name
-      foreign_key     = reflection.foreign_key
-      failure_opt     = options[:on_lookup_failure]
-      empty_name      = options[:permit_empty_name]
-      create_scope    = options[:create_scope]
+      attribute_name   = part_id.to_s
+      class_name       = reflection.class_name
+      foreign_key      = reflection.foreign_key
+      failure_opt      = options[:on_lookup_failure]
+      allow_empty_name = options[:permit_empty_name]
+      create_scope     = options[:create_scope]
 
       failure_handler = get_lookup_failure_handler(failure_opt)
 
-      class_attribute "has_enumerated_#{name}_error_handler"
-      self.send("has_enumerated_#{name}_error_handler=", failure_handler)
+      class_attribute "has_enumerated_#{attribute_name}_error_handler"
+      self.send( "has_enumerated_#{attribute_name}_error_handler=", failure_handler )
 
+      define_enum_accessor attribute_name, class_name, foreign_key, failure_handler
+      define_enum_writer   attribute_name, class_name, foreign_key, failure_handler, allow_empty_name
+
+      if failure_opt.to_s == 'validation_error'
+        define_validation_error( attribute_name )
+      end
+
+      enumerated_attributes << attribute_name
+
+      if options.has_key?(:default)
+        define_default_enum_value( attribute_name, options[:default] )
+      end
+
+      unless create_scope == false
+        define_enum_scope( attribute_name, class_name, foreign_key )
+      end
+
+    end # has_enumerated
+
+    # Defines the accessor method
+    def define_enum_accessor(attribute_name, class_name, foreign_key, failure_handler) #:nodoc:
       module_eval( <<-end_eval, __FILE__, __LINE__ )
-        def #{name}
-          if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
-            return @invalid_enum_values[:#{name}]
+        def #{attribute_name}
+          if @invalid_enum_values && @invalid_enum_values.has_key?(:#{attribute_name})
+            return @invalid_enum_values[:#{attribute_name}]
           end
           rval = #{class_name}.lookup_id(self.#{foreign_key})
           if rval.nil? && #{!failure_handler.nil?}
-            self.class.has_enumerated_#{name}_error_handler.call(self, :read, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
+            self.class.has_enumerated_#{attribute_name}_error_handler.call(self, :read, #{attribute_name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
           else
             rval
           end
         end
+      end_eval
+    end
+    private :define_enum_accessor
 
-        def #{name}=(arg)
+    # Defines the enum attribute writer method
+    def define_enum_writer(attribute_name, class_name, foreign_key, failure_handler, allow_empty_name) #:nodoc:
+      module_eval( <<-end_eval, __FILE__, __LINE__ )
+        def #{attribute_name}=(arg)
           @invalid_enum_values ||= {}
 
-          #{!empty_name ? 'arg = nil if arg.blank?' : ''}
+          #{!allow_empty_name ? 'arg = nil if arg.blank?' : ''}
           case arg
           when #{class_name}
             val = #{class_name}.lookup_id(arg.id)
@@ -129,91 +156,94 @@ module PowerEnum::HasEnumerated # :nodoc:
             val = #{class_name}.lookup_id(arg)
           when nil
             self.#{foreign_key} = nil
-            @invalid_enum_values.delete :#{name}
+            @invalid_enum_values.delete :#{attribute_name}
             return nil
           else
-            raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"
+            raise TypeError, "#{self.name}: #{attribute_name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.attribute_name}"
           end
 
           if val.nil?
             if #{failure_handler.nil?}
-              raise ArgumentError, "#{self.name}: #{name}= can't assign a #{class_name} for a value of (\#{arg.inspect})"
+              raise ArgumentError, "#{self.name}: #{attribute_name}= can't assign a #{class_name} for a value of (\#{arg.inspect})"
             else
-              @invalid_enum_values.delete :#{name}
-              self.class.has_enumerated_#{name}_error_handler.call(self, :write, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, arg)
+              @invalid_enum_values.delete :#{attribute_name}
+              self.class.has_enumerated_#{attribute_name}_error_handler.call(self, :write, #{attribute_name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, arg)
             end
           else
-            @invalid_enum_values.delete :#{name}
+            @invalid_enum_values.delete :#{attribute_name}
             self.#{foreign_key} = val.id
           end
         end
 
-        alias_method :'#{name}_bak=', :'#{name}='
+        alias_method :'#{attribute_name}_bak=', :'#{attribute_name}='
       end_eval
+    end
+    private :define_enum_writer
 
-      if failure_opt.to_s == 'validation_error'
-        module_eval( <<-end_eval, __FILE__, __LINE__ )
+    # Defines the default value for the enumerated attribute.
+    def define_default_enum_value(attribute_name, default) #:nodoc:
+      set_default_method = "set_default_value_for_#{attribute_name}".to_sym
+
+      after_initialize set_default_method
+
+      define_method set_default_method do
+        self.send("#{attribute_name}=", default) if self.send(attribute_name).nil?
+      end
+      private set_default_method
+    end
+    private :define_default_enum_value
+
+    # Defines validation_error handling mechanism
+    def define_validation_error(attribute_name) #:nodoc:
+      module_eval(<<-end_eval, __FILE__, __LINE__)
           validate do
-            if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
-              errors.add(:#{name}, "is invalid")
+            if @invalid_enum_values && @invalid_enum_values.has_key?(:#{attribute_name})
+              errors.add(:#{attribute_name}, "is invalid")
             end
           end
 
-          def validation_error(operation, name, name_foreign_key, acts_enumerated_class_name, lookup_value)
+          def validation_error(operation, attribute_name, name_foreign_key, acts_enumerated_class_name, lookup_value)
             @invalid_enum_values ||= {}
             if operation == :write
-              @invalid_enum_values[name.to_sym] = lookup_value
+              @invalid_enum_values[attribute_name.to_sym] = lookup_value
             else
               nil
             end
           end
           private :validation_error
-        end_eval
-      end
+      end_eval
+    end
+    private :define_validation_error
 
-      enumerated_attributes << name
-
-      if options.has_key?(:default)
-        default = options[:default]
-        set_default_method = "set_default_value_for_#{name}".to_sym
-
-        after_initialize set_default_method
-
-        define_method set_default_method do
-          self.send("#{name}=", default) if self.send(name).nil?
-        end
-        private set_default_method
-      end
-
-      unless create_scope == false
-        module_eval( <<-end_eval, __FILE__, __LINE__)
-          scope :with_#{name}, lambda { |*args|
+    # Defines the enum scopes on the model
+    def define_enum_scope(attribute_name, class_name, foreign_key) #:nodoc:
+      module_eval(<<-end_eval, __FILE__, __LINE__)
+          scope :with_#{attribute_name}, lambda { |*args|
             ids = args.map{ |arg|
               n = #{class_name}[arg]
             }
             where(:#{foreign_key} => ids)
           }
-          scope :exclude_#{name}, lambda {|*args|
+          scope :exclude_#{attribute_name}, lambda {|*args|
             ids = #{class_name}.all - args.map{ |arg|
               n = #{class_name}[arg]
             }
             where(:#{foreign_key} => ids)
           }
-        end_eval
+      end_eval
 
-        if (name_p = name.pluralize) != name
-          module_eval( <<-end_eval, __FILE__, __LINE__)
+      if (name_p = attribute_name.pluralize) != attribute_name
+        module_eval(<<-end_eval, __FILE__, __LINE__)
             class << self
-              alias_method :with_#{name_p}, :with_#{name}
-              alias_method :exclude_#{name_p}, :exclude_#{name}
+              alias_method :with_#{name_p}, :with_#{attribute_name}
+              alias_method :exclude_#{name_p}, :exclude_#{attribute_name}
             end
-          end_eval
-        end
+        end_eval
       end
+    end
+    private :define_enum_scope
 
-    end #has_enumerated
-
-    # If the lookup failure handler is a method name, wraps it in a lambda.
+    # If the lookup failure handler is a method attribute_name, wraps it in a lambda.
     def get_lookup_failure_handler(failure_opt) # :nodoc:
       if failure_opt.nil?
         nil
