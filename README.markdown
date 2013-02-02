@@ -45,7 +45,7 @@ See "How to use it" below for more information.
 
 ## Requirements
 
-* Ruby 1.8.7, 1.9.2, 1.9.3, JRuby 1.6+
+* Ruby 1.8.7, 1.9.2, 1.9.3, JRuby 1.6+ (Ruby 1.9.3 required for development)
 * Rails 3.1, 3.2
 
 ## Installation
