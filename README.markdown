@@ -58,6 +58,9 @@ then run
 
     bundle install
 
+Starting with version 1.1.0, the gem is signed.  The public key is available
+here: https://github.com/albertosaurus/power_enum (look for gem-public\_cert.pem)
+
 ## Gem Contents
 
 This package adds:
