@@ -3,7 +3,7 @@
 https://github.com/albertosaurus/power_enum
 
 [![Build Status](https://travis-ci.org/albertosaurus/power_enum.png)](https://travis-ci.org/albertosaurus/power_enum)
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/albertosaurus/power_enum)
+[![Code Climate](https://codeclimate.com/github/albertosaurus/power_enum.png)](https://codeclimate.com/github/albertosaurus/power_enum)
 
 Enumerations for Rails 3.1/3.2 Done Right.
 
