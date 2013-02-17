@@ -14,27 +14,11 @@ class PowerEnum < Rails::Engine
         include PowerEnum::Schema::SchemaStatements
       end
 
-      if defined?(ActiveRecord::Migration::CommandRecorder)
-        ActiveRecord::Migration::CommandRecorder.class_eval do
-          include PowerEnum::Migration::CommandRecorder
-        end
+      ActiveRecord::Migration::CommandRecorder.class_eval do
+        include PowerEnum::Migration::CommandRecorder
       end
 
-      # patch Module to support VirtualEnumerations
-      ::Module.module_eval do
-
-        alias_method :enumerations_original_const_missing, :const_missing
-
-        # Override const_missing to see if VirtualEnumerations can create it.
-        def const_missing(const_id)
-          # let rails have a go at loading it
-          enumerations_original_const_missing(const_id)
-        rescue NameError
-          # now it's our turn
-          ActiveRecord::VirtualEnumerations.synthesize_if_defined(const_id) or raise
-        end
-
-      end
+      ActiveRecord::VirtualEnumerations.patch_const_lookup
     end
 
   end

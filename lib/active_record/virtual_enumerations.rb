@@ -54,13 +54,35 @@ module ActiveRecord # :nodoc:
   #
   #     config.define :booking_status, :connector_type, :color, :order => :name
   #
-  # STI is also supported:
+  # Single Table Inheritance is also supported:
   #
   # Example:
   #
   #     config.define :base_enum, :name_column => ;foo
   #     config.define :booking_status, :connector_type, :color, :extends => :base_enum
-  module VirtualEnumerations # :nodoc:
+  module VirtualEnumerations
+
+    # Patches Module#const_missing to enable us to dynamically create enum
+    # classes at runtime.
+    def self.patch_const_lookup
+
+      # patch Module to support VirtualEnumerations
+      ::Module.module_eval do
+
+        alias_method :enumerations_original_const_missing, :const_missing
+
+        # Override const_missing to see if VirtualEnumerations can create it.
+        def const_missing(const_id)
+          # let rails have a go at loading it
+          enumerations_original_const_missing(const_id)
+        rescue NameError
+          # now it's our turn
+          ActiveRecord::VirtualEnumerations.synthesize_if_defined(const_id) or raise
+        end
+
+      end
+
+    end
 
     # Defines enumeration classes.  Passes a config object to the given block
     # which is used to define the virtual enumerations.  Call config.define for

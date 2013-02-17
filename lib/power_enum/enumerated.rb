@@ -143,13 +143,6 @@ module PowerEnum::Enumerated
       @all = load_all.collect{|val| val.freeze}.freeze
     end
 
-    def load_all
-      conditions = self.acts_enumerated_conditions
-      order = self.acts_enumerated_order
-      where(conditions).order(order)
-    end
-    private :load_all
-
     # Returns all the active enum values.  See the 'active?' instance method.
     def active
       return @all_active if @all_active
@@ -176,22 +169,7 @@ module PowerEnum::Enumerated
         nil
       when 1
         arg = args.first
-        case arg
-        when Symbol
-          return_val = lookup_name(arg.id2name) and return return_val
-        when String
-          return_val = lookup_name(arg) and return return_val
-        when Fixnum
-          return_val = lookup_id(arg) and return return_val
-        when self
-          return arg
-        when nil
-          nil
-        else
-          raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"
-        end
-
-        handle_lookup_failure(arg)
+        lookup_enum_by_type(arg) || handle_lookup_failure(arg)
       else
         args.map{ |item| self[item] }.uniq
       end
@@ -215,21 +193,6 @@ module PowerEnum::Enumerated
         false
       end
     end
-
-    # Deals with a lookup failure for the given argument.
-    def handle_lookup_failure(arg)
-      if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
-        case lookup_failure_handler
-        when Proc
-          lookup_failure_handler.call(arg)
-        else
-          self.send(lookup_failure_handler, arg)
-        end
-      else
-        self.send(:enforce_none, arg)
-      end
-    end
-    private :handle_lookup_failure
 
     # Enum lookup by id
     def lookup_id(arg)
@@ -311,6 +274,48 @@ module PowerEnum::Enumerated
     end
 
     # ---Private methods---
+
+    def load_all
+      conditions = self.acts_enumerated_conditions
+      order = self.acts_enumerated_order
+      where(conditions).order(order)
+    end
+    private :load_all
+
+    # Looks up the enum based on the type of the argument.
+    def lookup_enum_by_type(arg)
+      case arg
+      when Symbol
+        lookup_name(arg.id2name)
+      when String
+        lookup_name(arg)
+      when Fixnum
+        lookup_id(arg)
+      when self
+        arg
+      when nil
+        nil
+      else
+        raise TypeError, "#{self.name}[]: argument should"\
+                         " be a String, Symbol or Fixnum but got a: #{arg.class.name}"
+      end
+    end
+    private :lookup_enum_by_type
+
+    # Deals with a lookup failure for the given argument.
+    def handle_lookup_failure(arg)
+      if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
+        case lookup_failure_handler
+        when Proc
+          lookup_failure_handler.call(arg)
+        else
+          self.send(lookup_failure_handler, arg)
+        end
+      else
+        self.send(:enforce_none, arg)
+      end
+    end
+    private :handle_lookup_failure
 
     # Returns a hash of all enumeration members keyed by their ids.
     def all_by_id
