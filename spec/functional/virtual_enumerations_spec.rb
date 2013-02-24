@@ -2,6 +2,13 @@ require 'spec_helper'
 
 describe ActiveRecord::VirtualEnumerations do
 
+  it 'should not patch Module#const_missing more than once' do
+    # At this point, const_missing is already patched.
+    ::Module.should_not_receive :alias_method
+
+    subject.patch_const_lookup
+  end
+
   # See spec/dummy/config/initializers/virtual_enumerations.rb
 
   it 'should define VirtualEnum enum model' do

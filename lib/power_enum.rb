@@ -17,8 +17,6 @@ class PowerEnum < Rails::Engine
       ActiveRecord::Migration::CommandRecorder.class_eval do
         include PowerEnum::Migration::CommandRecorder
       end
-
-      ActiveRecord::VirtualEnumerations.patch_const_lookup
     end
 
   end

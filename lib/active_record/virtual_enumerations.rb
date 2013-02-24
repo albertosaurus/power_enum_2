@@ -65,21 +65,23 @@ module ActiveRecord # :nodoc:
     # Patches Module#const_missing to enable us to dynamically create enum
     # classes at runtime.
     def self.patch_const_lookup
+      # Make sure we haven't patched Module already
+      unless ::Module.respond_to?(:enumerations_original_const_missing)
+        # patch Module to support VirtualEnumerations
+        ::Module.module_eval do
 
-      # patch Module to support VirtualEnumerations
-      ::Module.module_eval do
+          alias_method :enumerations_original_const_missing, :const_missing
 
-        alias_method :enumerations_original_const_missing, :const_missing
+          # Override const_missing to see if VirtualEnumerations can create it.
+          def const_missing(const_id)
+            # let rails have a go at loading it
+            enumerations_original_const_missing(const_id)
+          rescue NameError
+            # now it's our turn
+            ActiveRecord::VirtualEnumerations.synthesize_if_defined(const_id) or raise
+          end
 
-        # Override const_missing to see if VirtualEnumerations can create it.
-        def const_missing(const_id)
-          # let rails have a go at loading it
-          enumerations_original_const_missing(const_id)
-        rescue NameError
-          # now it's our turn
-          ActiveRecord::VirtualEnumerations.synthesize_if_defined(const_id) or raise
         end
-
       end
 
     end
@@ -89,6 +91,7 @@ module ActiveRecord # :nodoc:
     # each enum or enums with a given set of options.
     def self.define
       raise ArgumentError, "#{self.name}: must pass a block to define()" unless block_given?
+      patch_const_lookup
       config = ActiveRecord::VirtualEnumerations::Config.new
       yield config
       @config = config # we only overwrite config if no exceptions were thrown
