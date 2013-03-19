@@ -40,16 +40,60 @@ module PowerEnum::Reflection
   class EnumerationReflection < ActiveRecord::Reflection::MacroReflection
     attr_reader :counter_cache_column
 
+    # See ActiveRecore::Reflection::MacroReflection
     def initialize( name, options, active_record )
       super :has_enumerated, name, options, active_record
     end
-    
+
+    # Returns the class name of the enum
     def class_name
       @class_name ||= (@options[:class_name] || @name).to_s.camelize
     end
-    
+
+    # Returns the foreign key on the association owner's table.
     def foreign_key
       @foreign_key ||= (@options[:foreign_key] || "#{@name}_id").to_s
     end
+
+    # Returns the name of the enum table
+    def table_name
+      @table_name ||= self.class.const_get(class_name).table_name
+    end
+
+    # Returns the primary key of the active record model that owns the has_enumerated
+    # association.
+    def association_primary_key
+      active_record.primary_key
+    end
+
+    # Does nothing.
+    def check_validity!; end
+
+    # Returns nil
+    def source_reflection;
+      nil
+    end
+
+    # Returns nil
+    def type
+      nil
+    end
+
+    # In this case, returns [[]]
+    def conditions
+      [[]]
+    end
+
+    # Returns :belongs_to.  Kind of hackish, but otherwise AREL joins logic
+    # gets confused.
+    def source_macro
+      :belongs_to
+    end
+
+    # Returns an array of this instance as the only member.
+    def chain
+      [self]
+    end
+
   end
 end
