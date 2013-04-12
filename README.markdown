@@ -50,6 +50,25 @@ See "How to use it" below for more information.
 
 ## Installation
 
+### READ THIS FIRST
+
+Starting with version 1.1.0, the gem is signed.  The public key is available
+here: https://github.com/albertosaurus/power_enum (look for gem-public\_cert.pem).  Hence, if
+you can get an error like the following if you're installing in `HighSecurity` mode.
+
+```
+ERROR:  While executing gem ... (RuntimeError)
+    Couldn't verify data signature: Untrusted Signing Chain Root: cert = '/CN=arthur.shagall/DC=gmail/DC=com', error = 'path "/home/arthur/.gem/trust/cert-a4fd51288a74063d0b79548dfa4c554344b3c65c.pem" does not exist'
+```
+
+If this happens, you need to add the PowerEnum public cert to your gem cert
+store.  Download the certificate (gem-public\_cert.pem) and run the following.
+
+    gem cert -a gem-public_cert.pem
+
+More information is available at http://docs.rubygems.org/read/chapter/21
+which I strongly urge you to read.
+
 Add the gem to your Gemfile
 
     gem 'power_enum'
@@ -57,9 +76,6 @@ Add the gem to your Gemfile
 then run
 
     bundle install
-
-Starting with version 1.1.0, the gem is signed.  The public key is available
-here: https://github.com/albertosaurus/power_enum (look for gem-public\_cert.pem)
 
 ## Gem Contents
 
