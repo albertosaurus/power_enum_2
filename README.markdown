@@ -58,7 +58,7 @@ you can get an error like the following if you're installing in `HighSecurity` m
 
 ```
 ERROR:  While executing gem ... (RuntimeError)
-    Couldn't verify data signature: Untrusted Signing Chain Root: cert = '/CN=arthur.shagall/DC=gmail/DC=com', error = 'path "/home/arthur/.gem/trust/cert-a4fd51288a74063d0b79548dfa4c554344b3c65c.pem" does not exist'
+    Couldn't verify data signature: Untrusted Signing Chain Root: cert = 'cert name', error = 'path "/your_gem_home/.gem/trust/cert-blah.pem" does not exist'
 ```
 
 If this happens, you need to add the PowerEnum public cert to your gem cert
@@ -69,6 +69,8 @@ store.  Download the certificate (gem-public\_cert.pem) and run the following.
 More information is available at http://docs.rubygems.org/read/chapter/21
 which I strongly urge you to read.
 
+#### Using Bundler
+
 Add the gem to your Gemfile
 
     gem 'power_enum'
@@ -76,6 +78,14 @@ Add the gem to your Gemfile
 then run
 
     bundle install
+
+#### Manual Installation
+
+    gem install power_enum
+
+If you want to verify the gem signature, use the `HighSecurity` installation option.
+
+    gem install power_enum -P HighSecurity
 
 ## Gem Contents
 
