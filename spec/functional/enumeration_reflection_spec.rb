@@ -10,6 +10,8 @@ describe PowerEnum::Reflection::EnumerationReflection do
     [:state, :status].each do |enum_attr|
       it "should have a reflection for #{enum_attr}" do
         reflection = Booking.reflections[enum_attr]
+        Booking.reflect_on_enumerated(enum_attr).should == reflection
+
         reflection.should_not be_nil
         reflection.chain.should =~ [reflection]
         reflection.check_validity!
@@ -17,8 +19,39 @@ describe PowerEnum::Reflection::EnumerationReflection do
         reflection.conditions.should == [[]]
         reflection.type.should be_nil
         reflection.source_macro.should == :belongs_to
-        reflection.belongs_to?.should be_false
+        reflection.belongs_to?.should be_true
+        reflection.name.to_sym.should == enum_attr
+        reflection.active_record.should == Booking
+        reflection.should respond_to(:counter_cache_column)
+        reflection.macro.should == :has_enumerated
+        reflection.should be_kind_of(PowerEnum::Reflection::EnumerationReflection)
       end
+    end
+
+    it 'should be able to reflect on all enumerated' do
+      Booking.should respond_to(:reflect_on_all_enumerated)
+      Booking.reflect_on_all_enumerated.map(&:name).to_set.should == [:state, :status].to_set
+    end
+
+    it 'should include enumerations as associations' do
+      Booking.reflect_on_all_associations.map(&:name).to_set.should == [:state, :status].to_set
+    end
+
+    it 'should have reflection on has_enumerated association' do
+      Booking.reflect_on_enumerated(:state).should_not be_nil
+      Booking.reflect_on_enumerated('status').should_not be_nil
+    end
+
+    it 'should have reflection on association' do
+      Booking.reflect_on_association(:state).should_not be_nil
+      Booking.reflect_on_association('status').should_not be_nil
+    end
+
+    it 'should have reflection properly built' do
+      reflection = Booking.reflect_on_enumerated(:status)
+      reflection.klass.should == BookingStatus
+      reflection.options[:foreign_key].should == :status_id
+      reflection.options[:on_lookup_failure].should == :not_found_status_handler
     end
 
     it 'should have the correct table name' do

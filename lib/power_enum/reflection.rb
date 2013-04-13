@@ -96,9 +96,9 @@ module PowerEnum::Reflection
     end
 
     # Normally defined on AR::AssociationReflection::MacroReflection.
-    # Absence of this method on EnumerationReflection causes ransack_ui to barf.
+    # Realistically, this is a belongs-to relationship.
     def belongs_to?
-      false
+      true
     end
 
   end
