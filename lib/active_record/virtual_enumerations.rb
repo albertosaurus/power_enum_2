@@ -114,7 +114,9 @@ module ActiveRecord # :nodoc:
       end
     end
 
-    def self.inject_class_options( virtual_enum_class, options ) # :nodoc:
+    # Evals the given set of options within the context of the given class
+    # @private
+    def self.inject_class_options( virtual_enum_class, options )
       # Declare it acts_as_enumerated
       virtual_enum_class.class_eval do
         acts_as_enumerated :conditions        => options[:conditions],

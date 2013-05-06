@@ -4,6 +4,7 @@ gem 'rails', '~> 3.1'
 
 group :development do
   gem 'jeweler'
+  gem 'yard'
 end
 
 group :development, :test do
@@ -16,3 +17,4 @@ end
 group :test do
   gem 'simplecov', :require => false
 end
+

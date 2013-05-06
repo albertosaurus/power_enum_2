@@ -1,6 +1,12 @@
 require "rails"
 require 'testing/rspec'
 
+# Power Enum allows you to treat instances of your ActiveRecord models as
+# though they were an enumeration of values. It allows you to cleanly solve
+# many of the problems that the traditional Rails alternatives handle poorly
+# if at all. It is particularly suitable for scenarios where your Rails
+# application is not the only user of the database, such as when it's used for
+# analytics or reporting.
 class PowerEnum < Rails::Engine
   config.autoload_paths << File.expand_path(File.join(__FILE__, "../"))
 

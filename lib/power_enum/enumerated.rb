@@ -2,9 +2,11 @@
 # Copyright (c) 2012 Arthur Shagall
 # Released under the MIT License.  See the LICENSE file for more details.
 
+# Implementation of acts_as_enumerated
 module PowerEnum::Enumerated
   extend ActiveSupport::Concern
 
+  # Class level methods injected into ActiveRecord.
   module ClassMethods
 
     # Returns false for ActiveRecord models that do not act as enumerated.
@@ -129,6 +131,8 @@ module PowerEnum::Enumerated
     private :get_name_column
   end
 
+  # These are class level methods which are patched into classes that act as
+  # enumerated
   module EnumClassMethods
     attr_accessor :enumeration_model_updates_permitted
 
@@ -336,7 +340,7 @@ module PowerEnum::Enumerated
     end
     private :all_by_name
 
-    def all_by_attribute(attr)
+    def all_by_attribute(attr) # :nodoc:
       aba = all.inject({}) { |memo, item|
         memo[item.send(attr)] = item
         memo
@@ -346,34 +350,36 @@ module PowerEnum::Enumerated
     end
     private :all_by_attribute
 
-    def enforce_none(arg)
+    def enforce_none(arg) # :nodoc:
       nil
     end
     private :enforce_none
 
-    def enforce_strict(arg)
+    def enforce_strict(arg) # :nodoc:
       raise_record_not_found(arg)
     end
     private :enforce_strict
 
-    def enforce_strict_literals(arg)
+    def enforce_strict_literals(arg) # :nodoc:
       raise_record_not_found(arg) if (Fixnum === arg) || (Symbol === arg)
       nil
     end
     private :enforce_strict_literals
 
-    def enforce_strict_ids(arg)
+    def enforce_strict_ids(arg) # :nodoc:
       raise_record_not_found(arg) if Fixnum === arg
       nil
     end
     private :enforce_strict_ids
 
-    def enforce_strict_symbols(arg)
+    def enforce_strict_symbols(arg) # :nodoc:
       raise_record_not_found(arg) if Symbol === arg
       nil
     end
     private :enforce_strict_symbols
 
+    # raise the {ActiveRecord::RecordNotFound} error.
+    # @private
     def raise_record_not_found(arg)
       raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
     end
@@ -381,6 +387,7 @@ module PowerEnum::Enumerated
 
   end
 
+  # These are instance methods for objects which are enums.
   module EnumInstanceMethods
     # Behavior depends on the type of +arg+.
     #

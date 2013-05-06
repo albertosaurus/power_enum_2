@@ -1,10 +1,12 @@
 # Copyright (c) 2011 Arthur Shagall
 # Released under the MIT license.  See LICENSE for details.
 
+# Extensions to the migrations DSL
 module PowerEnum::Schema
+  # Patches AbstractAdapter with {PowerEnum::Schema::AbstractAdapter}
   module SchemaStatements
 
-    def self.included(base)
+    def self.included(base) # :nodoc:
       base::AbstractAdapter.class_eval do
         include PowerEnum::Schema::AbstractAdapter
       end
@@ -12,6 +14,7 @@ module PowerEnum::Schema
 
   end
 
+  # Implementation of the PowerEnum extensions to the migrations DSL.
   module AbstractAdapter
 
     # Creates a new enum table.  +enum_name+ will be automatically pluralized.

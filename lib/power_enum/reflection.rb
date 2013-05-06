@@ -7,20 +7,25 @@
 module PowerEnum::Reflection
   extend ActiveSupport::Concern
 
+  # Class-level extensions injected into ActiveRecord
   module ClassMethods
-    def self.extended(base)
+    def self.extended(base) # :nodoc:
       class << base
         alias_method_chain :reflect_on_all_associations, :enumeration
         alias_method_chain :reflect_on_association, :enumeration
       end
     end
 
+    # All {PowerEnum::Reflection::EnumerationReflection} reflections
     def reflect_on_all_enumerated
       # Need to give it a full namespace to avoid getting Rails confused in development
       # mode where all objects are reloaded on every request.
       reflections.values.grep(PowerEnum::Reflection::EnumerationReflection)
     end
 
+    # If the reflection of the given name is an EnumerationReflection, returns
+    # the reflection, otherwise returns nil.
+    # @return [PowerEnum::Reflection::EnumerationReflection]
     def reflect_on_enumerated( enumerated )
       reflections[enumerated.to_sym].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[enumerated.to_sym] : nil
     end

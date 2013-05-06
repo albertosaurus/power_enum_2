@@ -1,0 +1,6 @@
+--private
+--protected
+--title 'PowerEnum'
+--markup rdoc
+--verbose
+'lib/**/*.rb'

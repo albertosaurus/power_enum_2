@@ -2,10 +2,12 @@
 # Copyright (c) 2012 Arthur Shagall
 # Released under the MIT License.  See the LICENSE file for more details.
 
-module PowerEnum::HasEnumerated # :nodoc:
+# Implementation of has_enumerated
+module PowerEnum::HasEnumerated
 
   extend ActiveSupport::Concern
 
+  # Class-level behavior injected into ActiveRecord to support has_enumerated
   module ClassMethods
 
     # Returns a list of all the attributes on the ActiveRecord model which are enumerated.

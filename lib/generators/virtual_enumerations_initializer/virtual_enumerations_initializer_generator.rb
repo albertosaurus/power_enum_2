@@ -7,6 +7,7 @@ class VirtualEnumerationsInitializerGenerator < Rails::Generators::Base
 
   argument :initializer_name, :type => :string, :default => 'virtual_enumerations'
 
+  # Writes the virtual enumerations initializer to config/initializers
   def generate_virtual_enum_initializer
     template 'virtual_enumerations.rb.erb', "config/initializers/#{initializer_name}.rb"
   end
