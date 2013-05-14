@@ -607,7 +607,7 @@ describe 'acts_as_enumerated' do
     end
   end
 
-  context 'using class method as scopes' do
+  context 'when class methods are used as scopes' do
     before { State.enumeration_model_updates_permitted = true  }
     after  { State.enumeration_model_updates_permitted = false }
 
@@ -615,7 +615,7 @@ describe 'acts_as_enumerated' do
       State.count.should == 3
       State.purge_enumerations_cache
 
-      # .acitve may call redefined .all which caches only values with passed scope(not all)
+      # .acitve may call redefined .all, which caches only values with passed scope(not all)
       State.where(:state_code => "IL").active
 
       State.all.size.should == 3
@@ -625,7 +625,7 @@ describe 'acts_as_enumerated' do
       State.count.should == 3
       State.purge_enumerations_cache
 
-      # .inacitve may call redefined .all which caches only values with passed scope(not all)
+      # .inacitve may call redefined .all, which caches only values with passed scope(not all)
       State.where(:state_code => "IL").inactive
 
       State.all.size.should == 3
