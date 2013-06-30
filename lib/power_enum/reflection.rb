@@ -47,7 +47,7 @@ module PowerEnum::Reflection
 
     # See ActiveRecore::Reflection::MacroReflection
     def initialize( name, options, active_record )
-      super :has_enumerated, name, options, active_record
+      super :has_enumerated, name, nil, options, active_record
     end
 
     # Returns the class name of the enum
@@ -104,6 +104,12 @@ module PowerEnum::Reflection
     # Realistically, this is a belongs-to relationship.
     def belongs_to?
       true
+    end
+
+    # An array of arrays of scopes. Each item in the outside array corresponds
+    # to a reflection in the #chain.
+    def scope_chain
+      scope ? [[scope]] : [[]]
     end
 
   end

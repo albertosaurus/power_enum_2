@@ -5,7 +5,12 @@ https://github.com/albertosaurus/power_enum
 [![Build Status](https://travis-ci.org/albertosaurus/power_enum.png)](https://travis-ci.org/albertosaurus/power_enum)
 [![Code Climate](https://codeclimate.com/github/albertosaurus/power_enum.png)](https://codeclimate.com/github/albertosaurus/power_enum)
 
-Enumerations for Rails 3.1/3.2 Done Right.
+Enumerations for Rails Done Right.
+
+## Versions
+
+* PowerEnum 2.X support Rails 4.
+* PowerEnum 1.X support Rails 3.1/3.2
 
 NOTICE: Version 1.0 removes support from Rails 3.0, as that version of Rails has no longer been supported for
 some time.  The last version to support Rails 3.0 was 0.11.1.
@@ -44,6 +49,13 @@ Booking.with_status( :provisional, :confirmed )
 See "How to use it" below for more information.
 
 ## Requirements
+
+### PowerEnum 2.X
+
+* Ruby 1.9.3, 2.0, JRuby 1.7+ (Ruby 1.9.3 or 2.0 required for development)
+* Rails 4.0
+
+### PowerEnum 1.X
 
 * Ruby 1.8.7, 1.9.2, 1.9.3, JRuby 1.6+ (Ruby 1.9.3 required for development)
 * Rails 3.1, 3.2

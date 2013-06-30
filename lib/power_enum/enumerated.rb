@@ -83,12 +83,34 @@ module PowerEnum::Enumerated
       self.acts_enumerated_name_column = get_name_column(options)
 
       unless self.is_a? PowerEnum::Enumerated::EnumClassMethods
+        preserve_query_aliases
         extend_enum_class_methods( options )
+      end
+    end
+
+    # Rails 4 delegates all the finder methods to 'all'. PowerEnum overrides 'all'. Hence,
+    # the need to re-alias the query methods.
+    def preserve_query_aliases
+      class << self
+        alias_method :__all, :all
+
+        # From ActiveRecord::Querying
+        delegate :find, :take, :take!, :first, :first!, :last, :last!, :exists?, :any?, :many?, :to => :__all
+        delegate :first_or_create, :first_or_create!, :first_or_initialize, :to => :__all
+        delegate :find_or_create_by, :find_or_create_by!, :find_or_initialize_by, :to => :__all
+        delegate :find_by, :find_by!, :to => :__all
+        delegate :destroy, :destroy_all, :delete, :delete_all, :update, :update_all, :to => :__all
+        delegate :find_each, :find_in_batches, :to => :__all
+        delegate :select, :group, :order, :except, :reorder, :limit, :offset, :joins,
+                 :where, :preload, :eager_load, :includes, :from, :lock, :readonly,
+                 :having, :create_with, :uniq, :distinct, :references, :none, :unscope, :to => :__all
+        delegate :count, :average, :minimum, :maximum, :sum, :calculate, :pluck, :ids, :to => :__all
       end
     end
 
     # Injects the class methods into model
     def extend_enum_class_methods(options) #:nodoc:
+
       extend PowerEnum::Enumerated::EnumClassMethods
 
       class_eval do
