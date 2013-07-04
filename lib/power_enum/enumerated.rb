@@ -92,7 +92,14 @@ module PowerEnum::Enumerated
     # the need to re-alias the query methods.
     def preserve_query_aliases
       class << self
-        alias_method :__all, :all
+        # I have to do the interesting hack below instead of using alias_method
+        # because there's some sort of weirdness going on with how __all binds
+        # to all in Ruby 2.0.
+        __all = self.instance_method(:all)
+
+        define_method(:__all) do
+          __all.bind(self).call
+        end
 
         # From ActiveRecord::Querying
         delegate :find, :take, :take!, :first, :first!, :last, :last!, :exists?, :any?, :many?, :to => :__all
