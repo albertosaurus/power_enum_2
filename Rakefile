@@ -10,7 +10,7 @@ It is particularly suitable for scenarios where your Rails application is not th
 when it's used for analytics or reporting.
     EOF
     gem.email = "arthur.shagall@gmail.com"
-    gem.homepage = "http://github.com/albertosaurus/power_enum"
+    gem.homepage = "http://github.com/albertosaurus/power_enum_2"
     gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
     gem.files = Dir["{lib}/**/*"]
     gem.signing_key = 'gem-private_key.pem'

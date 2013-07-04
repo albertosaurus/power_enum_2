@@ -290,8 +290,7 @@ class BookingStatus < ActiveRecord::Base
                       :on_lookup_failure => :optional_class_method, #This also works: lambda{ |arg| some_custom_action }
                       :name_column       => 'optional_name_column'  #If required, may override the default name column
                       :alias_name        => false                   #If set to false and have name_column set, will not
-                                                                    #  alias :name to the name column attribute
-                                                                    #  (version 0.9.0).
+                                                                    #  alias :name to the name column attribute.
 end
 ```
 
@@ -303,8 +302,8 @@ With that, your BookingStatus class will have the following methods defined:
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg. The arg value can be a
 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be
-a Fixnum, in which case the lookup will be against the BookingStatus.id field. Since version 0.5.3, it returns the arg
-if arg is an instance of the enum (in this case BookingStatus) as a convenience.
+a Fixnum, in which case the lookup will be against the BookingStatus.id field. It returns the arg if arg is an
+instance of the enum (in this case BookingStatus) as a convenience.
 
 The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to
 locate a BookingStatus record for arg. The default is the built-in `:enforce_none` which returns nil. There are also
@@ -313,14 +312,14 @@ an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises an
 `:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
 
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
-action should be taken, therefore b) a fallback action should be easily configurable. As of version 0.8.4, you can
+action should be taken, therefore b) a fallback action should be easily configurable. You can
 also set `:on_lookup_failure` to a lambda that takes in a single argument (The arg that was passed to `[]`).
 
-As of version 0.8.0, you can pass in multiple arguments to `[]`. This returns a list of enums corresponding to the
+You can also pass in multiple arguments to `[]`. This returns a list of enums corresponding to the
 passed in values. Duplicates are filtered out. For example `BookingStatus[arg1, arg2, arg3]` would be equivalent to
 `[BookingStatus[arg1], BookingStatus[arg2], BookingStatus[arg3]]`.
 
-##### contains?(arg) (since version 0.10.0)
+##### contains?(arg)
 
 `BookingStatus.contains?(arg)` returns `true if` the given Symbol, String or id has a member instance in the enumeration,
 `false` otherwise. Returns `true` if the argument is an enum instance, returns `false` if the argument  is `nil` or any
@@ -341,11 +340,11 @@ method.
 `BookingStatus.inactive` returns an array of all BookingStatus records that are inactive. See the `inactive?` instance
 method.
 
-##### names (since version 0.6.3)
+##### names
 
 `BookingStatus.names` will return all the names of the defined enums as an array of symbols.
 
-##### update\_enumerations\_model (since version 0.8.1)
+##### update\_enumerations\_model
 
 The preferred mechanism to update an enumerations model in migrations and similar. Pass in a block to this method to
 to perform any updates.
@@ -360,7 +359,7 @@ BookingStatus.update_enumerations_model do
 end
 ```
 
-Example 2 (since version 0.9.3):
+Example 2:
 
 ```ruby
 BookingStatus.update_enumerations_model do |klass|
@@ -370,7 +369,7 @@ BookingStatus.update_enumerations_model do |klass|
 end
 ```
 
-##### acts\_as\_enumerated? (since version 0.8.6)
+##### acts\_as\_enumerated?
 
 Returns `true` for ActiveRecord models that act as enumerated, `false` for others. So
 `BookingStatus.acts_as_enumerated?` would return `true`, while `Booking.acts_as_enumerated?` would return `false`.
@@ -430,7 +429,7 @@ Returns the symbol representation of the name of the enum. `BookingStatus[:foo].
 
 ##### to\_sym
 
-Aliased to `name_sym` (Since version 0.9.0).
+Aliased to `name_sym`.
 
 ##### active?
 
@@ -447,8 +446,7 @@ This method is used by the `inactive` class method to select inactive enums.
 
 `acts_as_enumerated` records are considered immutable. By default you cannot create/alter/destroy instances because they
 are cached in memory. Because of Rails' process-based model it is not safe to allow updating acts\_as\_enumerated
-records as the caches will get out of sync. Also, as of version 0.5.1, `to_s` is overriden to return the name of the
-enum instance.
+records as the caches will get out of sync. Also, `to_s` is overriden to return the name of the enum instance.
 
 However, one instance where updating the models *should* be allowed is if you are using seeds.rb to seed initial values
 into the database.
@@ -542,7 +540,7 @@ raise an exception, while in the case of a `:write` you don't have to return any
 Note that there's enough information in the method signature that you can specify one method to handle all lookup
 failures for all has\_enumerated fields if you happen to have more than one defined in your model.
 
-3) (Since version 0.8.5) Give it a lambda function. In that case, the lambda needs to accept the ActiveRecord model as
+3) Give it a lambda function. In that case, the lambda needs to accept the ActiveRecord model as
 its first argument, with the rest of the arguments being identical to the signature of the lookup handler instance
 method.
 
@@ -571,11 +569,11 @@ recommended for obvious reasons.
 Booking.with_status 1, 'confirmed', BookingStatus[:rejected]
 ```
 
-As of version 0.5.5, it also aliases a pluralized version of the scope, i.e. `:with_statuses`
+As a convenience, it also aliases a pluralized version of the scope, i.e. `:with_statuses`
 
 #### exclude\_enumerated\_attribute scope
 
-As of version 0.8.0, a scope for the inverse of `with_enumerated_attribute` is created, unless the `:create_scope`
+By default, a scope for the inverse of `with_enumerated_attribute` is created, unless the `:create_scope`
 option is set to `false`. As a result, this allows us to do things like
 
 ```ruby
@@ -608,7 +606,7 @@ you can use ActiveRecord::VirtualEnumerations to reduce that clutter.
 
 Create a custom Rails initializer: Rails.root/config/initializers/virtual\_enumerations.rb
 
-NOTE: As of version 0.9.2, there is a built in generator for this:
+To streamline this, a generator is provided:
 
 ```bash
 rails generate virtual_enumerations_initializer
@@ -679,7 +677,7 @@ config.define :base_enum, :name_column => ;foo
 config.define :booking_status, :connector_type, :color, :extends => :base_enum
 ```
 
-### Testing (Since version 0.6.0)
+### Testing
 
 A pair of custom RSpec matchers are included to streamline testing of enums and enumerated attributes.
 
@@ -748,7 +746,7 @@ describe Booking do
 end
 ```
 
-#### match\_enum (Since version 0.8.6)
+#### match\_enum
 
 Tests if an enum instance matches the given value, which may be a symbol, id, string, or enum instance:
 
