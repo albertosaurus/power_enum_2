@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = "power_enum"
-  s.version = "2.0.1"
+  s.version = "2.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Trevor Squires", "Pivotal Labs", "Arthur Shagall", "Sergey Potapov"]
   s.cert_chain = ["gem-public_cert.pem"]
-  s.date = "2013-07-04"
+  s.date = "2013-08-20"
   s.description = "Power Enum allows you to treat instances of your ActiveRecord models as though they were an enumeration of values.\nIt allows you to cleanly solve many of the problems that the traditional Rails alternatives handle poorly if at all.\nIt is particularly suitable for scenarios where your Rails application is not the only user of the database, such as\nwhen it's used for analytics or reporting.\n"
   s.email = "arthur.shagall@gmail.com"
   s.extra_rdoc_files = [
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
     "lib/testing/rspec.rb"
   ]
   s.homepage = "http://github.com/albertosaurus/power_enum_2"
+  s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "2.0.3"
   s.signing_key = "gem-private_key.pem" if File.exists?('gem-private_key.pem')

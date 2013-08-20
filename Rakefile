@@ -13,8 +13,9 @@ when it's used for analytics or reporting.
     gem.homepage = "http://github.com/albertosaurus/power_enum_2"
     gem.authors = ["Trevor Squires", "Pivotal Labs", 'Arthur Shagall', 'Sergey Potapov']
     gem.files = Dir["{lib}/**/*"]
-    gem.signing_key = 'gem-private_key.pem'
+    gem.signing_key = 'gem-private_key.pem' if File.exists?('gem-private_key.pem')
     gem.cert_chain = ['gem-public_cert.pem']
+    gem.licenses = ['MIT']
   end
 rescue
   puts "Jeweler or one of its dependencies is not installed."
