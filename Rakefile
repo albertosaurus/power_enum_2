@@ -15,6 +15,7 @@ when it's used for analytics or reporting.
     gem.files = Dir["{lib}/**/*"]
     gem.signing_key = 'gem-private_key.pem'
     gem.cert_chain = ['gem-public_cert.pem']
+    gem.licenses = ['MIT']
   end
 rescue
   puts "Jeweler or one of its dependencies is not installed."
