@@ -97,6 +97,13 @@ describe 'has_enumerated' do
       bookings.first.status.should ==  BookingStatus[:rejected]
     end
 
+    it 'active record query interface works with both enum and enum_id finders' do
+      bookings = Booking.where(:status_id => BookingStatus[:confirmed])
+      bookings.size.should == 1
+      bookings = Booking.where(:status => BookingStatus[:confirmed])
+      bookings.size.should == 1
+    end
+
   end
 
   context 'when enum value exists' do
