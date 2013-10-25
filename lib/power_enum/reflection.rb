@@ -84,6 +84,7 @@ module PowerEnum::Reflection
       nil
     end
 
+    # Always returns false. Necessary for stuff like Booking.where(:status => BookingStatus[:confirmed])
     def polymorphic?
       false
     end
