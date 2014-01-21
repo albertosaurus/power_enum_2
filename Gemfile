@@ -11,7 +11,7 @@ group :development, :test do
   gem 'rspec'
   gem 'sqlite3'
   # Use standard genspec once my pull request is merged.
-  gem 'genspec', '>= 0.2.7', :git => 'git://github.com/albertosaurus/genspec.git'
+  gem 'genspec', '>= 0.2.8'
 end
 
 group :test do

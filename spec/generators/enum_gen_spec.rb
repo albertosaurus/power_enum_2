@@ -6,9 +6,11 @@ describe :enum do
     GenerateMigrationMatcher.new(enum_name, &block)
   end
 
-  context 'no arguments or options' do
-    it 'should generate an error message' do
-      subject.should output("No value provided for required arguments 'enum_name'")
+  unless ENV['TRAVIS']
+    context 'no arguments or options' do
+      it 'should generate an error message' do
+        subject.should output("No value provided for required arguments 'name'")
+      end
     end
   end
 
