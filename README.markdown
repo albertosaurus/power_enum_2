@@ -4,6 +4,7 @@ https://github.com/albertosaurus/power_enum_2
 
 [![Build Status](https://travis-ci.org/albertosaurus/power_enum_2.png)](https://travis-ci.org/albertosaurus/power_enum_2)
 [![Code Climate](https://codeclimate.com/github/albertosaurus/power_enum_2.png)](https://codeclimate.com/github/albertosaurus/power_enum_2)
+[![Gem Version](https://badge.fury.io/rb/power_enum.png)](http://badge.fury.io/rb/power_enum)
 
 Enumerations for Rails 4 Done Right.
 
