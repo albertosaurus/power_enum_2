@@ -73,7 +73,7 @@ store. Download the certificate (gem-public\_cert.pem) and run the following.
 
     gem cert -a gem-public_cert.pem
 
-More information is available at http://docs.rubygems.org/read/chapter/21
+More information is available at http://rubygems.rubyforge.org/rubygems-update/Gem/Security.html
 which I strongly urge you to read.
 
 #### Using Bundler
