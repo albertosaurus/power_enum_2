@@ -33,6 +33,8 @@ module PowerEnum::Schema
     #   Set this to <tt>true</tt> to have a boolean 'active' column generated.  The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
     # [:timestamps]
     #   Set this to <tt>true</tt> to have timestamp columns (created_at and updated_at) generated.
+    # [:table_options]
+    #   A hash of options to pass to the 'create_table' method.
     #
     # You can also pass in a block that takes a table object as an argument, like <tt>create_table</tt>.
     #
@@ -46,14 +48,15 @@ module PowerEnum::Schema
     #  add_index :connector_types, [:name], :unique => true
     #
     # ====== Advanced Enum
-    #  create_enum :connector_type, :name_column => :connector,
-    #                               :name_limit => 50,
-    #                               :description => true,
-    #                               :desc_limit => 100,
-    #                               :active => true,
-    #                               :timestamps => true
+    #  create_enum :connector_type, :name_column   => :connector,
+    #                               :name_limit    => 50,
+    #                               :description   => true,
+    #                               :desc_limit    => 100,
+    #                               :active        => true,
+    #                               :timestamps    => true,
+    #                               :table_options => {:primary_key => :foo}
     # is the equivalent of
-    #  create_table :connector_types do |t|
+    #  create_table :connector_types, :primary_key => :foo do |t|
     #    t.string :connector, :limit => 50, :null => false
     #    t.string :description, :limit => 100
     #    t.boolean :active, :null => false, :default => true
@@ -82,8 +85,9 @@ module PowerEnum::Schema
       generate_timestamps = !!options[:timestamps]
       name_limit = options[:name_limit]
       desc_limit = options[:desc_limit]
+      table_options = options[:table_options] || {}
 
-      create_table enum_table_name do |t|
+      create_table enum_table_name, table_options do |t|
         t.string name_column, :limit => name_limit, :null => false
         if generate_description
           t.string :description, :limit => desc_limit

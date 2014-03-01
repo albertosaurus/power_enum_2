@@ -204,6 +204,7 @@ Creates a new enum table. `enum_name` will be automatically pluralized. The foll
 - [:desc\_limit]  Set this to define the limit of the description column
 - [:active]  Set this to `true` to have a boolean 'active' column generated. The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
 - [:timestamps]  Set this to `true` to have the timestamp columns (created\_at and updated\_at) generated
+- [:table_options] Allows you to set a hash which will be passed directly to `create_table`.
 
 You can also pass in a block that takes a table object as an argument, like `create_table`.
 
@@ -226,18 +227,19 @@ In a more complex case:
 
 ```ruby
 create_enum :booking_status,
-            :name_column => :booking_name,
-            :name_limit  => 50,
-            :description => true,
-            :desc_limit  => 100,
-            :active      => true,
-            :timestamps  => true
+            :name_column   => :booking_name,
+            :name_limit    => 50,
+            :description   => true,
+            :desc_limit    => 100,
+            :active        => true,
+            :timestamps    => true,
+            :table_options => {:primary_key => :foo}
 ```
 
 is the equivalent of
 
 ```ruby
-create_table :booking_statuses do |t|
+create_table :booking_statuses, :primary_key => :foo do |t|
   t.string :booking_name, :limit => 50, :null => false
   t.string :description, :limit => 100
   t.boolean :active, :null => false, :default => true

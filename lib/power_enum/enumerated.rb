@@ -352,7 +352,7 @@ module PowerEnum::Enumerated
 
     # Returns a hash of all enumeration members keyed by their ids.
     def all_by_id
-      @all_by_id ||= all_by_attribute( :id )
+      @all_by_id ||= all_by_attribute( primary_key )
     end
     private :all_by_id
 

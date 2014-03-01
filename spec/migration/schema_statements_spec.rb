@@ -4,11 +4,12 @@ class AbstractAdapterStub
   include PowerEnum::Schema::AbstractAdapter
 
   class TableStub
-    attr_accessor :table_name
+    attr_accessor :table_name, :args
     attr_reader :command_buffer
 
-    def initialize(table_name)
+    def initialize(table_name, args = {})
       self.table_name = table_name
+      self.args       = args
       @command_buffer = {
           :strings    => [],
           :booleans   => [],
@@ -37,8 +38,8 @@ class AbstractAdapterStub
   attr_reader :tables
   attr_reader :indexes
 
-  def create_table(name)
-    table_stub = TableStub.new(name)
+  def create_table(name, args)
+    table_stub = TableStub.new(name, args)
 
     yield table_stub
 
@@ -58,13 +59,18 @@ describe PowerEnum::Schema::AbstractAdapter do
     AbstractAdapterStub.new
   }
 
+  let(:table_options) {
+    { :foo => 1, :bar => 2, :baz => 3 }
+  }
+
   it 'should create the enum table on \'create_enum\'' do
     adapter_stub.create_enum(
         'test_enum',
-        :name_column => 'name_column',
-        :description => true,
-        :active      => true,
-        :timestamps  => true
+        :name_column   => 'name_column',
+        :description   => true,
+        :active        => true,
+        :timestamps    => true,
+        :table_options => table_options
     ) { |t| t.integer "integer_column" }
 
     indexes = adapter_stub.indexes
@@ -74,6 +80,7 @@ describe PowerEnum::Schema::AbstractAdapter do
     adapter_stub.tables.size.should eq(1)
     table = adapter_stub.tables.first
     table.table_name.should eq('test_enums')
+    table.args.should eq(table_options)
 
     command_buffer = table.command_buffer
 
