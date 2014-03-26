@@ -9,7 +9,9 @@ describe :enum do
   unless ENV['TRAVIS']
     context 'no arguments or options' do
       it 'should generate an error message' do
-        subject.should output("No value provided for required arguments 'name'")
+        expect {
+          subject.should output('')
+        }.to raise_error(Thor::RequiredArgumentMissingError, "No value provided for required arguments 'name'")
       end
     end
   end
@@ -41,6 +43,24 @@ end
       subject.should generate_migration(:foo) { |content|
         content.should eq(migration_contents)
       }
+    end
+  end
+
+  with_args :foo, "--description" do
+    it 'should generate migration with description' do
+      migration_contents = <<-exp
+class CreateEnumFoo < ActiveRecord::Migration
+
+  def change
+    create_enum :foo, description: true
+  end
+
+end
+      exp
+
+        subject.should generate_migration(:foo) { |content|
+          content.should eq(migration_contents)
+        }
     end
   end
 end

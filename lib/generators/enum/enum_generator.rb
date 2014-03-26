@@ -10,6 +10,8 @@ class EnumGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('../templates', __FILE__)
   class_option :migration, :type => :boolean, :default => true, :desc => 'Generate migration for the enum'
   class_option :fixture, :type => :boolean, :default => false, :desc => 'Generate fixture for the enum'
+  class_option :description,  :type => :boolean, :default => false, :desc => "Add description to the enum"
+
 
   # Generates the enum ActiveRecord model.
   def generate_model
@@ -18,6 +20,7 @@ class EnumGenerator < Rails::Generators::NamedBase
 
   # Generates the migration to create the enum table.
   def generate_migration
+    @description = options.description?
     migration_template 'rails31_migration.rb.erb', "db/migrate/create_enum_#{table_name}.rb" if options.migration?
   end
 
