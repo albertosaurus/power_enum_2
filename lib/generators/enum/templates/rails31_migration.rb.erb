@@ -1,7 +1,7 @@
 class <%= migration_class_name %> < ActiveRecord::Migration
 
   def change
-    create_enum :<%=file_name%>
+    create_enum :<%=file_name%><%= ", description: true" if @description %>
   end
 
 end
