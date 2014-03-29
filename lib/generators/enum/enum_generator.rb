@@ -12,10 +12,9 @@ class EnumGenerator < Rails::Generators::NamedBase
   class_option :fixture, :type => :boolean, :default => false, :desc => 'Generate fixture for the enum'
   class_option :description,  :type => :boolean, :default => false, :desc => "Add description to the enum"
 
-
   # Generates the enum ActiveRecord model.
   def generate_model
-    template 'model.rb.erb', "app/models/#{file_name}.rb"
+    template 'model.rb.erb', File.join('app/models', class_path, "#{file_name}.rb")
   end
 
   # Generates the migration to create the enum table.
