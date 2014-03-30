@@ -79,6 +79,11 @@ module PowerEnum::Schema
     # Notice that a unique index is automatically created in each case on the proper name column.
     def create_enum(enum_name, options = {}, &block)
       enum_table_name = enum_name.pluralize
+
+      # For compatibility with PgPower
+      schema_name = options[:schema]
+      enum_table_name  = "#{schema_name}.#{enum_table_name}" if schema_name
+
       name_column = options[:name_column] || :name
       generate_description = !!options[:description]
       generate_active = !!options[:active]
