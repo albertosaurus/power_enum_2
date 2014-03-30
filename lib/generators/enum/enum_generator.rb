@@ -30,7 +30,7 @@ class EnumGenerator < Rails::Generators::NamedBase
 
   hook_for :test_framework, :as => :model do |enum_generator_instance, test_generator_class|
     # Need to do this because I'm changing the default value of the 'fixture' option.
-    table_name = enum_generator_instance.send(:table_name)
-    enum_generator_instance.invoke( test_generator_class, [table_name], { 'fixture' => enum_generator_instance.options.fixture? } )
+    class_name = enum_generator_instance.send(:class_name)
+    enum_generator_instance.invoke( test_generator_class, [class_name], { 'fixture' => enum_generator_instance.options.fixture? } )
   end
 end
