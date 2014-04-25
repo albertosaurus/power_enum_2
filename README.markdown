@@ -205,6 +205,7 @@ Creates a new enum table. `enum_name` will be automatically pluralized. The foll
 - [:active]  Set this to `true` to have a boolean 'active' column generated. The 'active' column will have the options of NOT NULL and DEFAULT TRUE.
 - [:timestamps]  Set this to `true` to have the timestamp columns (created\_at and updated\_at) generated
 - [:table_options] Allows you to set a hash which will be passed directly to `create_table`.
+- [:schema] Allows you to create the enum table in a different schema (Version 2.6.0).
 
 You can also pass in a block that takes a table object as an argument, like `create_table`.
 
