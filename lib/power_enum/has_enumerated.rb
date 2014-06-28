@@ -88,8 +88,7 @@ module PowerEnum::HasEnumerated
                                  :create_scope )
 
       # Add a reflection for the enumerated attribute.
-      reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
-      self.reflections = self.reflections.merge(part_id => reflection)
+      reflection       = create_ar_reflection(part_id, options)
 
       attribute_name   = part_id.to_s
       class_name       = reflection.class_name
@@ -121,6 +120,20 @@ module PowerEnum::HasEnumerated
       end
 
     end # has_enumerated
+
+    # Creates the ActiveRecord reflection
+    def create_ar_reflection(part_id, options)
+      reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
+
+      # ActiveRecord 4.1.2 handles this differently.
+      if self.respond_to? :_reflections=
+        self._reflections = self._reflections.merge(part_id => reflection)
+      else
+        self.reflections = self.reflections.merge(part_id => reflection)
+      end
+      reflection
+    end
+    private :create_ar_reflection
 
     # Defines the accessor method
     def define_enum_accessor(attribute_name, class_name, foreign_key, failure_handler) #:nodoc:

@@ -44,6 +44,7 @@ module PowerEnum::Reflection
   # Reflection class for enum reflections.  See ActiveRecord::Reflection
   class EnumerationReflection < ActiveRecord::Reflection::MacroReflection
     attr_reader :counter_cache_column
+    attr_accessor :parent_reflection
 
     # See ActiveRecore::Reflection::MacroReflection
     def initialize( name, options, active_record )
