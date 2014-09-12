@@ -80,7 +80,7 @@ module PowerEnum::Schema
     def create_enum(enum_name, options = {}, &block)
       enum_table_name = enum_name.pluralize
 
-      # For compatibility with PgPower
+      # For compatibility with PgPower/PgSaurus
       schema_name = options[:schema]
       enum_table_name  = "#{schema_name}.#{enum_table_name}" if schema_name
 
