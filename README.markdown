@@ -177,7 +177,8 @@ end
 # It's highly recommended to add a foreign key constraint here.
 # Ideally, you would use a gem of some sort to handle this.
 # I have been using PgPower https://rubygems.org/gems/pg_power with much
-# success.
+# success. It's fork, PgSaurus https://rubygems.org/gems/pg_saurus should
+# work just as well.
 execute "ALTER TABLE bookings ADD 'bookings_bookings_status_id_fk'"\
     " FOREIGN KEY (status_id) REFERENCES booking_statuses (id);"
 ```
