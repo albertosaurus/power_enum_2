@@ -23,6 +23,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
         reflection.name.to_sym.should == enum_attr
         reflection.active_record.should == Booking
         reflection.should respond_to(:counter_cache_column)
+        reflection.macro.should == :has_enumerated
         reflection.should be_kind_of(PowerEnum::Reflection::EnumerationReflection)
       end
     end
