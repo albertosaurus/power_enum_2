@@ -59,20 +59,20 @@ describe "RSpec Matchers" do
       end
 
       it 'should have the correct failure message for should' do
-        subject.failure_message_for_should.should eq("should act as enumerated and have members #{[:foo, :bar, :baz].inspect}")
+        subject.failure_message.should eq("should act as enumerated and have members #{[:foo, :bar, :baz].inspect}")
       end
 
       it 'should have the correct failure message for should_not' do
-        subject.failure_message_for_should_not.should eq("should not act as enumerated with members #{[:foo, :bar, :baz].inspect}")
+        subject.failure_message_when_negated.should eq("should not act as enumerated with members #{[:foo, :bar, :baz].inspect}")
       end
 
       it 'validate_enum should handle a random item value' do
-        subject.validate_enum(BookingStatus, 1.5).should be_false
+        subject.validate_enum(BookingStatus, 1.5).should eq(false)
       end
 
       it 'should handle an exception in validate_enum' do
         subject.should_receive(:validate_enum).and_raise(RuntimeError)
-        subject.matches?(BookingStatus).should be_false
+        subject.matches?(BookingStatus).should eq(false)
       end
     end
 
@@ -95,11 +95,11 @@ describe "RSpec Matchers" do
       end
 
       it 'should have the correct failure message for should' do
-        subject.failure_message_for_should.should eq('expected foo to be an enumerated attribute')
+        subject.failure_message.should eq('expected foo to be an enumerated attribute')
       end
 
       it 'should have the correct failure message for should_not' do
-        subject.failure_message_for_should_not.should eq('expected foo to not be an enumerated attribute')
+        subject.failure_message_when_negated.should eq('expected foo to not be an enumerated attribute')
       end
     end
   end
@@ -150,11 +150,11 @@ describe "RSpec Matchers" do
       end
 
       it 'should have the correct failure message for should' do
-        subject.failure_message_for_should.should eq('expected foo to match the enum')
+        subject.failure_message.should eq('expected foo to match the enum')
       end
 
       it 'should have the correct failure message for should_not' do
-        subject.failure_message_for_should_not.should eq('expected foo to not match the enum')
+        subject.failure_message_when_negated.should eq('expected foo to not match the enum')
       end
     end
   end

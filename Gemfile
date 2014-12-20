@@ -8,10 +8,8 @@ group :development do
 end
 
 group :development, :test do
-  gem 'rspec'
+  gem 'rspec', '~> 3.1'
   gem 'sqlite3'
-  # Use standard genspec once my pull request is merged.
-  gem 'genspec', '>= 0.2.8'
 end
 
 group :test do

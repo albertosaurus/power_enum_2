@@ -9,7 +9,12 @@ describe PowerEnum::Reflection::EnumerationReflection do
 
     [:state, :status].each do |enum_attr|
       it "should have a reflection for #{enum_attr}" do
-        reflection = Booking.reflections[enum_attr]
+        refl = if Rails.version =~ /^4\.2.*/
+                 enum_attr.to_s
+               else
+                 enum_attr
+               end
+        reflection = Booking.reflections[refl]
         Booking.reflect_on_enumerated(enum_attr).should == reflection
 
         reflection.should_not be_nil
@@ -19,7 +24,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
         reflection.conditions.should == [[]]
         reflection.type.should be_nil
         reflection.source_macro.should == :belongs_to
-        reflection.belongs_to?.should be_true
+        reflection.belongs_to?.should eq(true)
         reflection.name.to_sym.should == enum_attr
         reflection.active_record.should == Booking
         reflection.should respond_to(:counter_cache_column)
@@ -55,8 +60,13 @@ describe PowerEnum::Reflection::EnumerationReflection do
     end
 
     it 'should have the correct table name' do
-      Booking.reflections[:state].table_name.should == 'states'
-      Booking.reflections[:status].table_name.should == 'booking_statuses'
+      if Rails.version =~ /^4\.2.*/
+        Booking.reflections['state'].table_name.should == 'states'
+        Booking.reflections['status'].table_name.should == 'booking_statuses'
+      else
+        Booking.reflections[:state].table_name.should == 'states'
+        Booking.reflections[:status].table_name.should == 'booking_statuses'
+      end
     end
   end
 

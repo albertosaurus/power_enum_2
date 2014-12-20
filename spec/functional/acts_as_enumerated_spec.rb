@@ -208,19 +208,19 @@ describe 'acts_as_enumerated' do
       context ':name_column is not explicitly specified' do
 
         it 'returns true if looking up String' do
-          BookingStatus.contains?('confirmed').should be_true
+          BookingStatus.contains?('confirmed').should eq(true)
         end
 
         it 'returns true if looking up by Symbol' do
-          BookingStatus.contains?(:confirmed).should be_true
+          BookingStatus.contains?(:confirmed).should eq(true)
         end
 
         it 'returns true if looking up by id' do
-          BookingStatus.contains?(1).should be_true
+          BookingStatus.contains?(1).should eq(true)
         end
 
         it 'return true if passing in an enum instance' do
-          BookingStatus.contains?(BookingStatus.all.first).should be_true
+          BookingStatus.contains?(BookingStatus.all.first).should eq(true)
         end
 
       end # context ':name_column is not explicitly specified'
@@ -228,19 +228,19 @@ describe 'acts_as_enumerated' do
       context ':name_column is specified' do
 
         it 'returns true if looking up String' do
-          State.contains?('IL').should be_true
+          State.contains?('IL').should eq(true)
         end
 
         it 'returns true if looking up by Symbol' do
-          State.contains?(:IL).should be_true
+          State.contains?(:IL).should eq(true)
         end
 
         it 'returns true if looking up by id' do
-          State.contains?(1).should be_true
+          State.contains?(1).should eq(true)
         end
 
         it 'return true if passing in an enum instance' do
-          State.contains?(State.all.first).should be_true
+          State.contains?(State.all.first).should eq(true)
         end
       end # context ':name_column is specified'
 
@@ -249,23 +249,23 @@ describe 'acts_as_enumerated' do
     context 'item does not exist' do
 
       it 'returns false when passing in a nil' do
-        BookingStatus.contains?(nil).should be_false
+        BookingStatus.contains?(nil).should eq(false)
       end
 
       it 'returns false when passing in a random value' do
-        BookingStatus.contains?(Booking.new).should be_false
+        BookingStatus.contains?(Booking.new).should eq(false)
       end
 
       it 'returns false when a lookup by id fails' do
-        State.contains?(999999).should be_false
+        State.contains?(999999).should eq(false)
       end
 
       it 'returns false when a lookup by Symbol fails' do
-        State.contains?(:XXX).should be_false
+        State.contains?(:XXX).should eq(false)
       end
 
       it 'returns false when a lookup by String fails' do
-        State.contains?('XXX').should be_false
+        State.contains?('XXX').should eq(false)
       end
     end
   end
@@ -358,11 +358,11 @@ describe 'acts_as_enumerated' do
 
   describe 'name' do
     it 'should create a name alias by default' do
-      State[:IL].respond_to?(:name).should be_true
+      State[:IL].respond_to?(:name).should eq(true)
     end
 
     it 'should not create a name alias if :name_alias is set to false' do
-      Fruit[:apple].respond_to?(:name).should be_false
+      Fruit[:apple].respond_to?(:name).should eq(false)
     end
 
     specify "#name" do
@@ -374,12 +374,12 @@ describe 'acts_as_enumerated' do
   describe 'in?' do
     it 'in? should find by Symbol, String, or Fixnum' do
       [1, :IL, 'IL'].each do |arg|
-        State[:IL].in?(arg).should be_true
+        State[:IL].in?(arg).should eq(true)
       end
     end
 
     it 'in? should return false if nothing matches' do
-      State[:IL].in?(nil).should be_false
+      State[:IL].in?(nil).should eq(false)
     end
   end
 

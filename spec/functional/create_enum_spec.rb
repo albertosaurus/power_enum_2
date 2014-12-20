@@ -5,7 +5,7 @@ describe "create_enum migration methods" do
   it "connector type should be defined" do
     expect{
       Module.const_get('ConnectorType')
-    }.to_not raise_error(NameError)
+    }.to_not raise_error
   end
 
   it "connector type should define correct columns" do
