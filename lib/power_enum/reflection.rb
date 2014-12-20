@@ -48,7 +48,17 @@ module PowerEnum::Reflection
 
     # See ActiveRecore::Reflection::MacroReflection
     def initialize( name, options, active_record )
-      super :has_enumerated, name, nil, options, active_record
+      if Rails.version =~ /^4\.2.*/
+        super name, nil, options, active_record
+      else
+        super :has_enumerated, nil, options, active_record
+      end
+    end
+
+    if Rails.version =~ /^4\.2.*/
+      def macro
+        :has_enumerated
+      end
     end
 
     # Returns the class name of the enum
