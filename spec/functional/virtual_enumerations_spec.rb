@@ -12,7 +12,7 @@ describe ActiveRecord::VirtualEnumerations do
   # See spec/dummy/config/initializers/virtual_enumerations.rb
 
   it 'should define VirtualEnum enum model' do
-    VirtualEnum.acts_as_enumerated?.should be_true
+    VirtualEnum.acts_as_enumerated?.should eq(true)
   end
 
   it 'VirtualEnum should function as an enum' do
@@ -27,7 +27,7 @@ describe ActiveRecord::VirtualEnumerations do
 
   it 'should execute the config block' do
     f = VirtualEnum[:virtual_enum]
-    f.respond_to?(:virtual_enum_id).should be_true
+    f.respond_to?(:virtual_enum_id).should eq(true)
     f.virtual_enum_id.should == f.id
   end
 
@@ -46,7 +46,7 @@ describe ActiveRecord::VirtualEnumerations do
 
     it 'should not execute the config block for VirtualEnum' do
       PirateEnum[:foo].should be_nil
-      PirateEnum[:foo].respond_to?(:virtual_enum_id).should be_false
+      PirateEnum[:foo].respond_to?(:virtual_enum_id).should eq(false)
     end
   end
 

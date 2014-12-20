@@ -2,4 +2,4 @@
 --profile
 --backtrace
 --order random
---format nested
+--format doc

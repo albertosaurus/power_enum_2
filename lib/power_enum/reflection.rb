@@ -27,7 +27,12 @@ module PowerEnum::Reflection
     # the reflection, otherwise returns nil.
     # @return [PowerEnum::Reflection::EnumerationReflection]
     def reflect_on_enumerated( enumerated )
-      reflections[enumerated.to_sym].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[enumerated.to_sym] : nil
+      key = if Rails.version =~ /^4\.2.*/
+              enumerated.to_s
+            else
+              enumerated.to_sym
+            end
+      reflections[key].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[key] : nil
     end
 
     # Extend associations with enumerations, preferring enumerations
@@ -46,9 +51,48 @@ module PowerEnum::Reflection
     attr_reader :counter_cache_column
     attr_accessor :parent_reflection
 
-    # See ActiveRecore::Reflection::MacroReflection
+    # See ActiveRecord::Reflection::MacroReflection
     def initialize( name, options, active_record )
-      super :has_enumerated, name, nil, options, active_record
+      if Rails.version =~ /^4\.2.*/
+        super name, nil, options, active_record
+      else
+        super :has_enumerated, name, nil, options, active_record
+      end
+    end
+
+    if Rails.version =~ /^4\.2.*/
+      def macro
+        :has_enumerated
+      end
+
+      def check_preloadable!
+        return unless scope
+        if scope.arity > 0
+          ActiveSupport::Deprecation.warn(<<-MSG.squish)
+The association scope '#{name}' is instance dependent (the scope
+block takes an argument). Preloading happens before the individual
+instances are created. This means that there is no instance being
+passed to the association scope. This will most likely result in
+broken or incorrect behavior. Joining, Preloading and eager loading
+of these associations is deprecated and will be removed in the future.
+          MSG
+        end
+      end
+      alias :check_eager_loadable! :check_preloadable!
+
+      def active_record_primary_key
+        @active_record_primary_key ||= options[:primary_key] || active_record.primary_key
+      end
+
+      def klass
+        @klass ||= active_record.send(:compute_type, class_name)
+      end
+
+      EnumJoinKeys = Struct.new(:key, :foreign_key)
+
+      def join_keys(_)
+        EnumJoinKeys.new(active_record_primary_key, foreign_key)
+      end
     end
 
     # Returns the class name of the enum

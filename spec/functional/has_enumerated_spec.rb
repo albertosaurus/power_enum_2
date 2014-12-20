@@ -19,10 +19,10 @@ describe 'has_enumerated' do
   end
 
   it 'has_enumerated? should respond true to enumerated attributes' do
-    Booking.has_enumerated?(:state).should be_true
-    Booking.has_enumerated?('status').should be_true
-    Booking.has_enumerated?('foo').should_not be_true
-    Booking.has_enumerated?(nil).should_not be_true
+    Booking.has_enumerated?(:state).should eq(true)
+    Booking.has_enumerated?('status').should eq(true)
+    Booking.has_enumerated?('foo').should_not eq(true)
+    Booking.has_enumerated?(nil).should_not eq(true)
   end
 
   it 'enumerated_attributes should contain the list of has_enumerated attributes and nothing else' do

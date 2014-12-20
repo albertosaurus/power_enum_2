@@ -1,5 +1,5 @@
 ### TODO
 
-1. Support namespaced enums
+1. Switch to RSpec 3.X syntax
 1. Ponder JRuby testing in Travis
 1. Stop using Jeweler
