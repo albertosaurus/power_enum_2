@@ -112,7 +112,7 @@ of these associations is deprecated and will be removed in the future.
 
     # Returns the primary key of the active record model that owns the has_enumerated
     # association.
-    def association_primary_key
+    def association_primary_key(klass = nil)
       active_record.primary_key
     end
 
