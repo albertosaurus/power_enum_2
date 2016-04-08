@@ -87,7 +87,7 @@ if defined? RSpec
       end
     end
 
-    failure_message_for_should do
+    failure_message do
       message = "should act as enumerated"
       if @items
         message << " and have members #{@items.inspect}"
@@ -95,7 +95,7 @@ if defined? RSpec
       message
     end
 
-    failure_message_for_should_not do
+    failure_message_when_negated do
       message = "should not act as enumerated"
       if @items
         message << " with members #{@items.inspect}"
@@ -131,11 +131,11 @@ if defined? RSpec
       model_class.has_enumerated?(attribute)
     end
 
-    failure_message_for_should do
+    failure_message do
       "expected #{attribute} to be an enumerated attribute"
     end
 
-    failure_message_for_should_not do
+    failure_message_when_negated do
       "expected #{attribute} to not be an enumerated attribute"
     end
 
@@ -166,11 +166,11 @@ if defined? RSpec
       end
     end
 
-    failure_message_for_should do
+    failure_message do
       "expected #{attribute} to match the enum"
     end
 
-    failure_message_for_should_not do
+    failure_message_when_negated do
       "expected #{attribute} to not match the enum"
     end
 
