@@ -6,11 +6,11 @@ https://github.com/albertosaurus/power_enum_2
 [![Code Climate](https://codeclimate.com/github/albertosaurus/power_enum_2.png)](https://codeclimate.com/github/albertosaurus/power_enum_2)
 [![Gem Version](https://badge.fury.io/rb/power_enum.png)](http://badge.fury.io/rb/power_enum)
 
-Enumerations for Rails 4.X Done Right.
+Enumerations for Rails Done Right.
 
 ## Versions
 
-* PowerEnum 2.X (this version) supports Rails 4.X
+* PowerEnum 2.X (this version) supports Rails 4.X and Rails 5.0
 * PowerEnum 1.X supports Rails 3.1/3.2, available here: https://github.com/albertosaurus/power_enum
 
 ## What is this?:
@@ -802,7 +802,7 @@ Go back to gem root directory:
 * Initial Version Copyright (c) 2005 Trevor Squires
 * Rails 3 Updates Copyright (c) 2010 Pivotal Labs
 * Initial Test Suite Copyright (c) 2011 Sergey Potapov
-* Subsequent Updates Copyright (c) 2011-2013 Arthur Shagall
+* Subsequent Updates Copyright (c) 2011-2016 Arthur Shagall
 
 Released under the MIT License. See the LICENSE file for more details.
 
