@@ -1,14 +1,13 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
-gem 'rails', '~> 4.0'
+# Specify your gem's dependencies in lazy_object.gemspec
+gemspec
 
 group :development do
-  gem 'jeweler'
   gem 'yard'
 end
 
 group :development, :test do
-  gem 'rspec', '~> 3.1'
   gem 'sqlite3'
 end
 
