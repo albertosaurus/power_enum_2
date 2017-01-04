@@ -1,4 +1,5 @@
-require "rails"
+require 'rails'
+require 'active_record'
 require 'testing/rspec'
 
 # Power Enum allows you to treat instances of your ActiveRecord models as
