@@ -96,7 +96,7 @@ describe 'acts_as_enumerated' do
           status.name_sym.should == :confirmed
         end
 
-        it 'returns a record found by id when Fixnum is passed' do
+        it 'returns a record found by id when Integer is passed' do
           status = BookingStatus[1]
           status.should be_an_instance_of BookingStatus
           status.__enum_name__.should == 'confirmed'
@@ -120,7 +120,7 @@ describe 'acts_as_enumerated' do
           state.name_sym.should == :IL
         end
 
-        it 'returns a record found by id when Fixnum is passed' do
+        it 'returns a record found by id when Integer is passed' do
           state = State[1]
           state.should be_an_instance_of State
           state.state_code.should == 'IL'
@@ -169,7 +169,7 @@ describe 'acts_as_enumerated' do
           expect { State[:XXX] }.to raise_error ActiveRecord::RecordNotFound
         end
 
-        it 'raises if Fixnum is passed' do
+        it 'raises if Integer is passed' do
           expect { State[999_999] }.to raise_error ActiveRecord::RecordNotFound
         end
 
@@ -372,7 +372,7 @@ describe 'acts_as_enumerated' do
   end
 
   describe 'in?' do
-    it 'in? should find by Symbol, String, or Fixnum' do
+    it 'in? should find by Symbol, String, or Integer' do
       [1, :IL, 'IL'].each do |arg|
         State[:IL].in?(arg).should eq(true)
       end

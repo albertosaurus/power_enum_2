@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(version: 20120909235526) do
     t.string   "name",        limit: 50,                null: false
     t.string   "description"
     t.boolean  "active",                 default: true, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.boolean  "has_sound",                             null: false
     t.index ["name"], name: "index_connector_types_on_name", unique: true
   end

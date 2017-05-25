@@ -25,8 +25,8 @@ module PowerEnum::Enumerated
     #   Specifies the name of a class method to invoke when the +[]+ method is unable to locate a BookingStatus
     #   record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for
     #   :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an
-    #   exception if the arg is a Fixnum or Symbol), :enforce_strict_ids (raises and exception if the arg is a
-    #   Fixnum) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).  The purpose of the
+    #   exception if the arg is a Integer or Symbol), :enforce_strict_ids (raises and exception if the arg is a
+    #   Integer) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).  The purpose of the
     #   :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action
     #   should be taken, therefore b) a fallback action should be easily configurable.  You can also give it a
     #   lambda that takes in a single argument (The arg that was passed to +[]+).
@@ -218,7 +218,7 @@ module PowerEnum::Enumerated
         !!lookup_name(arg.id2name)
       when String
         !!lookup_name(arg)
-      when Fixnum
+      when Integer
         !!lookup_id(arg)
       when self
         true
@@ -244,7 +244,7 @@ module PowerEnum::Enumerated
         !lookup_name(arg.id2name).nil?
       when String
         !lookup_name(arg).nil?
-      when Fixnum
+      when Integer
         !lookup_id(arg).nil?
       when self
         possible_match = lookup_id(arg.id)
@@ -322,7 +322,7 @@ module PowerEnum::Enumerated
         lookup_name(arg.id2name)
       when String
         lookup_name(arg)
-      when Fixnum
+      when Integer
         lookup_id(arg)
       when self
         arg
@@ -330,7 +330,7 @@ module PowerEnum::Enumerated
         nil
       else
         raise TypeError, "#{self.name}[]: argument should"\
-                         " be a String, Symbol or Fixnum but got a: #{arg.class.name}"
+                         " be a String, Symbol or Integer but got a: #{arg.class.name}"
       end
     end
     private :lookup_enum_by_type
@@ -390,13 +390,13 @@ module PowerEnum::Enumerated
     private :enforce_strict
 
     def enforce_strict_literals(arg) # :nodoc:
-      raise_record_not_found(arg) if (Fixnum === arg) || (Symbol === arg)
+      raise_record_not_found(arg) if (Integer === arg) || (Symbol === arg)
       nil
     end
     private :enforce_strict_literals
 
     def enforce_strict_ids(arg) # :nodoc:
-      raise_record_not_found(arg) if Fixnum === arg
+      raise_record_not_found(arg) if Integer === arg
       nil
     end
     private :enforce_strict_ids
@@ -421,7 +421,7 @@ module PowerEnum::Enumerated
     # Behavior depends on the type of +arg+.
     #
     # * If +arg+ is +nil+, returns +false+.
-    # * If +arg+ is an instance of +Symbol+, +Fixnum+ or +String+, returns the result of +BookingStatus[:foo] == BookingStatus[arg]+.
+    # * If +arg+ is an instance of +Symbol+, +Integer+ or +String+, returns the result of +BookingStatus[:foo] == BookingStatus[arg]+.
     # * If +arg+ is an +Array+, returns +true+ if any member of the array returns +true+ for +===(arg)+, +false+ otherwise.
     # * In all other cases, delegates to +===(arg)+ of the superclass.
     #
@@ -439,7 +439,7 @@ module PowerEnum::Enumerated
       case arg
       when nil
         false
-      when Symbol, String, Fixnum
+      when Symbol, String, Integer
         return self == self.class[arg]
       when Array
         return self.in?(*arg)

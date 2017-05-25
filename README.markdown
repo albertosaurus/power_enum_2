@@ -307,13 +307,13 @@ With that, your BookingStatus class will have the following methods defined:
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg. The arg value can be a
 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be
-a Fixnum, in which case the lookup will be against the BookingStatus.id field. It returns the arg if arg is an
+a Integer, in which case the lookup will be against the BookingStatus.id field. It returns the arg if arg is an
 instance of the enum (in this case BookingStatus) as a convenience.
 
 The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to
 locate a BookingStatus record for arg. The default is the built-in `:enforce_none` which returns nil. There are also
 built-ins for `:enforce_strict` (raise and exception regardless of the type for arg), `:enforce_strict_literals` (raises
-an exception if the arg is a Fixnum or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Fixnum) and
+an exception if the arg is a Integer or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Integer) and
 `:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
 
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
@@ -388,7 +388,7 @@ Each enumeration model gets the following instance methods.
 Behavior depends on the type of `arg`.
 
 * If `arg` is `nil`, returns `false`.
-* If `arg` is an instance of `Symbol`, `Fixnum` or `String`, returns the result of `BookingStatus[:foo] == BookingStatus[arg]`.
+* If `arg` is an instance of `Symbol`, `Integer` or `String`, returns the result of `BookingStatus[:foo] == BookingStatus[arg]`.
 * If `arg` is an `Array`, returns `true` if any member of the array returns `true` for `===(arg)`, `false` otherwise.
 * In all other cases, delegates to `===(arg)` of the superclass.
 

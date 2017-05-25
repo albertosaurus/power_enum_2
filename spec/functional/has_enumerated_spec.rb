@@ -123,7 +123,7 @@ describe 'has_enumerated' do
       status.name.should == 'confirmed'
     end
 
-    it 'assigns and returns an appropriate status when Fixnum is passed' do
+    it 'assigns and returns an appropriate status when Integer is passed' do
       @booking.status = 1
       status = @booking.status
       status.should_not be_new_record

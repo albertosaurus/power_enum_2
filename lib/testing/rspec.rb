@@ -71,7 +71,7 @@ if defined? RSpec
     # Validates the given enum.
     def validate_enum(enum_class, item)
       case item
-      when String, Symbol, Fixnum
+      when String, Symbol, Integer
         enum_class[item].present?
       when Hash
         name = item[:name]

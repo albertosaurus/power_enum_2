@@ -4,7 +4,7 @@ module EnumGeneratorHelpers
   module MigrationNumber
     # Returns the next upcoming migration number.  Sadly, Rails has no API for
     # this, so we're reduced to copying from ActiveRecord::Generators::Migration
-    # @return [Fixnum]
+    # @return [Integer]
     def next_migration_number(dirname)
       # Lifted directly from ActiveRecord::Generators::Migration
       # Unfortunately, no API is provided by Rails at this time.
