@@ -15,7 +15,12 @@ class PowerEnum < Rails::Engine
     ActiveSupport.on_load(:active_record) do
       include PowerEnum::Enumerated
       include PowerEnum::HasEnumerated
-      include PowerEnum::Reflection
+
+      ActiveRecord::Base.module_eval do
+        class << self
+          prepend ::PowerEnum::Reflection
+        end
+      end
 
       ActiveRecord::ConnectionAdapters.module_eval do
         include PowerEnum::Schema::SchemaStatements

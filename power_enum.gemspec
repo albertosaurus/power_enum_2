@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
   spec.name = "power_enum"
-  spec.version = "2.11.0"
+  spec.version = "2.12.0"
 
   spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
   spec.require_paths = ["lib"]
