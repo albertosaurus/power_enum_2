@@ -457,8 +457,8 @@ describe 'acts_as_enumerated' do
 
     it 'Should not permit the creation of new enumeration models by default' do
       bs = BookingStatus.create(:name => 'unconfirmed')
-      bs.new_record?.should == true
-      bs.save.should == false
+      expect(bs.new_record?).to eq(true)
+      expect(bs.save).to eq(false)
     end
 
     it 'Should not permit the creation of an enumeration model with a blank name' do

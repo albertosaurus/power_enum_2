@@ -1,6 +1,8 @@
 *.*~
 .idea/
 Gemfile.lock
+Gemfile.lock.bak
+Gemfile.lock.51
 pkg/*
 .rvmrc
 coverage/*

@@ -40,14 +40,14 @@ module PowerEnum::Reflection
 
     # See ActiveRecord::Reflection::MacroReflection
     def initialize( name, options, active_record )
-      if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.0\.*/
+      if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.*/
         super name, nil, options, active_record
       else
         super :has_enumerated, name, nil, options, active_record
       end
     end
 
-    if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.0\.*/
+    if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.*/
       def macro
         :has_enumerated
       end
@@ -77,7 +77,7 @@ of these associations is deprecated and will be removed in the future.
 
       EnumJoinKeys = Struct.new(:key, :foreign_key)
 
-      def join_keys(_)
+      def join_keys(*_)
         EnumJoinKeys.new(active_record_primary_key, foreign_key)
       end
     end
