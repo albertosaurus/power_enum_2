@@ -125,17 +125,7 @@ module PowerEnum::HasEnumerated
     def create_ar_reflection(part_id, options)
       reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
 
-      # ActiveRecord >= 4.1 handles this differently.
-      if self.respond_to? :_reflections=
-        if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.*/
-          self._reflections = self._reflections.merge(part_id.to_s => reflection)
-        else
-          self._reflections = self._reflections.merge(part_id => reflection)
-        end
-
-      else
-        self.reflections = self.reflections.merge(part_id => reflection)
-      end
+      self._reflections = self._reflections.merge(part_id.to_s => reflection)
       reflection
     end
     private :create_ar_reflection

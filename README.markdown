@@ -51,10 +51,15 @@ See "How to use it" below for more information.
 
 ## Requirements
 
+### PowerEnum 3.X
+
+* Ruby 2.1 or later (JRuby should work but isn't extensively tested; Travis is being difficult).
+* Rails 4.2, 5.0, 5.1
+
 ### PowerEnum 2.X
 
 * Ruby 1.9.3, 2.0, JRuby 1.7+ (Ruby 1.9.3 or 2.0 required for development)
-* Rails 4.0
+* Rails 4.0, 4.1, 4.2, 5.0
 
 ## Installation
 
