@@ -9,7 +9,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
 
     [:state, :status].each do |enum_attr|
       it "should have a reflection for #{enum_attr}" do
-        refl = if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.0\.*/
+        refl = if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.*/
                  enum_attr.to_s
                else
                  enum_attr
@@ -34,8 +34,8 @@ describe PowerEnum::Reflection::EnumerationReflection do
     end
 
     it 'should be able to reflect on all enumerated' do
-      Booking.should respond_to(:reflect_on_all_enumerated)
-      Booking.reflect_on_all_enumerated.map(&:name).to_set.should == [:state, :status].to_set
+      expect(Booking.respond_to?(:reflect_on_all_enumerated)).to eq(true)
+      expect(Booking.reflect_on_all_enumerated.map(&:name).to_set).to eq( [:state, :status].to_set )
     end
 
     it 'should include enumerations as associations' do
@@ -43,13 +43,13 @@ describe PowerEnum::Reflection::EnumerationReflection do
     end
 
     it 'should have reflection on has_enumerated association' do
-      Booking.reflect_on_enumerated(:state).should_not be_nil
-      Booking.reflect_on_enumerated('status').should_not be_nil
+      expect(Booking.reflect_on_enumerated(:state)).to_not be_nil
+      expect(Booking.reflect_on_enumerated('status')).to_not be_nil
     end
 
     it 'should have reflection on association' do
-      Booking.reflect_on_association(:state).should_not be_nil
-      Booking.reflect_on_association('status').should_not be_nil
+      expect(Booking.reflect_on_association(:state)).to_not be_nil
+      expect(Booking.reflect_on_association('status')).to_not be_nil
     end
 
     it 'should have reflection properly built' do
@@ -60,7 +60,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
     end
 
     it 'should have the correct table name' do
-      if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.0\.*/
+      if Rails.version =~ /^4\.2\.*/ || Rails.version =~ /^5\.*/
         Booking.reflections['state'].table_name.should == 'states'
         Booking.reflections['status'].table_name.should == 'booking_statuses'
       else
