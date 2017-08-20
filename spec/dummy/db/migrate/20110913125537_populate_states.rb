@@ -1,4 +1,4 @@
-class PopulateStates < ActiveRecord::Migration
+class PopulateStates < ActiveRecord::Migration[4.2]
   def up
     State.enumeration_model_updates_permitted = true
     State.create!(:state_code => 'IL', :id => 1)

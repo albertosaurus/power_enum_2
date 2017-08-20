@@ -1,4 +1,4 @@
-class CreateEnumColor < ActiveRecord::Migration
+class CreateEnumColor < ActiveRecord::Migration[4.2]
 
   def change
     create_enum :color

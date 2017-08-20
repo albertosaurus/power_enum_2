@@ -1,4 +1,4 @@
-class PopulateConnectorTypes < ActiveRecord::Migration
+class PopulateConnectorTypes < ActiveRecord::Migration[4.2]
   def up
     ConnectorType.enumeration_model_updates_permitted = true
     

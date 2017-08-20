@@ -1,4 +1,4 @@
-class AddStateIdToBooking < ActiveRecord::Migration
+class AddStateIdToBooking < ActiveRecord::Migration[4.2]
 
   def up
     change_table :bookings do |t|

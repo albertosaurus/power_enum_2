@@ -1,4 +1,4 @@
-class AddBookingStatuses < ActiveRecord::Migration
+class AddBookingStatuses < ActiveRecord::Migration[4.2]
   def up
     BookingStatus.enumeration_model_updates_permitted = true
     BookingStatus.create!(:name => 'confirmed', :id => 1)

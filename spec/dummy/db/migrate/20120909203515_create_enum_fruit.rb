@@ -1,4 +1,4 @@
-class CreateEnumFruit < ActiveRecord::Migration
+class CreateEnumFruit < ActiveRecord::Migration[4.2]
 
   def up
     create_enum :fruit, :name_column => :fruit_name, :description => :true

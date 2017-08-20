@@ -1,4 +1,4 @@
-class CreateVirtualEnum < ActiveRecord::Migration
+class CreateVirtualEnum < ActiveRecord::Migration[4.2]
   def up
     create_enum :virtual_enum
 

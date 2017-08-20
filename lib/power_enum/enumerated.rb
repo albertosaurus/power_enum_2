@@ -126,6 +126,7 @@ module PowerEnum::Enumerated
         before_save :enumeration_model_update
         before_destroy :enumeration_model_update
         validates acts_enumerated_name_column, :presence => true, :uniqueness => true
+        validate :validate_enumeration_model_updates_permitted
 
         define_method :__enum_name__ do
           read_attribute(acts_enumerated_name_column).to_s
@@ -489,16 +490,25 @@ module PowerEnum::Enumerated
     # and rather than completely disallow changes I make you jump
     # through an extra hoop just in case you're defining your enumeration
     # values in Migrations.  I.e. set enumeration_model_updates_permitted = true
-    def enumeration_model_update
+    private def enumeration_model_update
       if self.class.enumeration_model_updates_permitted
         self.class.purge_enumerations_cache
         true
       else
         # Ugh.  This just seems hack-ish.  I wonder if there's a better way.
-        self.errors.add(self.class.name_column, "changes to acts_as_enumeration model instances are not permitted")
-        false
+        if Rails.version =~ /^4\.2\.*/
+          false
+        else
+          throw(:abort)
+        end
       end
     end
-    private :enumeration_model_update
+
+    # Validates that model updates are enabled.
+    private def validate_enumeration_model_updates_permitted
+      unless self.class.enumeration_model_updates_permitted
+        self.errors.add(self.class.name_column, "changes to acts_as_enumeration model instances are not permitted")
+      end
+    end
   end # module EnumInstanceMethods
 end # module PowerEnum::Enumerated

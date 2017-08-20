@@ -13,22 +13,22 @@
 ActiveRecord::Schema.define(version: 20120909235526) do
 
   create_table "adapters", force: :cascade do |t|
-    t.integer  "connector_type_id"
+    t.integer "connector_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "booking_statuses", force: :cascade do |t|
-    t.string   "name"
+    t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "bookings", force: :cascade do |t|
-    t.integer  "status_id"
+    t.integer "status_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "state_id"
+    t.integer "state_id"
   end
 
   create_table "colors", force: :cascade do |t|
@@ -37,23 +37,23 @@ ActiveRecord::Schema.define(version: 20120909235526) do
   end
 
   create_table "connector_types", force: :cascade do |t|
-    t.string   "name",        limit: 50,                null: false
-    t.string   "description"
-    t.boolean  "active",                 default: true, null: false
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.boolean  "has_sound",                             null: false
+    t.string "name", limit: 50, null: false
+    t.string "description"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "has_sound", null: false
     t.index ["name"], name: "index_connector_types_on_name", unique: true
   end
 
   create_table "fruits", force: :cascade do |t|
-    t.string "fruit_name",  null: false
+    t.string "fruit_name", null: false
     t.string "description"
     t.index ["fruit_name"], name: "index_fruits_on_fruit_name", unique: true
   end
 
   create_table "states", force: :cascade do |t|
-    t.string   "state_code"
+    t.string "state_code"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 20120909235526) do
   end
 
   create_table "widgets", force: :cascade do |t|
-    t.integer  "connector_type_id"
+    t.integer "connector_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

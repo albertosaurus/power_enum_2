@@ -1,4 +1,4 @@
-class CreateConnectorTypes < ActiveRecord::Migration
+class CreateConnectorTypes < ActiveRecord::Migration[4.2]
   def change
     create_enum :connector_type,
                 :description => true,
