@@ -67,6 +67,10 @@ of these associations is deprecated and will be removed in the future.
       @klass ||= active_record.send(:compute_type, class_name)
     end
 
+    def association_class
+      ::ActiveRecord::Associations::HasOneAssociation
+    end
+
     EnumJoinKeys = Struct.new(:key, :foreign_key)
 
     def join_keys(*_)

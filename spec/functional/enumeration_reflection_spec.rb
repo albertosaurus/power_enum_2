@@ -49,9 +49,10 @@ describe PowerEnum::Reflection::EnumerationReflection do
 
     it 'should have reflection properly built' do
       reflection = Booking.reflect_on_enumerated(:status)
-      reflection.klass.should == BookingStatus
-      reflection.options[:foreign_key].should == :status_id
-      reflection.options[:on_lookup_failure].should == :not_found_status_handler
+      expect(reflection.klass).to eq BookingStatus
+      expect(reflection.options[:foreign_key]).to eq :status_id
+      expect(reflection.options[:on_lookup_failure]).to eq :not_found_status_handler
+      expect(reflection.association_class).to eq(::ActiveRecord::Associations::HasOneAssociation)
     end
 
     it 'should have the correct table name' do
