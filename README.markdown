@@ -341,6 +341,10 @@ other value.
 `BookingStatus.all` returns an array of all BookingStatus records that match the `:conditions` specified in
 `acts_as_enumerated`, in the order specified by `:order`.
 
+##### all_except(*items)
+
+`BookingStatus.all_except(arg1, arg2)` returns an array of all BookingStatus records with the given items filtered out.
+
 ##### active
 
 `BookingStatus.active` returns an array of all BookingStatus records that are marked active. See the `active?` instance

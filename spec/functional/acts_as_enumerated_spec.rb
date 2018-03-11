@@ -548,6 +548,20 @@ describe 'acts_as_enumerated' do
     end
   end
 
+  describe 'all_except' do
+    it "should filter out one item (Symbol)" do
+      expect(ConnectorType.all_except(:VGA)).to match_array(ConnectorType[:HDMI, :DVI])
+    end
+
+    it "should filter out one item (Enum)" do
+      expect(ConnectorType.all_except(ConnectorType[:VGA])).to match_array(ConnectorType[:HDMI, :DVI])
+    end
+
+    it "should filter out multiple items" do
+      expect(ConnectorType.all_except(:VGA, :DVI)).to match_array([ConnectorType[:HDMI]])
+    end
+  end
+
   describe 'update_enumerations_model' do
 
     it 'should not complain if no block given' do

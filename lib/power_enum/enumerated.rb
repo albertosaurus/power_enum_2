@@ -194,6 +194,11 @@ module PowerEnum::Enumerated
       all.map { |item| item.name_sym }
     end
 
+    # Returns all except for the given list
+    def all_except(*excluded)
+      all.find_all { |item| !(item === excluded) }
+    end
+
     # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
     # an enum instance.  Passing in a list of arguments returns a list of
     # enums.  When called with no arguments, returns nil.
