@@ -43,10 +43,10 @@ describe 'has_enumerated' do
   context 'enumerated attribute scope' do
 
     before :each do
-      [:confirmed, :received, :rejected].map{|status|
-        booking = Booking.create(:status => status)
+      [:confirmed, :received, :rejected].map do |status|
+        booking = Booking.create!(:status => status)
         booking
-      }
+      end
     end
 
     it 'should create a scopes for the enumerated attribute by default' do
@@ -99,9 +99,11 @@ describe 'has_enumerated' do
 
     it 'active record query interface works with both enum and enum_id finders' do
       bookings = Booking.where(:status_id => BookingStatus[:confirmed])
-      bookings.size.should == 1
+      expect(bookings.size).to eq(1)
       bookings = Booking.where(:status => BookingStatus[:confirmed])
-      bookings.size.should == 1
+
+      expect(bookings.size).to eq(1)
+      expect(bookings.first.status).to eq(BookingStatus[:confirmed])
     end
 
   end
