@@ -63,6 +63,8 @@ of these associations is deprecated and will be removed in the future.
       @active_record_primary_key ||= options[:primary_key] || active_record.primary_key
     end
 
+    alias_method :join_primary_key, :active_record_primary_key
+
     def klass
       @klass ||= active_record.send(:compute_type, class_name)
     end
@@ -86,6 +88,8 @@ of these associations is deprecated and will be removed in the future.
     def foreign_key
       @foreign_key ||= (@options[:foreign_key] || "#{@name}_id").to_s
     end
+
+    alias_method :join_foreign_key, :foreign_key
 
     # Returns the name of the enum table
     def table_name
