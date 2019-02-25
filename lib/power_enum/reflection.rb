@@ -120,6 +120,11 @@ of these associations is deprecated and will be removed in the future.
       false
     end
 
+    # Always returns true.
+    def collection?
+      true
+    end
+
     # In this case, returns [[]]
     def conditions
       [[]]
