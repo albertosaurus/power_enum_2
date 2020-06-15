@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
   spec.name = "power_enum"
-  spec.version = "3.3.1"
+  spec.version = "3.3.2"
 
   spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
   spec.require_paths = ["lib"]
@@ -38,9 +38,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '> 1.7'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.1'
-  spec.add_development_dependency 'rails', '>= 4.2', '< 6'
+  spec.add_development_dependency 'rails', '>= 4.2', '< 7'
 
-  spec.add_runtime_dependency 'railties', '>= 4.2', '< 6'
-  spec.add_runtime_dependency 'activerecord', '>= 4.2', '< 6'
+  spec.add_runtime_dependency 'railties', '>= 4.2', '< 7'
+  spec.add_runtime_dependency 'activerecord', '>= 4.2', '< 7'
 end
-
