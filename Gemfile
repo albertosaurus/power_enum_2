@@ -9,8 +9,7 @@ end
 
 group :development, :test do
   platform :mri do
-    # TODO: Do not specify version once Rails can work with SQLite >= 1.4
-    gem 'sqlite3', '~> 1.3.6'
+    gem 'sqlite3'
   end
 
   platform :jruby do
