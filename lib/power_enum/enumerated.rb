@@ -69,7 +69,7 @@ module PowerEnum::Enumerated
     #                       :name_column       => :status_code
     #  end
     def acts_as_enumerated(options = {})
-      valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name]
+      valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name, :scope]
       options.assert_valid_keys(*valid_keys)
 
       valid_keys.each do |key|
@@ -125,7 +125,7 @@ module PowerEnum::Enumerated
 
         before_save :enumeration_model_update
         before_destroy :enumeration_model_update
-        validates acts_enumerated_name_column, :presence => true, :uniqueness => true
+        validates acts_enumerated_name_column, :presence => true, :uniqueness => {:scope => Array(acts_enumerated_scope)}
         validate :validate_enumeration_model_updates_permitted
 
         define_method :__enum_name__ do
