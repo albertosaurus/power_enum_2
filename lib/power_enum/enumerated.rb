@@ -83,35 +83,7 @@ module PowerEnum::Enumerated
       self.acts_enumerated_name_column = get_name_column(options)
 
       unless self.is_a? PowerEnum::Enumerated::EnumClassMethods
-        preserve_query_aliases
         extend_enum_class_methods( options )
-      end
-    end
-
-    # Rails 4 delegates all the finder methods to 'all'. PowerEnum overrides 'all'. Hence,
-    # the need to re-alias the query methods.
-    def preserve_query_aliases
-      class << self
-        # I have to do the interesting hack below instead of using alias_method
-        # because there's some sort of weirdness going on with how __all binds
-        # to all in Ruby 2.0.
-        __all = self.instance_method(:all)
-
-        define_method(:__all) do
-          __all.bind(self).call
-        end
-
-        # From ActiveRecord::Querying
-        delegate :find, :take, :take!, :first, :first!, :last, :last!, :exists?, :any?, :many?, :to => :__all
-        delegate :first_or_create, :first_or_create!, :first_or_initialize, :to => :__all
-        delegate :find_or_create_by, :find_or_create_by!, :find_or_initialize_by, :to => :__all
-        delegate :find_by, :find_by!, :to => :__all
-        delegate :destroy, :destroy_all, :delete, :delete_all, :update, :update_all, :to => :__all
-        delegate :find_each, :find_in_batches, :to => :__all
-        delegate :select, :group, :order, :except, :reorder, :limit, :offset, :joins,
-                 :where, :preload, :eager_load, :includes, :from, :lock, :readonly,
-                 :having, :create_with, :uniq, :distinct, :references, :none, :unscope, :to => :__all
-        delegate :count, :average, :minimum, :maximum, :sum, :calculate, :pluck, :ids, :to => :__all
       end
     end
 
@@ -172,31 +144,31 @@ module PowerEnum::Enumerated
     end
 
     # Returns all the enum values.  Caches results after the first time this method is run.
-    def all
-      return @all if @all
-      @all = load_all.collect{|val| val.freeze}.freeze
+    def enum_all
+      return @enum_all if @enum_all
+      @enum_all = load_all.collect{|val| val.freeze}.freeze
     end
 
     # Returns all the active enum values.  See the 'active?' instance method.
     def active
       return @all_active if @all_active
-      @all_active = all.find_all{ |enum| enum.active? }.freeze
+      @all_active = enum_all.find_all{ |enum| enum.active? }.freeze
     end
 
     # Returns all the inactive enum values.  See the 'inactive?' instance method.
     def inactive
       return @all_inactive if @all_inactive
-      @all_inactive = all.find_all{ |enum| !enum.active? }.freeze
+      @all_inactive = enum_all.find_all{ |enum| !enum.active? }.freeze
     end
 
     # Returns the names of all the enum values as an array of symbols.
     def names
-      all.map { |item| item.name_sym }
+      enum_all.map { |item| item.name_sym }
     end
 
     # Returns all except for the given list
     def all_except(*excluded)
-      all.find_all { |item| !(item === excluded) }
+      enum_all.find_all { |item| !(item === excluded) }
     end
 
     # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
@@ -271,7 +243,7 @@ module PowerEnum::Enumerated
       unless self.enumeration_model_updates_permitted
         raise "#{self.name}: cache purging disabled for your protection"
       end
-      @all = @all_by_name = @all_by_id = @all_active = nil
+      @enum_all = @all_by_name = @all_by_id = @all_active = nil
     end
 
     # The preferred method to update an enumerations model.  The same
@@ -285,7 +257,7 @@ module PowerEnum::Enumerated
         begin
           self.enumeration_model_updates_permitted = true
           purge_enumerations_cache
-          @all = load_all
+          @enum_all = load_all
           @enumerations_model_updating = true
           case block.arity
           when 0
@@ -376,7 +348,7 @@ module PowerEnum::Enumerated
     private :all_by_name
 
     def all_by_attribute(attr) # :nodoc:
-      aba = all.inject({}) { |memo, item|
+      aba = enum_all.inject({}) { |memo, item|
         memo[item.send(attr)] = item
         memo
       }
