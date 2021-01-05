@@ -625,6 +625,18 @@ describe 'acts_as_enumerated' do
     end
   end
 
+  describe "freeze_members" do
+
+    it "members not frozen" do
+      ConnectorType.all.each { |c| expect(c.frozen?).to eq(false) }
+    end
+
+    it "members frozen" do
+      BookingStatus.all.each { |c| expect(c.frozen?).to eq(true) }
+    end
+
+  end
+
   context 'when class methods are used as scopes' do
     before { State.enumeration_model_updates_permitted = true  }
     after  { State.enumeration_model_updates_permitted = false }

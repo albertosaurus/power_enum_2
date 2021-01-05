@@ -33,8 +33,11 @@ module PowerEnum::Enumerated
     # [:name_column]
     #   Override for the 'name' column.  By default, assumed to be 'name'.
     # [:alias_name]
-    #   By default, if a name column is not 'name', will create an alias of 'name' to the name_column attribute.  Set
+    #   By default, if a name column is not 'name', will create an alias of 'name' to the name_column attribute. Set
     #   this to +false+ if you don't want this behavior.
+    # [:freeze_members]
+    #   Specifies whether individual enum instances should be frozen on database load. By default, true in production.
+    #   Can be either a lambda or a boolean.
     #
     # === Examples
     #
@@ -66,10 +69,11 @@ module PowerEnum::Enumerated
     #    acts_as_enumerated :conditions        => [:exclude => false],
     #                       :order             => 'created_at DESC',
     #                       :on_lookup_failure => lambda { |arg| raise CustomError, "BookingStatus lookup failed; #{arg}" },
-    #                       :name_column       => :status_code
+    #                       :name_column       => :status_code,
+    #                       :freeze_members    => true
     #  end
     def acts_as_enumerated(options = {})
-      valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name]
+      valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name, :freeze_members]
       options.assert_valid_keys(*valid_keys)
 
       valid_keys.each do |key|
@@ -79,7 +83,6 @@ module PowerEnum::Enumerated
         end
       end
 
-      class_attribute :acts_enumerated_name_column
       self.acts_enumerated_name_column = get_name_column(options)
 
       unless self.is_a? PowerEnum::Enumerated::EnumClassMethods
@@ -138,7 +141,6 @@ module PowerEnum::Enumerated
       end # class_eval
 
     end
-    private :extend_enum_class_methods
 
     # Determines if the name column should be explicitly aliased
     def should_alias_name?(options) #:nodoc:
@@ -148,7 +150,6 @@ module PowerEnum::Enumerated
         true
       end
     end
-    private :should_alias_name?
 
     # Extracts the name column from options or gives the default
     def get_name_column(options) #:nodoc:
@@ -158,7 +159,6 @@ module PowerEnum::Enumerated
         :name
       end
     end
-    private :get_name_column
   end
 
   # These are class level methods which are patched into classes that act as
@@ -174,7 +174,19 @@ module PowerEnum::Enumerated
     # Returns all the enum values.  Caches results after the first time this method is run.
     def all
       return @all if @all
-      @all = load_all.collect{|val| val.freeze}.freeze
+
+      freeze_handler = if (handler = self.acts_enumerated_freeze_members).nil?
+                         -> { Rails.env.production? }
+                       else
+                         case handler
+                         when Proc
+                           handler
+                         else
+                           -> { handler }
+                         end
+                       end
+
+      @all = load_all.collect{ |val| !!freeze_handler.call ? val.freeze : val }.freeze
     end
 
     # Returns all the active enum values.  See the 'active?' instance method.
@@ -314,15 +326,14 @@ module PowerEnum::Enumerated
 
     # ---Private methods---
 
-    def load_all
+    private def load_all
       conditions = self.acts_enumerated_conditions
       order      = self.acts_enumerated_order
       unscoped.where(conditions).order(order)
     end
-    private :load_all
 
     # Looks up the enum based on the type of the argument.
-    def lookup_enum_by_type(arg)
+    private def lookup_enum_by_type(arg)
       case arg
       when Symbol
         lookup_name(arg.id2name)
@@ -339,10 +350,9 @@ module PowerEnum::Enumerated
                          " be a String, Symbol or Integer but got a: #{arg.class.name}"
       end
     end
-    private :lookup_enum_by_type
 
     # Deals with a lookup failure for the given argument.
-    def handle_lookup_failure(arg)
+    private def handle_lookup_failure(arg)
       if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
         case lookup_failure_handler
         when Proc
@@ -354,16 +364,14 @@ module PowerEnum::Enumerated
         self.send(:enforce_none, arg)
       end
     end
-    private :handle_lookup_failure
 
     # Returns a hash of all enumeration members keyed by their ids.
-    def all_by_id
+    private def all_by_id
       @all_by_id ||= all_by_attribute( primary_key )
     end
-    private :all_by_id
 
     # Returns a hash of all the enumeration members keyed by their names.
-    def all_by_name
+    private def all_by_name
       begin
         @all_by_name ||= all_by_attribute( :__enum_name__ )
       rescue NoMethodError => err
@@ -373,9 +381,8 @@ module PowerEnum::Enumerated
         raise
       end
     end
-    private :all_by_name
 
-    def all_by_attribute(attr) # :nodoc:
+    private def all_by_attribute(attr) # :nodoc:
       aba = all.inject({}) { |memo, item|
         memo[item.send(attr)] = item
         memo
@@ -383,42 +390,35 @@ module PowerEnum::Enumerated
       aba.freeze unless enumerations_model_updating?
       aba
     end
-    private :all_by_attribute
 
-    def enforce_none(arg) # :nodoc:
+    private def enforce_none(arg) # :nodoc:
       nil
     end
-    private :enforce_none
 
-    def enforce_strict(arg) # :nodoc:
+    private def enforce_strict(arg) # :nodoc:
       raise_record_not_found(arg)
     end
-    private :enforce_strict
 
-    def enforce_strict_literals(arg) # :nodoc:
+    private def enforce_strict_literals(arg) # :nodoc:
       raise_record_not_found(arg) if (Integer === arg) || (Symbol === arg)
       nil
     end
-    private :enforce_strict_literals
 
-    def enforce_strict_ids(arg) # :nodoc:
+    private def enforce_strict_ids(arg) # :nodoc:
       raise_record_not_found(arg) if Integer === arg
       nil
     end
-    private :enforce_strict_ids
 
-    def enforce_strict_symbols(arg) # :nodoc:
+    private def enforce_strict_symbols(arg) # :nodoc:
       raise_record_not_found(arg) if Symbol === arg
       nil
     end
-    private :enforce_strict_symbols
 
     # raise the {ActiveRecord::RecordNotFound} error.
     # @private
-    def raise_record_not_found(arg)
+    private def raise_record_not_found(arg)
       raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
     end
-    private :raise_record_not_found
 
   end
 

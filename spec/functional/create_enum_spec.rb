@@ -15,6 +15,7 @@ describe "create_enum migration methods" do
   end
 
   it 'connector type names should match descriptions' do
+    ConnectorType.all.each { |c| puts c.inspect }
     ConnectorType.all.size.should == 3
     [['DVI', 'Digital Video Interface'],
     ['VGA', 'Video Graphics Array'],

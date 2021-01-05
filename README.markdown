@@ -63,26 +63,7 @@ See "How to use it" below for more information.
 
 ## Installation
 
-### READ THIS FIRST
-
-This gem is signed. The public key is available
-here: https://github.com/albertosaurus/power_enum (look for gem-public\_cert.pem). Hence, if
-you can get an error like the following if you're installing in `HighSecurity` mode.
-
-```
-ERROR:  While executing gem ... (RuntimeError)
-    Couldn't verify data signature: Untrusted Signing Chain Root: cert = 'cert name', error = 'path "/your_gem_home/.gem/trust/cert-blah.pem" does not exist'
-```
-
-If this happens, you need to add the PowerEnum public cert to your gem cert
-store. Download the certificate (gem-public\_cert.pem) and run the following.
-
-    gem cert -a gem-public_cert.pem
-
-More information is available at http://guides.rubygems.org/security/
-which I strongly urge you to read.
-
-#### Using Bundler
+### Using Bundler
 
 Add the gem to your Gemfile
 
@@ -92,7 +73,7 @@ then run
 
     bundle install
 
-#### Manual Installation
+### Manual Installation
 
     gem install power_enum
 
@@ -298,10 +279,12 @@ drop_table :booking_statuses
 class BookingStatus < ActiveRecord::Base
   acts_as_enumerated  :conditions        => 'optional_sql_conditions',
                       :order             => 'optional_sql_order_by',
-                      :on_lookup_failure => :optional_class_method, #This also works: lambda{ |arg| some_custom_action }
-                      :name_column       => 'optional_name_column'  #If required, may override the default name column
-                      :alias_name        => false                   #If set to false and have name_column set, will not
-                                                                    #  alias :name to the name column attribute.
+                      :on_lookup_failure => :optional_class_method, # This also works: lambda{ |arg| some_custom_action }
+                      :name_column       => 'optional_name_column'  # If required, may override the default name column
+                      :alias_name        => false,                  # If set to false and have name_column set, will not
+                                                                    #   alias :name to the name column attribute.
+                      :freeze_members    => true                    # Optional, default is true in prod.
+                                                                    # This also works: lambda { true }
 end
 ```
 
