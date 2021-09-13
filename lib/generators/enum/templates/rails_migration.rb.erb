@@ -1,0 +1,7 @@
+class <%= migration_class_name %> < ActiveRecord::Migration<%= "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]" %>
+
+  def change
+    create_enum :<%=file_name%><%= ", description: true" if @description %>
+  end
+
+end

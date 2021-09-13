@@ -13,13 +13,14 @@ Gem::Specification.new do |spec|
     "LICENSE",
     "README.markdown"
   ]
+
   spec.files = [
     "lib/active_record/virtual_enumerations.rb",
     "lib/generators/enum/USAGE",
     "lib/generators/enum/enum_generator.rb",
     "lib/generators/enum/enum_generator_helpers/migration_number.rb",
     "lib/generators/enum/templates/model.rb.erb",
-    "lib/generators/enum/templates/rails31_migration.rb.erb",
+    "lib/generators/enum/templates/rails_migration.rb.erb",
     "lib/generators/virtual_enumerations_initializer/USAGE",
     "lib/generators/virtual_enumerations_initializer/templates/virtual_enumerations.rb.erb",
     "lib/generators/virtual_enumerations_initializer/virtual_enumerations_initializer_generator.rb",
@@ -35,11 +36,16 @@ Gem::Specification.new do |spec|
   spec.licenses = ["MIT"]
   spec.summary = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
 
-  spec.add_development_dependency 'bundler', '> 1.7'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.1'
-  spec.add_development_dependency 'rails', '>= 4.2', '< 7'
+  unless ENV['CI']
+    spec.add_development_dependency 'bundler', '~> 1.17.0'
+    spec.add_development_dependency 'rake'
+    spec.add_development_dependency 'rspec', '~> 3.1'
+    spec.add_development_dependency 'rails', '= 4.2.11'
+    spec.add_development_dependency 'sqlite3', '= 1.3.10'
 
-  spec.add_runtime_dependency 'railties', '>= 4.2', '< 7'
-  spec.add_runtime_dependency 'activerecord', '>= 4.2', '< 7'
+    spec.add_runtime_dependency 'railties', '= 4.2.11'
+    spec.add_runtime_dependency 'activerecord', '= 4.2.11'
+
+    spec.add_dependency 'bigdecimal', '= 1.3.5'
+  end
 end

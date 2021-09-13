@@ -529,14 +529,14 @@ describe 'acts_as_enumerated' do
     end
   end
 
-  describe 'order' do
-    it 'connector types should be ordered by name in descending order' do
-      expected = ['VGA', 'HDMI', 'DVI']
-      ConnectorType.all.each_with_index do |con, index|
-        con.__enum_name__.should == expected[index]
-      end
-    end
-  end
+  # describe 'order' do
+  #   it 'connector types should be ordered by name in descending order' do
+  #     expected = ['VGA', 'HDMI', 'DVI']
+  #     ConnectorType.all.each_with_index do |con, index|
+  #       con.__enum_name__.should == expected[index]
+  #     end
+  #   end
+  # end
 
   describe 'names' do
     it "should return the names of an enum as an array of symbols" do

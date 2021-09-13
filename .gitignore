@@ -1,12 +1,10 @@
 *.*~
 .idea/
-Gemfile.lock
-Gemfile.lock.bak
-Gemfile.lock.51
 pkg/*
 .rvmrc
 coverage/*
 gem-private_key.pem
 .yardoc
 .ruby-gemset
-.ruby-version
+spec/dummy/log
+spec/dummy/db/*.sqlite3

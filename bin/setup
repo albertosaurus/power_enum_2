@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+# Run as follow:
+# bundle exec bin/setup
+
+require "fileutils"
+require "bundler/setup"
+require "rails"
+require 'rails/generators'
+require 'rails/generators/rails/app/app_generator'
+
+APP_ROOT = File.expand_path("..", __dir__)
+DUMMY_APP_ROOT = File.expand_path("../spec/dummy", __dir__)
+
+params = []
+params << DUMMY_APP_ROOT
+params << "--skip-gemfile"
+params << "--skip-gemspec"
+params << "--skip-git"
+params << "--skip-yarn"
+params << "--skip-action-mailer"
+params << "--skip-active-storage"
+params << "--skip-puma"
+params << "--skip-action-cable"
+params << "--skip-sprockets"
+params << "--skip-spring"
+params << "--skip-listen"
+params << "--skip-coffee"
+params << "--skip-javascript"
+params << "--skip-turbolinks"
+params << "--skip-test"
+params << "--skip-system-test"
+params << "--skip-bootsnap"
+params << "--skip-keeps"
+params << "--force"
+params << "--skip-bundle"
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+FileUtils.chdir APP_ROOT do
+  dummy_app_dir = './spec/dummy'
+  if File.directory?(dummy_app_dir)
+    puts "\n== Remove existing Dummy App =="
+    FileUtils.rm_r(dummy_app_dir, force: true)
+  end
+
+  puts "\n== Add Dummy App Skeleton =="
+  Rails::Generators::AppGenerator.start(params)
+end
+
+FileUtils.chdir APP_ROOT do
+  puts "== Rails version =="
+  puts "Rails [#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"
+
+  puts "== Copy migration files =="
+  FileUtils.mkdir_p './spec/dummy/db/migrate'
+  if Rails::VERSION::MAJOR > 4
+    miration_files = Dir.glob('./spec/app/migrations/*.rb')
+
+    miration_files.each do |file_name|
+      text = File.read(file_name)
+      replace = text.gsub!("ActiveRecord::Migration", "ActiveRecord::Migration[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]")
+      File.open("./spec/dummy/db/migrate/#{File.basename(file_name)}", "w") { |file| file.write(replace) }
+    end
+  else
+    FileUtils.cp_r Dir.glob('./spec/app/migrations/*.rb'), './spec/dummy/db/migrate', verbose: true
+  end
+
+  puts "== Copy models files =="
+  FileUtils.mkdir_p './spec/dummy/app/models'
+  FileUtils.cp_r Dir.glob('./spec/app/models/*.rb'), './spec/dummy/app/models', verbose: true
+
+  puts "== Copy config files =="
+  FileUtils.mkdir_p './spec/dummy/config'
+  FileUtils.cp_r Dir.glob('./spec/app/initializers/*.rb'), './spec/dummy/config/initializers', verbose: true
+end
+
+FileUtils.chdir DUMMY_APP_ROOT do
+  puts "DUMMY_APP_ROOT: [#{DUMMY_APP_ROOT}]"
+
+  puts "\n== Create database =="
+  system! "RAILS_ENV=test bundle exec rake db:create"
+
+  puts "\n== Migrate schema =="
+  system! "RAILS_ENV=test bundle exec rake db:migrate"
+end

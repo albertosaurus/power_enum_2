@@ -1,0 +1,51 @@
+# bundle exec rails _4.2.11_ new --help
+
+# bundle exec rails _4.2.11_ new spec/dummy \
+#   --skip-gemfile \
+#   --skip-gemspec \
+#   --skip-git \
+#   --skip-keeps \
+#   --force \
+#   --skip-bundle \
+#   -S -J -T
+
+# Usage:
+#   rails new APP_PATH [options]
+
+# Options:
+#   -r, [--ruby=PATH]                                      # Path to the Ruby binary of your choice
+#                                                          # Default: ~/.asdf/installs/ruby/2.7.3/bin/ruby
+#   -m, [--template=TEMPLATE]                              # Path to some plugin template (can be a filesystem path or URL)
+#       [--skip-gemfile], [--no-skip-gemfile]              # Don't create a Gemfile
+#   -B, [--skip-bundle], [--no-skip-bundle]                # Don't run bundle install
+#   -G, [--skip-git], [--no-skip-git]                      # Skip .gitignore file
+#       [--skip-keeps], [--no-skip-keeps]                  # Skip source control .keep files
+#   -O, [--skip-active-record], [--no-skip-active-record]  # Skip Active Record files
+#   -S, [--skip-sprockets], [--no-skip-sprockets]          # Skip Sprockets files
+#       [--skip-spring], [--no-skip-spring]                # Don't install Spring application preloader
+#   -d, [--database=DATABASE]                              # Preconfigure for selected database (options: mysql/oracle/postgresql/sqlite3/frontbase/ibm_db/sqlserver/jdbcmysql/jdbcsqlite3/jdbcpostgresql/jdbc)
+#                                                          # Default: sqlite3
+#   -j, [--javascript=JAVASCRIPT]                          # Preconfigure for selected JavaScript library
+#                                                          # Default: jquery
+#   -J, [--skip-javascript], [--no-skip-javascript]        # Skip JavaScript files
+#       [--dev], [--no-dev]                                # Setup the plugin with Gemfile pointing to your Rails checkout
+#       [--edge], [--no-edge]                              # Setup the plugin with Gemfile pointing to Rails repository
+#       [--skip-turbolinks], [--no-skip-turbolinks]        # Skip turbolinks gem
+#   -T, [--skip-test-unit], [--no-skip-test-unit]          # Skip Test::Unit files
+#       [--rc=RC]                                          # Path to file containing extra configuration options for rails command
+#       [--no-rc], [--no-no-rc]                            # Skip loading of extra configuration options from .railsrc file
+#       [--dummy-path=DUMMY_PATH]                          # Create dummy application at given path
+#                                                          # Default: test/dummy
+#       [--full], [--no-full]                              # Generate a rails engine with bundled Rails application for testing
+#       [--mountable], [--no-mountable]                    # Generate mountable isolated application
+#       [--skip-gemspec], [--no-skip-gemspec]              # Skip gemspec file
+#       [--skip-gemfile-entry], [--no-skip-gemfile-entry]  # If creating plugin in application's directory skip adding entry to Gemfile
+
+--skip-gemfile
+--skip-gemspec
+--skip-git
+--skip-keeps
+--skip-bundle
+-S # Skip Sprockets files
+-J # Skip JavaScript files
+-T # Skip Test::Unit files

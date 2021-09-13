@@ -1,15 +1,38 @@
+os: linux
+dist: focal # Ubuntu 20.04 LTS
 language: ruby
+
+git:
+  depth: 1
+
+env:
+  global:
+    - CI=true
+    - BUNDLE_WITHOUT=production
+    - BUNDLE_JOBS=3
+    - BUNDLE_RETRY=3
+
+jobs:
+  fast_finish: true
+  include:
+    -
+      name: "Rails 4.2 / Ruby 2.7"
+      rvm: 2.7.4
+      gemfile: gemfiles/Gemfile.4.2-2.7.4
+    -
+      name: "Rails 5.2 / Ruby 2.7"
+      rvm: 2.7.4
+      gemfile: gemfiles/Gemfile.5.2-2.7.4
+      before_install:
+        - gem update --system
+        - gem install bundler:2.2.25 --default
+
+install:
+  - bundle config set --local deployment 'true'
+  - bundler install
+
 before_script:
-  - script/test_setup.sh
-script: 'bundle exec rake spec'
-rvm:
-  - 2.3
-  - 2.4
-  - 2.5
-  - 2.6
-  - jruby
-matrix:
-  allow_failures:
-    - rvm: 2.5
-    - rvm: 2.6
-    - rvm: jruby
+  - bundle exec bin/setup
+
+script:
+  - bundle exec rake

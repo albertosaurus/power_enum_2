@@ -1,0 +1,50 @@
+name: Tests
+
+on: [ push ]
+
+jobs:
+  ci:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          -
+            name: Default
+            ruby: 2.7.4
+            gemfile: gemfiles/Gemfile.4.2-2.7.4
+            rails_version: 4.2
+          -
+            ruby: 2.7.4
+            gemfile: gemfiles/Gemfile.5.2-2.7.4
+            rails_version: 5.2
+
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+      BUNDLE_WITHOUT: production
+      BUNDLE_JOBS: 3
+      BUNDLE_RETRY: 3
+      CI: true
+
+    steps:
+      -
+        name: Checkout Source Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '1'
+      -
+        name: Install ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      -
+        name: Bundle ${{ matrix.gemfile }}
+        run: bundle install
+      -
+        name: Dummy Setup Rails ${{ matrix.rails_version }}
+        run: bundle exec bin/setup
+      -
+        name: Run test suite Rails ${{ matrix.rails_version }}
+        run: bundle exec rake
