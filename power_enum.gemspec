@@ -37,15 +37,15 @@ Gem::Specification.new do |spec|
   spec.summary = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
 
   unless ENV['CI']
-    spec.add_development_dependency 'bundler', '~> 1.17.0'
+    spec.add_development_dependency 'bundler', '~> 1.17', '>= 1.17.3'
     spec.add_development_dependency 'rake'
     spec.add_development_dependency 'rspec', '~> 3.1'
-    spec.add_development_dependency 'rails', '= 4.2.11'
-    spec.add_development_dependency 'sqlite3', '= 1.3.10'
+    spec.add_development_dependency 'rails', '~> 4.2'
+    spec.add_development_dependency 'sqlite3', '~> 1.3', '>= 1.3.10'
 
-    spec.add_runtime_dependency 'railties', '= 4.2.11'
-    spec.add_runtime_dependency 'activerecord', '= 4.2.11'
+    spec.add_runtime_dependency 'railties', '~> 4.2'
+    spec.add_runtime_dependency 'activerecord', '~> 4.2'
 
-    spec.add_dependency 'bigdecimal', '= 1.3.5'
+    spec.add_dependency 'bigdecimal', '~> 1.3.5'
   end
 end
