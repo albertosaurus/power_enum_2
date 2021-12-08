@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
   spec.name = "power_enum"
-  spec.version = "3.5.0"
+  spec.version = File.readlines(File.join(File.dirname(__FILE__), "VERSION")).first.chomp
 
   spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
   spec.require_paths = ["lib"]
@@ -11,7 +11,8 @@ Gem::Specification.new do |spec|
   spec.email = "arthur.shagall@gmail.com"
   spec.extra_rdoc_files = [
     "LICENSE",
-    "README.markdown"
+    "README.markdown",
+    "VERSION"
   ]
   spec.files = [
     "lib/active_record/virtual_enumerations.rb",
