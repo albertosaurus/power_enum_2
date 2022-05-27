@@ -134,7 +134,7 @@ describe 'has_enumerated' do
     end
 
     it 'correctly looks up the proper value from the enumeration cache when performing update_attributes' do
-      @booking.update_attributes(:status => :rejected)
+      @booking.update(:status => :rejected)
       status = @booking.status
       status.should_not be_new_record
       status.should be_an_instance_of BookingStatus
