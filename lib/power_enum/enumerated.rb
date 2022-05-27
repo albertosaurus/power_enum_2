@@ -75,7 +75,7 @@ module PowerEnum
       #                       :freeze_members    => true
       #  end
       def acts_as_enumerated(options = {})
-        valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name, :freeze_members]
+        valid_keys = [:conditions, :order, :on_lookup_failure, :name_column, :alias_name, :freeze_members, :dont_cache]
         options.assert_valid_keys(*valid_keys)
 
         valid_keys.each do |key|
@@ -87,7 +87,7 @@ module PowerEnum
 
         self.acts_enumerated_name_column = get_name_column(options)
 
-        unless self.is_a? PowerEnum::Enumerated::EnumClassMethods
+        unless self.is_a?(PowerEnum::Enumerated::EnumClassMethods) || self.is_a?(PowerEnum::Enumerated::CachedEnumClassMethods)
           preserve_query_aliases
           extend_enum_class_methods( options )
         end
@@ -123,7 +123,12 @@ module PowerEnum
       # Injects the class methods into model
       def extend_enum_class_methods(options) #:nodoc:
 
-        extend PowerEnum::Enumerated::EnumClassMethods
+        if options[:dont_cache]
+          extend PowerEnum::Enumerated::EnumClassMethods
+        else
+          extend PowerEnum::Enumerated::EnumClassMethods
+          # extend PowerEnum::Enumerated::CachedEnumClassMethods
+        end
 
         class_eval do
           include PowerEnum::Enumerated::EnumInstanceMethods
@@ -165,7 +170,7 @@ module PowerEnum
 
     # These are class level methods which are patched into classes that act as
     # enumerated
-    module EnumClassMethods
+    module CachedEnumClassMethods
       attr_accessor :enumeration_model_updates_permitted
 
       # Returns true for ActiveRecord models that act as enumerated.
@@ -391,6 +396,176 @@ module PowerEnum
         }
         aba.freeze unless enumerations_model_updating?
         aba
+      end
+
+      private def enforce_none(arg) # :nodoc:
+        nil
+      end
+
+      private def enforce_strict(arg) # :nodoc:
+        raise_record_not_found(arg)
+      end
+
+      private def enforce_strict_literals(arg) # :nodoc:
+        raise_record_not_found(arg) if (Integer === arg) || (Symbol === arg)
+        nil
+      end
+
+      private def enforce_strict_ids(arg) # :nodoc:
+        raise_record_not_found(arg) if Integer === arg
+        nil
+      end
+
+      private def enforce_strict_symbols(arg) # :nodoc:
+        raise_record_not_found(arg) if Symbol === arg
+        nil
+      end
+
+      # raise the {ActiveRecord::RecordNotFound} error.
+      # @private
+      private def raise_record_not_found(arg)
+        raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
+      end
+
+    end
+
+    module EnumClassMethods
+      attr_accessor :enumeration_model_updates_permitted
+
+      # Returns true for ActiveRecord models that act as enumerated.
+      def acts_as_enumerated?
+        true
+      end
+
+      def self.extended(base)
+        # Returns all the active enum values.  See the 'active?' instance method.
+        base.scope :active, -> { attribute_names.include?("active") ? where(active: true) : all }
+
+        # Returns all the inactive enum values.  See the 'inactive?' instance method.
+        base.scope :inactive, -> { attribute_names.include?("active") ? where.not(active: true) : none }
+      end
+
+      # Returns the names of all the enum values as an array of symbols.
+      def names
+        pluck(acts_enumerated_name_column).map(&:to_sym)
+      end
+
+      # Returns all except for the given list
+      def all_except(*excluded)
+        all.find_all { |item| !(item === excluded) }
+      end
+
+      # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
+      # an enum instance.  Passing in a list of arguments returns a list of
+      # enums.  When called with no arguments, returns nil.
+      def [](*args)
+        case args.size
+        when 0
+          nil
+        when 1
+          arg = args.first
+          lookup_enum_by_type(arg) || handle_lookup_failure(arg)
+        else
+          args.map{ |item| self[item] }.uniq
+        end
+      end
+
+      # Returns <tt>true</tt> if the given Symbol, String or id has a member
+      # instance in the enumeration, <tt>false</tt> otherwise.  Returns <tt>true</tt>
+      # if the argument is an enum instance, returns <tt>false</tt> if the argument
+      # is nil or any other value.
+      def contains?(arg)
+        case arg
+        when Symbol, String
+          exists?(acts_enumerated_name_column => arg)
+        when Integer
+          exists?(:id => arg)
+        when self
+          true
+        else
+          false
+        end
+      end
+
+      # Enum lookup by id
+      def lookup_id(arg)
+        find_by(:id => arg)
+      end
+
+      # Enum lookup by String
+      def lookup_name(arg)
+        find_by(acts_enumerated_name_column => arg)
+      end
+
+      # Returns true if the enum lookup by the given Symbol, String or id would have returned a value, false otherwise.
+      def include?(arg)
+        return include?(arg.id) if arg.is_a?(self)
+        contains?(arg)
+      end
+
+      # NOTE: purging the cache is sort of pointless because
+      # of the per-process rails model.
+      # By default this blows up noisily just in case you try to be more
+      # clever than rails allows.
+      # For those times (like in Migrations) when you really do want to
+      # alter the records you can silence the carping by setting
+      # enumeration_model_updates_permitted to true.
+      def purge_enumerations_cache
+        nil
+      end
+
+      # The preferred method to update an enumerations model.  The same
+      # warnings as 'purge_enumerations_cache' and
+      # 'enumerations_model_update_permitted' apply.  Pass a block to this
+      # method where you perform your updates.  Cache will be
+      # flushed automatically.  If your block takes an argument, will pass in
+      # the model class.  The argument is optional.
+      def update_enumerations_model(&block)
+        yield if block_given?
+      end
+
+      # Returns true if the enumerations model is in the middle of an
+      # update_enumerations_model block, false otherwise.
+      def enumerations_model_updating?
+        false
+      end
+
+      # Returns the name of the column this enum uses as the basic underlying value.
+      def name_column
+        @name_column ||= self.acts_enumerated_name_column
+      end
+
+      # ---Private methods---
+
+      # Looks up the enum based on the type of the argument.
+      private def lookup_enum_by_type(arg)
+        case arg
+        when Symbol, String
+          find_by(acts_enumerated_name_column => arg)
+        when Integer
+          find_by(:id => arg)
+        when self
+          arg
+        when nil
+          nil
+        else
+          raise TypeError, "#{self.name}[]: argument should"\
+                           " be a String, Symbol or Integer but got a: #{arg.class.name}"
+        end
+      end
+
+      # Deals with a lookup failure for the given argument.
+      private def handle_lookup_failure(arg)
+        if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
+          case lookup_failure_handler
+          when Proc
+            lookup_failure_handler.call(arg)
+          else
+            self.send(lookup_failure_handler, arg)
+          end
+        else
+          self.send(:enforce_none, arg)
+        end
       end
 
       private def enforce_none(arg) # :nodoc:
