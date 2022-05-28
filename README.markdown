@@ -283,8 +283,10 @@ class BookingStatus < ActiveRecord::Base
                       :name_column       => 'optional_name_column'  # If required, may override the default name column
                       :alias_name        => false,                  # If set to false and have name_column set, will not
                                                                     #   alias :name to the name column attribute.
-                      :freeze_members    => true                    # Optional, default is true in prod.
+                      :freeze_members    => true,                   # Optional, default is true in prod.
                                                                     # This also works: lambda { true }
+                      :dont_cache        => false,                  # Do not cache instances in memory.
+                                                                    # Also, allows to modify instances in any moment.
 end
 ```
 
