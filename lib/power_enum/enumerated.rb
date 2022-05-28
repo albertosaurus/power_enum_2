@@ -436,6 +436,10 @@ module PowerEnum
         true
       end
 
+      def enumeration_model_updates_permitted
+        true
+      end
+
       def self.extended(base)
         # Returns all the active enum values.  See the 'active?' instance method.
         base.scope :active, -> { attribute_names.include?("active") ? where(active: true) : all }
@@ -444,9 +448,16 @@ module PowerEnum
         base.scope :inactive, -> { attribute_names.include?("active") ? where.not(active: true) : none }
       end
 
+      # Returns all the enum values.  Caches results after the first time this method is run.
+      def all
+        conditions = self.acts_enumerated_conditions
+        order      = self.acts_enumerated_order
+        unscoped.where(conditions).order(order)
+      end
+
       # Returns the names of all the enum values as an array of symbols.
       def names
-        pluck(acts_enumerated_name_column).map(&:to_sym)
+        all.pluck(acts_enumerated_name_column).map(&:to_sym)
       end
 
       # Returns all except for the given list
@@ -520,7 +531,14 @@ module PowerEnum
       # flushed automatically.  If your block takes an argument, will pass in
       # the model class.  The argument is optional.
       def update_enumerations_model(&block)
-        yield if block_given?
+        if block_given?
+          case block.arity
+          when 0
+            yield
+          else
+            yield self
+          end
+        end
       end
 
       # Returns true if the enumerations model is in the middle of an

@@ -9,61 +9,6 @@ describe 'acts_as_enumerated' do
     StateUncached.should respond_to :[]
   end
 
-  describe 'all_by_name' do
-
-    def flush_cache(klass)
-      tmp = klass.enumeration_model_updates_permitted
-      begin
-        klass.enumeration_model_updates_permitted = true
-        klass.purge_enumerations_cache
-
-        yield klass
-        BookingStatusUncached.should_receive(:name_column).twice.and_return('name_column')
-        BookingStatusUncached.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'name_column'))
-        expect{
-          BookingStatusUncached.send(:all_by_name)
-        }.to raise_error(TypeError)
-      ensure
-        klass.purge_enumerations_cache
-        klass.enumeration_model_updates_permitted = tmp
-      end
-    end
-
-    it 'should raise a TypeError if the name column is not defined' do
-      flush_cache(BookingStatusUncached) do |klass|
-        klass.should_receive(:name_column).twice.and_return('name_column')
-        klass.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'name_column'))
-        expect{
-          klass.send(:all_by_name)
-        }.to raise_error(TypeError)
-      end
-    end
-
-    it 'should raise NoMethodError for any unrelated NoMethodError' do
-      flush_cache(BookingStatusUncached) do |klass|
-        klass.should_receive(:name_column).and_return('name_column')
-        klass.should_receive(:all_by_attribute).and_raise(NoMethodError.new('foo', 'foo'))
-        expect{
-          klass.send(:all_by_name)
-        }.to raise_error(NoMethodError)
-      end
-    end
-  end
-
-  describe 'purge_enumerations_cache' do
-    it 'should raise a runtime error unless enumeration model updates are permitted' do
-      tmp = BookingStatusUncached.enumeration_model_updates_permitted
-      begin
-        BookingStatusUncached.enumeration_model_updates_permitted = false
-        expect{
-          BookingStatusUncached.purge_enumerations_cache
-        }.to raise_error(RuntimeError)
-      ensure
-        BookingStatusUncached.enumeration_model_updates_permitted = tmp
-      end
-    end
-  end
-
   describe 'enforce' do
     {
         :enforce_strict_literals => :foo,
@@ -459,10 +404,11 @@ describe 'acts_as_enumerated' do
       BookingStatusUncached.enumeration_model_updates_permitted = false
     end
 
-    it 'Should not permit the creation of new enumeration models by default' do
-      bs = BookingStatusUncached.new(:name => 'unconfirmed'); puts "save: #{bs.save}"
-      expect(bs.new_record?).to eq(true)
-      expect(bs.save).to eq(false)
+    it 'Should permit the creation of new enumeration models by default' do
+      bs = BookingStatusUncached.new(:name => 'unconfirmed2'); puts "save: #{bs.save}"
+      expect(bs.new_record?).to eq(false)
+      expect(bs.save).to eq(true)
+      bs.destroy!
     end
 
     it 'Should not permit the creation of an enumeration model with a blank name' do
@@ -580,8 +526,9 @@ describe 'acts_as_enumerated' do
       ConnectorTypeUncached['Foo'].should_not be_nil
 
       ConnectorTypeUncached.update_enumerations_model do
-        ConnectorTypeUncached['Foo'].description = 'foobar'
-        ConnectorTypeUncached['Foo'].save!
+        e = ConnectorTypeUncached['Foo']
+        e.description = 'foobar'
+        e.save!
       end
       ConnectorTypeUncached['Foo'].description.should == 'foobar'
 
@@ -602,8 +549,9 @@ describe 'acts_as_enumerated' do
       ConnectorTypeUncached['Foo'].should_not be_nil
 
       ConnectorTypeUncached.update_enumerations_model do |klass|
-        klass['Foo'].description = 'foobar'
-        klass['Foo'].save!
+        e = klass['Foo']
+        e.description = 'foobar'
+        e.save!
       end
       ConnectorTypeUncached['Foo'].description.should == 'foobar'
 
@@ -623,18 +571,6 @@ describe 'acts_as_enumerated' do
     it 'models which are not enums should not act as enumerated' do
       Booking.acts_as_enumerated?.should == false
     end
-  end
-
-  describe "freeze_members" do
-
-    it "members not frozen" do
-      ConnectorTypeUncached.all.each { |c| expect(c.frozen?).to eq(false) }
-    end
-
-    it "members frozen" do
-      BookingStatusUncached.all.each { |c| expect(c.frozen?).to eq(true) }
-    end
-
   end
 
   context 'when class methods are used as scopes' do
