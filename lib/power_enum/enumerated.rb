@@ -126,8 +126,7 @@ module PowerEnum
         if options[:dont_cache]
           extend PowerEnum::Enumerated::EnumClassMethods
         else
-          extend PowerEnum::Enumerated::EnumClassMethods
-          # extend PowerEnum::Enumerated::CachedEnumClassMethods
+          extend PowerEnum::Enumerated::CachedEnumClassMethods
         end
 
         class_eval do
