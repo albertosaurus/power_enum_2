@@ -29,16 +29,17 @@ At it's most basic level, it allows you to say things along the lines of:
 
 ```ruby
 # Create a provisional booking
-booking = Booking.new( :status => BookingStatus[:provisional] )
+booking = Booking.new( status: BookingStatus[:provisional] )
 # This also works
-booking = Booking.new( :status => :provisional )
+booking = Booking.new( status: :provisional )
 # Set the booking status to 'confirmed'
 booking.status = :confirmed
-booking = Booking.create( :status => :rejected )
+booking = Booking.create( status: :rejected )
 # And now...
 booking.status == BookingStatus[:rejected]               # evaluates to true
 booking.status === :rejected                             # also evaluates to true
 booking.status === [:rejected, :confirmed, :provisional] # and so does this
+booking.status === [%i[rejected confirmed provisional]]  # and this
 
 Booking.where( :status_id => BookingStatus[:provisional] )
 
