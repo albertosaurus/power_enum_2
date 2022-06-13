@@ -66,14 +66,15 @@ describe 'has_enumerated' do
       Booking.should_not respond_to(:exclude_states)
     end
 
-    it 'the generated scope should work with ids, strings, symbols, and enum instances' do
+    it 'the generated scope should work with ids, strings, symbols, array, and enum instances' do
       sql = [
         [1, 3],
         [:confirmed, :rejected],
+        [[:confirmed, :rejected]],
         ['confirmed', 'rejected'],
         [BookingStatus[1], BookingStatus[3]]
-      ].map{ |status1, status2|
-        Booking.with_status(status1, status2).to_sql
+      ].map{ |args|
+        Booking.with_status(*args).to_sql
       }
       sql.each{|s|
         sql.first.should == s
@@ -134,7 +135,7 @@ describe 'has_enumerated' do
     end
 
     it 'correctly looks up the proper value from the enumeration cache when performing update_attributes' do
-      @booking.update_attributes(:status => :rejected)
+      @booking.update(:status => :rejected)
       status = @booking.status
       status.should_not be_new_record
       status.should be_an_instance_of BookingStatus

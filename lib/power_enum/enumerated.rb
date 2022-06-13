@@ -222,6 +222,7 @@ module PowerEnum
           nil
         when 1
           arg = args.first
+          return self[*arg] if arg.is_a?(Array)
           lookup_enum_by_type(arg) || handle_lookup_failure(arg)
         else
           args.map{ |item| self[item] }.uniq
