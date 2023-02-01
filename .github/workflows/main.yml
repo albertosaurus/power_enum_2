@@ -1,0 +1,71 @@
+name: Tests
+
+on: [ push ]
+
+env:
+  DEFAULT_RUBY: 2.7.7
+
+jobs:
+
+  ci:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          -
+            ruby: 2.7.7
+            rails: 5.2
+            gemfile: gemfiles/rails_5_2.gemfile
+          -
+            ruby: 2.7.7
+            rails: 6.1
+            gemfile: gemfiles/rails_6_1.gemfile
+          -
+            ruby: 3.0.5
+            rails: 6.1
+            gemfile: gemfiles/rails_6_1.gemfile
+          -
+            ruby: head
+            rails: 6.1
+            gemfile: gemfiles/rails_6_1.gemfile
+
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+      BUNDLE_WITHOUT: production
+      BUNDLE_JOBS: 3
+      BUNDLE_RETRY: 3
+
+    steps:
+      -
+        name: Checkout Source Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '1'
+      -
+        name: Install ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      -
+        name: Set Bundle ${{ matrix.gemfile }}
+        run: |
+          gem update --system
+          gem install bundler
+      -
+        name: Bundle Install ${{ matrix.gemfile }}
+        run: |
+          bundle lock --add-platform x86_64-linux
+          bundle install
+      -
+        name: Dummy Setup Rails ${{ matrix.rails }}
+        run: |
+          bundle exec bin/setup
+          bundle exec bin/dummy_setup ensure_classic_autoloading
+      -
+        name: Run test suite ${{ matrix.ruby }} x ${{ matrix.rails }}
+        run: |
+          echo $BUNDLE_GEMFILE
+          bundle exec rake

@@ -1,7 +1,11 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in lazy_object.gemspec
-gemspec
+source "https://rubygems.org"
+
+gem 'rails', github: "rails/rails", branch: "main"
+
+# Gem under test
+gem 'power_enum', :path => '../'
 
 # Development dependencies
 group :development do
