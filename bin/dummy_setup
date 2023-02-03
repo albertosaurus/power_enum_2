@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "thor"
+end
+
+require "thor"
+
+class DummySetup < Thor
+  include Thor::Actions
+
+  # bin/dummy_setup ensure_classic_autoloading
+  desc "ensure_classic_autoloading", "Do Not Switch To Zeitwerk"
+  def ensure_classic_autoloading
+    puts "Configure classic Autoloading"
+
+    inject_into_file "spec/dummy/config/application.rb", "\n    config.autoloader = :classic", after: /config\.load_defaults\s{1}\d{1}\.\d{1}/
+  end
+
+end
+
+DummySetup.start(ARGV)

@@ -36,12 +36,4 @@ Gem::Specification.new do |spec|
   spec.homepage = "http://github.com/albertosaurus/power_enum_2"
   spec.licenses = ["MIT"]
   spec.summary = "Allows you to treat instances of your ActiveRecord models as though they were an enumeration of values"
-
-  spec.add_development_dependency 'bundler', '> 1.7'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.1'
-  spec.add_development_dependency 'rails', '>= 6.0', '< 8'
-
-  spec.add_runtime_dependency 'railties', '>= 6.0', '< 8'
-  spec.add_runtime_dependency 'activerecord', '>= 6.0', '< 8'
 end
