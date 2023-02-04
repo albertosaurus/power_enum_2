@@ -10,7 +10,7 @@ Enumerations for Rails Done Right.
 
 ## Versions
 
-* PowerEnum 4.X (this version) supports Rails 6.X, and Rails 7.0
+* PowerEnum 4.0.X (this version) supports Rails 6.X, and Rails 7.0 (Experimental)
 * PowerEnum 3.X supports Rails 4.2, Rails 5.X and Rails 6.0
 * PowerEnum 2.X supports Rails 4.X and Rails 5.0
 * PowerEnum 1.X supports Rails 3.1/3.2, available here: https://github.com/albertosaurus/power_enum
@@ -53,7 +53,7 @@ See "How to use it" below for more information.
 
 ## Requirements
 
-### PowerEnum 4.X
+### PowerEnum 4.0.X
 
 * Ruby 2.7 or later (JRuby should work but isn't extensively tested).
 * Rails 6.0, 6.1, 6.2, 7.0
@@ -83,10 +83,6 @@ then run
 ### Manual Installation
 
     gem install power_enum
-
-If you want to verify the gem signature, use the `HighSecurity` installation option.
-
-    gem install power_enum -P HighSecurity
 
 ## Gem Contents
 
@@ -158,6 +154,8 @@ create_enum :booking_status, :name_limit => 50
 # end
 ```
 
+**WARNING - This conflicts with PostgreSQL enum support in Rails 7+ and will be renamed in future versions.**
+
 Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign
 key relationship to the booking\_statuses table.
 
@@ -169,7 +167,7 @@ create_table :bookings do |t|
 end
 
 # It's highly recommended to add a foreign key constraint here.
-# Ideally, you would use a gem of some sort to handle this.
+# Ideally, you would use a gem of some sort to handle this for Rails < 6.
 # I have been using PgPower https://rubygems.org/gems/pg_power with much
 # success. It's fork, PgSaurus https://rubygems.org/gems/pg_saurus should
 # work just as well.
@@ -190,6 +188,8 @@ end
 There are two methods added to Rails migrations:
 
 ##### create\_enum(enum\_name, options = {}, &block)
+
+**WARNING - This conflicts with PostgreSQL enum support in Rails 7+ and will be renamed in future versions.**
 
 Creates a new enum table. `enum_name` will be automatically pluralized. The following options are supported:
 
