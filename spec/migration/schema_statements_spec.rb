@@ -63,8 +63,8 @@ describe PowerEnum::Schema::AbstractAdapter do
     { :foo => 1, :bar => 2, :baz => 3 }
   }
 
-  it 'should create the enum table on \'create_enum\'' do
-    adapter_stub.create_enum(
+  it 'should create the enum table on \'create_power_enum\'' do
+    adapter_stub.create_power_enum(
         'test_enum',
         :name_column   => 'name_column',
         :description   => true,

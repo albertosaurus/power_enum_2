@@ -5,9 +5,9 @@ module PowerEnum::Migration # :nodoc:
 
   # Extensions for CommandRecorder
   module CommandRecorder
-    # Records create_enum
-    def create_enum(*args)
-      record(:create_enum, args)
+    # Records create_power_enum
+    def create_power_enum(*args)
+      record(:create_power_enum, args)
     end
 
     # Records remove_enum
@@ -15,10 +15,10 @@ module PowerEnum::Migration # :nodoc:
       record(:remove_enum, args)
     end
 
-    # The inversion of create_enum is remove_enum
-    # @param [Array] args Arguments to create_enum
+    # The inversion of create_power_enum is remove_enum
+    # @param [Array] args Arguments to create_power_enum
     # @return [Array] [:remove_enum, [enum_name]]
-    def invert_create_enum(args)
+    def invert_create_power_enum(args)
       enum_name = args[0]
       [:remove_enum, [enum_name]]
     end

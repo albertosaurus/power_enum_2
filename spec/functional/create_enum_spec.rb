@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "create_enum migration methods" do
+describe "create_power_enum migration methods" do
 
   it "connector type should be defined" do
     expect{
