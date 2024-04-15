@@ -10,7 +10,7 @@ class CreateEnumFruit < ActiveRecord::Migration[4.2]
   end
 
   def down
-    remove_enum :fruit
+    remove_power_enum :fruit
   end
 
 end

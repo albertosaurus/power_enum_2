@@ -6,6 +6,6 @@ class CreateVirtualEnum < ActiveRecord::Migration[4.2]
   end
 
   def down
-    remove_enum :virtual_enum
+    remove_power_enum :virtual_enum
   end
 end

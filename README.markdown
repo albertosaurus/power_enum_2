@@ -260,14 +260,14 @@ add_index :booking_statuses, [:name], :unique => true
 
 Notice that a unique index is automatically created on the specified name column.
 
-##### remove\_enum(enum\_name)
+##### remove\_power\_enum(enum\_name)
 
 Drops the enum table. `enum_name` will be automatically pluralized.
 
 Example:
 
 ```ruby
-remove_enum :booking_status
+remove_power_enum :booking_status
 ```
 
 is the equivalent of

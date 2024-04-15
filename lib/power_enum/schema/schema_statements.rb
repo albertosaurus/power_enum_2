@@ -115,10 +115,10 @@ module PowerEnum::Schema
     # Drops the enum table.  +enum_name+ will be automatically pluralized.
     #
     # ===== Example
-    #  remove_enum :connector_type
+    #  remove_power_enum :connector_type
     # is the equivalent of
     #  drop_table :connector_types
-    def remove_enum(enum_name)
+    def remove_power_enum(enum_name)
       drop_table enum_name.pluralize
     end
 

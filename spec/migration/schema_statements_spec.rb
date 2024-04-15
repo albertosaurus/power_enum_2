@@ -88,10 +88,10 @@ describe PowerEnum::Schema::AbstractAdapter do
 
   end
 
-  it 'should drop the enum table on \'remove_enum\'' do
+  it 'should drop the enum table on \'remove_power_enum\'' do
     adapter_stub.should_receive(:drop_table).with('test_enums')
 
-    adapter_stub.remove_enum('test_enum')
+    adapter_stub.remove_power_enum('test_enum')
   end
 
 end
