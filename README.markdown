@@ -10,7 +10,7 @@ Enumerations for Rails Done Right.
 
 ## Versions
 
-* PowerEnum 5.0.X (this version) supports Rails 6.X, and Rails 7.X
+* PowerEnum 5.0.X (this version) supports Rails 7.X
 * PowerEnum 4.0.X supports Rails 6.X, and Rails 7.0 (Experimental)
 * PowerEnum 3.X supports Rails 4.2, Rails 5.X and Rails 6.0
 * PowerEnum 2.X supports Rails 4.X and Rails 5.0
