@@ -8,9 +8,7 @@ module PowerEnum::Schema
 
     def self.included(base) # :nodoc:
       base::AbstractAdapter.class_eval do
-        # This squashes the "#create_enum" in the PostgreSQL adapter in Rails 7+.
-        # .../activerecord-7.0.X.Y/lib/active_record/connection_adapters/postgresql_adapter.rb
-        prepend PowerEnum::Schema::AbstractAdapter
+        include PowerEnum::Schema::AbstractAdapter
       end
     end
 
@@ -42,7 +40,7 @@ module PowerEnum::Schema
     #
     # ===== Examples
     # ====== Basic Enum
-    #  create_enum :connector_type
+    #  create_power_enum :connector_type
     # is the equivalent of
     #  create_table :connector_types do |t|
     #    t.string :name, :null => false
@@ -50,7 +48,7 @@ module PowerEnum::Schema
     #  add_index :connector_types, [:name], :unique => true
     #
     # ====== Advanced Enum
-    #  create_enum :connector_type, :name_column   => :connector,
+    #  create_power_enum :connector_type, :name_column   => :connector,
     #                               :name_limit    => 50,
     #                               :description   => true,
     #                               :desc_limit    => 100,
@@ -67,7 +65,7 @@ module PowerEnum::Schema
     #  add_index :connector_types, [:connector], :unique => true
     #
     # ====== Customizing Enum with a block
-    #  create_enum :connector_type, :description => true do |t|
+    #  create_power_enum :connector_type, :description => true do |t|
     #    t.boolean :has_sound
     #  end
     # is the equivalent of
@@ -79,7 +77,7 @@ module PowerEnum::Schema
     #  add_index :connector_types, [:connector], :unique => true
     #
     # Notice that a unique index is automatically created in each case on the proper name column.
-    def create_enum(enum_name, options = {}, &block)
+    def create_power_enum(enum_name, options = {}, &block)
       enum_table_name = enum_name.pluralize
 
       # For compatibility with PgPower/PgSaurus
@@ -117,10 +115,10 @@ module PowerEnum::Schema
     # Drops the enum table.  +enum_name+ will be automatically pluralized.
     #
     # ===== Example
-    #  remove_enum :connector_type
+    #  remove_power_enum :connector_type
     # is the equivalent of
     #  drop_table :connector_types
-    def remove_enum(enum_name)
+    def remove_power_enum(enum_name)
       drop_table enum_name.pluralize
     end
 

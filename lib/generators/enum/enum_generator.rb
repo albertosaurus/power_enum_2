@@ -20,7 +20,7 @@ class EnumGenerator < Rails::Generators::NamedBase
   # Generates the migration to create the enum table.
   def generate_migration
     @description = options.description?
-    migration_template 'rails31_migration.rb.erb', "db/migrate/create_enum_#{table_name}.rb" if options.migration?
+    migration_template 'rails31_migration.rb.erb', "db/migrate/create_power_enum_#{table_name}.rb" if options.migration?
   end
 
   # Do not pluralize enumeration names

@@ -10,7 +10,8 @@ Enumerations for Rails Done Right.
 
 ## Versions
 
-* PowerEnum 4.0.X (this version) supports Rails 6.X, and Rails 7.0 (Experimental)
+* PowerEnum 5.0.X (this version) supports Rails 7.X
+* PowerEnum 4.0.X supports Rails 6.X, and Rails 7.0 (Experimental)
 * PowerEnum 3.X supports Rails 4.2, Rails 5.X and Rails 6.0
 * PowerEnum 2.X supports Rails 4.X and Rails 5.0
 * PowerEnum 1.X supports Rails 3.1/3.2, available here: https://github.com/albertosaurus/power_enum
@@ -121,7 +122,7 @@ rails generate enum booking_status
 You should see output similar to this:
 
     create  app/models/booking_status.rb
-    create  db/migrate/20110926012928_create_enum_booking_status.rb
+    create  db/migrate/20110926012928_create_power_enum_booking_status.rb
     invoke  test_unit
     create    test/unit/booking_status_test.rb
 
@@ -138,7 +139,7 @@ When you open your migration file, it will look something like this:
 class CreateEnumBookingStatus < ActiveRecord::Migration
 
   def change
-    create_enum :booking_status
+    create_power_enum :booking_status
   end
 
 end
@@ -147,14 +148,12 @@ end
 You can now customize it.
 
 ```ruby
-create_enum :booking_status, :name_limit => 50
+create_power_enum :booking_status, :name_limit => 50
 # The above is equivalent to saying
 # create_table :booking_statuses do |t|
 #   t.string :name, :limit => 50, :null => false
 # end
 ```
-
-**WARNING - This conflicts with PostgreSQL enum support in Rails 7+ and will be renamed in future versions.**
 
 Now, when you create your Booking model, your migration should create a reference column for status id's and a foreign
 key relationship to the booking\_statuses table.
@@ -187,9 +186,7 @@ end
 
 There are two methods added to Rails migrations:
 
-##### create\_enum(enum\_name, options = {}, &block)
-
-**WARNING - This conflicts with PostgreSQL enum support in Rails 7+ and will be renamed in future versions.**
+##### create\_power\_enum(enum\_name, options = {}, &block)
 
 Creates a new enum table. `enum_name` will be automatically pluralized. The following options are supported:
 
@@ -207,7 +204,7 @@ You can also pass in a block that takes a table object as an argument, like `cre
 Example:
 
 ```ruby
-create_enum :booking_status
+create_power_enum :booking_status
 ```
 
 is the equivalent of
@@ -222,7 +219,7 @@ add_index :booking_statuses, [:name], :unique => true
 In a more complex case:
 
 ```ruby
-create_enum :booking_status,
+create_power_enum :booking_status,
             :name_column   => :booking_name,
             :name_limit    => 50,
             :description   => true,
@@ -247,7 +244,7 @@ add_index :booking_statuses, [:booking_name], :unique => true
 You can also customize the creation process by using a block:
 
 ```ruby
-create_enum :booking_status do |t|
+create_power_enum :booking_status do |t|
   t.boolean :first_booking, :null => false
 end
 ```
@@ -264,14 +261,14 @@ add_index :booking_statuses, [:name], :unique => true
 
 Notice that a unique index is automatically created on the specified name column.
 
-##### remove\_enum(enum\_name)
+##### remove\_power\_enum(enum\_name)
 
 Drops the enum table. `enum_name` will be automatically pluralized.
 
 Example:
 
 ```ruby
-remove_enum :booking_status
+remove_power_enum :booking_status
 ```
 
 is the equivalent of

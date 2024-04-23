@@ -1,6 +1,6 @@
 class CreateConnectorTypes < ActiveRecord::Migration[4.2]
   def change
-    create_enum :connector_type,
+    create_power_enum :connector_type,
                 :description => true,
                 :name_limit  => 50,
                 :active      => true,

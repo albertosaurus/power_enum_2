@@ -6,5 +6,5 @@ Example:
 
     This will create:
         BookingStatus model: app/models/booking_status.rb
-        Migration to create tables: db/migrate/20110925195833_create_enum_booking_status.rb
+        Migration to create tables: db/migrate/20110925195833_create_power_enum_booking_status.rb
         Unit test for model: test/unit/booking_status_test.rb
