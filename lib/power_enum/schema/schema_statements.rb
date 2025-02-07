@@ -7,10 +7,13 @@ module PowerEnum::Schema
   module SchemaStatements
 
     def self.included(base) # :nodoc:
-      base::AbstractAdapter.class_eval do
-        # This squashes the "#create_enum" in the PostgreSQL adapter in Rails 7+.
-        # .../activerecord-7.0.X.Y/lib/active_record/connection_adapters/postgresql_adapter.rb
-        prepend PowerEnum::Schema::AbstractAdapter
+      [base::AbstractAdapter, base::PostgreSQLAdapter].each do |mod|
+        mod.class_eval do
+          # Currently defined in ActiveRecord::ConnectionAdapters::PostgreSQLAdapter#create_enum
+          # This squashes the "#create_enum" in the PostgreSQL adapter in Rails 7+.
+          # .../activerecord-7.0.X.Y/lib/active_record/connection_adapters/postgresql_adapter.rb
+          prepend PowerEnum::Schema::AbstractAdapter
+        end
       end
     end
 

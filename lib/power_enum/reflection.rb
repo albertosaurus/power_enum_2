@@ -106,7 +106,7 @@ of these associations is deprecated and will be removed in the future.
     def check_validity!; end
 
     # Returns nil
-    def source_reflection;
+    def source_reflection
       nil
     end
 
@@ -114,6 +114,9 @@ of these associations is deprecated and will be removed in the future.
     def type
       nil
     end
+
+    # https://github.com/rails/rails/pull/48362
+    alias_method :join_primary_type, :type
 
     # Always returns false. Necessary for stuff like Booking.where(:status => BookingStatus[:confirmed])
     def polymorphic?
