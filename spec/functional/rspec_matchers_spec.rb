@@ -59,11 +59,11 @@ describe "RSpec Matchers" do
       end
 
       it 'should have the correct failure message for should' do
-        subject.failure_message.should eq("should act as enumerated and have members #{[:foo, :bar, :baz].inspect}")
+        expect(subject.failure_message).to eq("should act as enumerated and have members #{[:foo, :bar, :baz].inspect}")
       end
 
       it 'should have the correct failure message for should_not' do
-        subject.failure_message_when_negated.should eq("should not act as enumerated with members #{[:foo, :bar, :baz].inspect}")
+        expect(subject.failure_message_when_negated).to eq("should not act as enumerated with members #{[:foo, :bar, :baz].inspect}")
       end
 
       it 'validate_enum should handle a random item value' do

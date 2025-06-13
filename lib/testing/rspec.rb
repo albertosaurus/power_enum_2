@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if defined? RSpec
   require 'rspec/expectations'
 
@@ -90,7 +92,7 @@ if defined? RSpec
     failure_message do
       message = "should act as enumerated"
       if @items
-        message << " and have members #{@items.inspect}"
+        message = "#{message} and have members #{@items.inspect}"
       end
       message
     end
@@ -98,7 +100,7 @@ if defined? RSpec
     failure_message_when_negated do
       message = "should not act as enumerated"
       if @items
-        message << " with members #{@items.inspect}"
+        message = "#{message} with members #{@items.inspect}"
       end
       message
     end

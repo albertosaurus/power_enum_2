@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2011 Arthur Shagall
 # Released under the MIT license.  See LICENSE for details.
 
