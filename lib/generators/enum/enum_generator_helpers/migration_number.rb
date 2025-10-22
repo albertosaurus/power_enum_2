@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Helper logic for the enum generator
 module EnumGeneratorHelpers
   # Helper methods to figure out the migration number.

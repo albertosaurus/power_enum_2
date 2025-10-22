@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2005 Trevor Squires
 # Copyright (c) 2012 Arthur Shagall
 # Released under the MIT License.  See the LICENSE file for more details.
