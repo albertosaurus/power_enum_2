@@ -7,19 +7,28 @@ class MigrationStub
 end
 
 describe EnumGeneratorHelpers::MigrationNumber do
-  let(:helper) { MigrationStub.new }
+  let(:helper) { migration_stub.new }
+  let(:migration_stub) {
+    Class.new do
+      include EnumGeneratorHelpers::MigrationNumber
+    end
+  }
   let(:dirname) { "#{Rails.root}/db/migrate/[0-9]*_*.rb" }
 
-  it 'non-timestamp migration number' do
-    helper.should_receive(:current_migration_number).and_return(5)
-    ActiveRecord::Base.should_receive(:timestamped_migrations).and_return(false)
+  let(:active_record_class) {
+    ActiveRecord::Base.respond_to?(:timestamped_migrations) ? ActiveRecord::Base : ActiveRecord
+  }
 
-    helper.next_migration_number(dirname).should eq('006')
+  it 'non-timestamp migration number' do
+    expect(helper).to receive(:current_migration_number).and_return(5)
+    expect(active_record_class).to receive(:timestamped_migrations).and_return(false)
+
+    expect(helper.next_migration_number(dirname)).to eq('006')
   end
 
   it 'timestamp migration number' do
-    helper.should_receive(:current_migration_number).and_return(90000000000001)
+    expect(helper).to receive(:current_migration_number).and_return(90000000000001)
 
-    helper.next_migration_number(dirname).should eq('90000000000002')
+    expect(helper.next_migration_number(dirname)).to eq('90000000000002')
   end
 end

@@ -131,7 +131,7 @@ module PowerEnum
       private def create_ar_reflection(part_id, options)
         reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
 
-        self._reflections = self._reflections.merge(part_id.to_s => reflection)
+        self._reflections = self._reflections.merge(part_id.to_s => reflection, part_id.to_sym => reflection)
         reflection
       end
 
