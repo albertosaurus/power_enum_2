@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2012_09_09_235526) do
+ActiveRecord::Schema[7.1].define(version: 2012_09_09_235526) do
   create_table "adapters", force: :cascade do |t|
     t.integer "connector_type_id"
     t.datetime "created_at", precision: nil
