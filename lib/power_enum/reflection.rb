@@ -130,6 +130,11 @@ of these associations is deprecated and will be removed in the future.
       true
     end
 
+    # https://github.com/rails/rails/pull/55285
+    def deprecated?
+      false
+    end
+
     # In this case, returns [[]]
     def conditions
       [[]]
