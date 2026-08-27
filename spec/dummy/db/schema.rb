@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2012_09_09_235526) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_27_070909) do
   create_table "adapters", force: :cascade do |t|
     t.integer "connector_type_id"
     t.datetime "created_at", precision: nil
@@ -45,6 +45,11 @@ ActiveRecord::Schema[7.1].define(version: 2012_09_09_235526) do
     t.index ["name"], name: "index_connector_types_on_name", unique: true
   end
 
+  create_table "fasteners", force: :cascade do |t|
+    t.string "name", null: false
+    t.index ["name"], name: "index_fasteners_on_name", unique: true
+  end
+
   create_table "fruits", force: :cascade do |t|
     t.string "fruit_name", null: false
     t.string "description"
@@ -66,6 +71,12 @@ ActiveRecord::Schema[7.1].define(version: 2012_09_09_235526) do
     t.integer "connector_type_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+  end
+
+  create_table "writing_instruments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.index ["name"], name: "index_writing_instruments_on_name", unique: true
   end
 
 end

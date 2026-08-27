@@ -418,6 +418,24 @@ module PowerEnum
         nil
       end
 
+      private def insert_if_missing(arg)
+        if Symbol === arg || String == arg
+          value = arg.to_s
+          upsert_attributes = if column_names.include?("description")
+                                { acts_enumerated_name_column => value, description: value.capitalize.gsub("_", " ") }
+                              else
+                                { acts_enumerated_name_column => value }
+                              end
+
+          update_enumerations_model do
+            upsert(upsert_attributes, update_only: [], unique_by: acts_enumerated_name_column)
+          end
+          self[arg]
+        else
+          nil
+        end
+      end
+
       # raise the {ActiveRecord::RecordNotFound} error.
       # @private
       private def raise_record_not_found(arg)

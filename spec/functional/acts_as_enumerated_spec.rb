@@ -76,6 +76,32 @@ describe 'acts_as_enumerated' do
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    context "insert_if_missing" do
+
+      before(:each) do
+        WritingInstrument.update_enumerations_model do
+          WritingInstrument.where(name: "pencil").delete_all
+        end
+
+        Fastener.update_enumerations_model do
+          Fastener.where(name: "nail").delete_all
+        end
+      end
+
+      it "will insert if missing and generate a default description if necessary" do
+        expect(WritingInstrument.where(name: "pencil").exists?).to eq(false)
+
+        expect(WritingInstrument[:pencil]).not_to be_nil
+        expect(WritingInstrument[:pencil].description).to eq("Pencil")
+      end
+
+      it "will skip the description column if the model does not have a description" do
+        expect(Fastener.where(name: "nail").exists?).to eq(false)
+
+        expect(Fastener[:bolt, :nail].count).to eq(2)
+      end
+    end
   end
 
   describe '[]' do

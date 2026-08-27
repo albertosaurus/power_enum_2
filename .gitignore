@@ -10,3 +10,4 @@ gem-private_key.pem
 .yardoc
 .ruby-gemset
 .ruby-version
+test.sqlite3*
