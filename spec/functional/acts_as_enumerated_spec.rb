@@ -77,9 +77,11 @@ describe 'acts_as_enumerated' do
       end
     end
 
-    context "insert_if_missing" do
+    context "insert_new_record" do
 
       before(:each) do
+        Part.delete_all
+
         WritingInstrument.update_enumerations_model do
           WritingInstrument.where(name: "pencil").delete_all
         end
@@ -97,9 +99,21 @@ describe 'acts_as_enumerated' do
       end
 
       it "will skip the description column if the model does not have a description" do
-        expect(Fastener.where(name: "nail").exists?).to eq(false)
+        expect(Fastener.acts_enumerated_on_lookup_failure.to_s).to eq("insert_new_record")
+        expect(Fastener.where(name: :nail).exists?).to eq(false)
 
         expect(Fastener[:bolt, :nail].count).to eq(2)
+      end
+
+      it "will insert if a missing value is assigned to a model with an enumerated attribute" do
+        p = Part.create!(fastener: :nail)
+        expect(p.fastener === :nail).to eq(true)
+
+        p.reload
+        expect(p.fastener === :nail).to eq(true)
+
+        p = Part.find(p.id)
+        expect(p.fastener === :nail).to eq(true)
       end
     end
   end

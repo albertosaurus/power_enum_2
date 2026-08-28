@@ -30,10 +30,13 @@ module PowerEnum
       #   record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for
       #   :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an
       #   exception if the arg is a Integer or Symbol), :enforce_strict_ids (raises and exception if the arg is a
-      #   Integer) and :enforce_strict_symbols (raises an exception if the arg is a Symbol).  The purpose of the
-      #   :on_lookup_failure option is that a) under some circumstances a lookup failure is a Bad Thing and action
-      #   should be taken, therefore b) a fallback action should be easily configurable.  You can also give it a
-      #   lambda that takes in a single argument (The arg that was passed to +[]+).
+      #   Integer), :enforce_strict_symbols (raises an exception if the arg is a Symbol), and :insert_new_record (see
+      #   below).
+      #   The purpose of the :on_lookup_failure option is that a) under some circumstances a lookup failure is a
+      #   Bad Thing and action should be taken, therefore b) a fallback action should be easily configurable.
+      #   You can also give it a lambda that takes in a single argument (The arg that was passed to +[]+).
+      #   Note the :insert_new_record option - it will insert a new record into the database and update the enumerations
+      #   cache. NOTE: This option is only supported where the database back end implements an atomic UPSERT operation.
       # [:name_column]
       #   Override for the 'name' column.  By default, assumed to be 'name'.
       # [:alias_name]
@@ -418,8 +421,8 @@ module PowerEnum
         nil
       end
 
-      private def insert_if_missing(arg)
-        if Symbol === arg || String == arg
+      private def insert_new_record(arg)
+        if Symbol === arg || String === arg
           value = arg.to_s
           upsert_attributes = if column_names.include?("description")
                                 { acts_enumerated_name_column => value, description: value.capitalize.gsub("_", " ") }

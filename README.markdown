@@ -10,7 +10,8 @@ Enumerations for Rails Done Right.
 
 ## Versions
 
-* PowerEnum 4.0.X (this version) supports Rails 6.X, and Rails 7.0 (Experimental)
+* PowerEnum 4.3+ supports Rails 8.X (Experimental)
+* PowerEnum 4.0.X supports Rails 6.X, and Rails 7.0 (Experimental)
 * PowerEnum 3.X supports Rails 4.2, Rails 5.X and Rails 6.0
 * PowerEnum 2.X supports Rails 4.X and Rails 5.0
 * PowerEnum 1.X supports Rails 3.1/3.2, available here: https://github.com/albertosaurus/power_enum
@@ -52,6 +53,11 @@ Booking.with_status( :provisional, :confirmed )
 See "How to use it" below for more information.
 
 ## Requirements
+
+### PowerEnum 4.3+
+
+* Ruby 3.1 or later (JRuby should work but isn't extensively tested).
+* Rails 8.X
 
 ### PowerEnum 4.0.X
 
@@ -309,8 +315,9 @@ instance of the enum (in this case BookingStatus) as a convenience.
 The `:on_lookup_failure` option specifies the name of a *class* method to invoke when the `[]` method is unable to
 locate a BookingStatus record for arg. The default is the built-in `:enforce_none` which returns nil. There are also
 built-ins for `:enforce_strict` (raise and exception regardless of the type for arg), `:enforce_strict_literals` (raises
-an exception if the arg is a Integer or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Integer) and
-`:enforce_strict_symbols` (raises an exception if the arg is a Symbol).
+an exception if the arg is a Integer or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Integer),
+`:enforce_strict_symbols` (raises an exception if the arg is a Symbol), and `:insert_new_record` (will insert a new
+record - NOTE: only supported if the DB back end implements atomic UPSERT).
 
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
 action should be taken, therefore b) a fallback action should be easily configurable. You can

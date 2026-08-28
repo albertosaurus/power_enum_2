@@ -165,9 +165,17 @@ module PowerEnum
           when #{class_name}
             val = #{class_name}.lookup_id(arg.id)
           when String
-            val = #{class_name}.lookup_name(arg)
+            val = if #{class_name}.acts_enumerated_on_lookup_failure.to_s == 'insert_new_record'
+              #{class_name}[arg]
+            else
+              #{class_name}.lookup_name(arg)
+            end
           when Symbol
-            val = #{class_name}.lookup_name(arg.id2name)
+            val = if #{class_name}.acts_enumerated_on_lookup_failure.to_s == 'insert_new_record'
+              #{class_name}[arg.id2name]
+            else
+              #{class_name}.lookup_name(arg.id2name)
+            end
           when Integer
             val = #{class_name}.lookup_id(arg)
           when nil

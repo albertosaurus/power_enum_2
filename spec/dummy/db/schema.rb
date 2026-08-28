@@ -56,6 +56,13 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_27_070909) do
     t.index ["fruit_name"], name: "index_fruits_on_fruit_name", unique: true
   end
 
+  create_table "parts", force: :cascade do |t|
+    t.integer "fastener_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+  end
+
   create_table "states", force: :cascade do |t|
     t.string "state_code"
     t.datetime "created_at", precision: nil
