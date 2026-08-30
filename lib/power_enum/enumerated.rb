@@ -421,6 +421,7 @@ module PowerEnum
         nil
       end
 
+      # Insert a new record if +arg+ is a Symbol or a String, and flush the enumerations cache.
       private def insert_new_record(arg)
         if Symbol === arg || String === arg
           value = arg.to_s

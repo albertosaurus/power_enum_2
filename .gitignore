@@ -11,3 +11,4 @@ gem-private_key.pem
 .ruby-gemset
 .ruby-version
 test.sqlite3*
+
