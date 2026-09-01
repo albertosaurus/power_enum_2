@@ -116,6 +116,34 @@ describe 'acts_as_enumerated' do
         expect(p.fastener === :nail).to eq(true)
       end
     end
+
+    context "call block" do
+      before(:each) do
+        Bird.update_enumerations_model do
+          Bird.where(name: [:eagle, :hawk, :owl]).delete_all
+        end
+      end
+
+      it "returns nil if no block given" do
+        expect(Bird[:eagle]).to be_nil
+      end
+
+      it "calls block if block given" do
+        expect(Bird[:eagle] { |klass, name| klass.insert_new_record(name, description: "Big Predator") }).not_to be_nil
+        expect(Bird[:eagle].description).to eq("Big Predator")
+      end
+
+      it "calls the block in turn on multiple arguments" do
+        birds = Bird[:eagle, :hawk, :owl] { |klass, name| klass.insert_new_record(name) }
+
+        expect(birds.count).to eq(3)
+        expect(birds.map(&:name_sym)).to match_array([:eagle, :hawk, :owl])
+
+        Bird.all.each do |bird|
+          expect(bird.description).to eq(bird.name.capitalize)
+        end
+      end
+    end
   end
 
   describe '[]' do

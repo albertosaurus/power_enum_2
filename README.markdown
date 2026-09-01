@@ -305,7 +305,7 @@ With that, your BookingStatus class will have the following methods defined:
 
 #### Class Methods
 
-##### [](*args)
+##### [](*args, &block)
 
 `BookingStatus[arg]` performs a lookup for the BookingStatus instance for the given arg. The arg value can be a
 'string' or a :symbol, in which case the lookup will be against the BookingStatus.name field. Alternatively arg can be
@@ -316,8 +316,9 @@ The `:on_lookup_failure` option specifies the name of a *class* method to invoke
 locate a BookingStatus record for arg. The default is the built-in `:enforce_none` which returns nil. There are also
 built-ins for `:enforce_strict` (raise and exception regardless of the type for arg), `:enforce_strict_literals` (raises
 an exception if the arg is a Integer or Symbol), `:enforce_strict_ids` (raises and exception if the arg is a Integer),
-`:enforce_strict_symbols` (raises an exception if the arg is a Symbol), and `:insert_new_record` (will insert a new
-record - NOTE: only supported if the DB back end implements atomic UPSERT).
+`:enforce_strict_symbols` (raises an exception if the arg is a Symbol), `:insert_new_record` (will insert a new
+record - NOTE: only supported if the DB back end implements atomic UPSERT), and `:call_block`. Alternatively set
+`:on_lookup_failure` to a proc for a more generic handler.
 
 The purpose of the `:on_lookup_failure` option is that a) under some circumstances a lookup failure is a Bad Thing and
 action should be taken, therefore b) a fallback action should be easily configurable. You can
@@ -326,6 +327,27 @@ also set `:on_lookup_failure` to a lambda that takes in a single argument (The a
 You can also pass in multiple arguments to `[]`. This returns a list of enums corresponding to the
 passed in values. Duplicates are filtered out. For example `BookingStatus[arg1, arg2, arg3]` would be equivalent to
 `[BookingStatus[arg1], BookingStatus[arg2], BookingStatus[arg3]]`.
+
+Example:
+
+```ruby
+class BookingStatus < ActiveRecord::Base
+  acts_as_enumerated on_lookup_failure: :call_block
+end
+
+# Given a BookingStatus, whose possible members are "pending", "closed", or "canceled":
+
+# Returns nil
+BookingStatus[:expired]
+
+# Returns the equivalent of BookingStatus[:pending, :closed]
+BookingStatus[:Pending, :Closed] { |klass, arg| klass[arg.to_s.downcase] }
+
+# Inserts a new record - CAVEAT EMPTOR
+BookingStatus[:expired] do |klass, arg|
+  klass.insert_new_record(arg, description: "#{arg.to_s.capitalize} - inserted inline")
+end
+```
 
 ##### contains?(arg)
 

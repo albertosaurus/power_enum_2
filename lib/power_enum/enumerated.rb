@@ -30,8 +30,8 @@ module PowerEnum
       #   record for arg. The default is the built-in :enforce_none which returns nil. There are also built-ins for
       #   :enforce_strict (raise and exception regardless of the type for arg), :enforce_strict_literals (raises an
       #   exception if the arg is a Integer or Symbol), :enforce_strict_ids (raises and exception if the arg is a
-      #   Integer), :enforce_strict_symbols (raises an exception if the arg is a Symbol), and :insert_new_record (see
-      #   below).
+      #   Integer), :enforce_strict_symbols (raises an exception if the arg is a Symbol), :insert_new_record (see
+      #   below), and :call_block (See documentation for +[arg]+).
       #   The purpose of the :on_lookup_failure option is that a) under some circumstances a lookup failure is a
       #   Bad Thing and action should be taken, therefore b) a fallback action should be easily configurable.
       #   You can also give it a lambda that takes in a single argument (The arg that was passed to +[]+).
@@ -221,15 +221,19 @@ module PowerEnum
       # Enum lookup by Symbol, String, or id.  Returns <tt>arg<tt> if arg is
       # an enum instance.  Passing in a list of arguments returns a list of
       # enums.  When called with no arguments, returns nil.
-      def [](*args)
+      #
+      # If the given arg is not in the enumerations cache, the lookup failure handler is set to :call_block
+      # and an optional block of the form { |klass, arg| } is passed to this method, the block will be
+      # invoked with the first argument being this instance and the second the given argument.
+      def [](*args, &block)
         case args.size
         when 0
           nil
         when 1
           arg = args.first
-          Array === arg ? self[*arg] : (lookup_enum_by_type(arg) || handle_lookup_failure(arg))
+          Array === arg ? self[*arg, &block] : (lookup_enum_by_type(arg) || handle_lookup_failure(arg, &block))
         else
-          args.map{ |item| self[item] }.uniq
+          args.map{ |item| self[item, &block] }.uniq
         end
       end
 
@@ -359,13 +363,13 @@ module PowerEnum
       end
 
       # Deals with a lookup failure for the given argument.
-      private def handle_lookup_failure(arg)
+      private def handle_lookup_failure(arg, &block)
         if (lookup_failure_handler = self.acts_enumerated_on_lookup_failure)
           case lookup_failure_handler
           when Proc
             lookup_failure_handler.call(arg)
           else
-            self.send(lookup_failure_handler, arg)
+            self.send(lookup_failure_handler, arg, &block)
           end
         else
           self.send(:enforce_none, arg)
@@ -422,11 +426,11 @@ module PowerEnum
       end
 
       # Insert a new record if +arg+ is a Symbol or a String, and flush the enumerations cache.
-      private def insert_new_record(arg)
+      def insert_new_record(arg, description: nil)
         if Symbol === arg || String === arg
           value = arg.to_s
           upsert_attributes = if column_names.include?("description")
-                                { acts_enumerated_name_column => value, description: value.capitalize.gsub("_", " ") }
+                                { acts_enumerated_name_column => value, description: description || value.capitalize.gsub("_", " ") }
                               else
                                 { acts_enumerated_name_column => value }
                               end
@@ -437,6 +441,14 @@ module PowerEnum
           self[arg]
         else
           nil
+        end
+      end
+
+      private def call_block(arg, &block)
+        if block_given?
+          block.call self, arg
+        else
+          enforce_none(arg)
         end
       end
 
