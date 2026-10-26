@@ -20,6 +20,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
         expect(reflection.source_reflection).to be_nil
         expect(reflection.conditions).to eq([[]])
         expect(reflection.type).to be_nil
+        expect(reflection.inverse_of).to be_nil
         expect(reflection.source_macro).to eq(:belongs_to)
         expect(reflection.belongs_to?).to eq(true)
         expect(reflection.name.to_sym).to eq(enum_attr)
