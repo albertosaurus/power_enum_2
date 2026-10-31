@@ -120,6 +120,13 @@ of these associations is deprecated and will be removed in the future.
     # https://github.com/rails/rails/pull/48362
     alias_method :join_primary_type, :type
 
+    # Needed since activerecord-import 3.0.
+    # https://github.com/zdennis/activerecord-import/blob/v3.0.0/lib/activerecord-import/import.rb#L1222
+    # https://github.com/rails/rails/blob/v8.1.4/activerecord/lib/active_record/reflection.rb#L761
+    def inverse_name
+      nil
+    end
+
     # Always returns false. Necessary for stuff like Booking.where(:status => BookingStatus[:confirmed])
     def polymorphic?
       false
